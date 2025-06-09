@@ -502,23 +502,34 @@
         }
 
         #start-menu li {
-            padding: 8px 12px;
+            /* padding: 8px 12px; */ /* Base padding adjusted below for items with/without submenu */
             cursor: pointer;
             font-size: 0.9em;
             border: 1px solid transparent;
-            position: relative; /* 하위 메뉴 위치 기준점 */
-            display: flex; /* 텍스트와 화살표 정렬 */
-            justify-content: space-between; /* 텍스트와 화살표 양 끝으로 */
+            position: relative;
+            display: flex;
+            justify-content: space-between;
             align-items: center;
         }
-        #start-menu li .menu-text {
-            flex-grow: 1; /* 텍스트가 남은 공간 차지 */
+        /* Adjust padding for items that are direct actions vs those with submenus */
+        #startMenuList > li:not(.has-submenu) {
+            padding: 8px 12px;
         }
-        #start-menu li .submenu-arrow {
-            font-size: 0.8em; /* 화살표 크기 */
-            margin-left: 5px;
+        #startMenuList > li.has-submenu {
+            padding: 8px 6px 8px 12px; /* Less padding on the right for the arrow */
         }
 
+
+        #start-menu li .menu-text {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #start-menu li .submenu-arrow {
+            font-size: 0.7em; /* Slightly smaller arrow */
+            margin-left: 8px; /* More space for arrow */
+        }
 
         #start-menu li:hover {
             background-color: #0058a8;
@@ -528,31 +539,33 @@
 
         /* Submenu Styles */
         .has-submenu .submenu {
-            display: none; /* 기본적으로 숨김 */
+            display: none;
             position: absolute;
-            left: 100%; /* 부모 li의 오른쪽 바깥 */
-            top: -5px; /* 부모 li의 상단에서 약간 위 (-5px은 padding과 border 고려) */
-            min-width: 200px; /* 하위 메뉴 최소 너비 */
-            background-color: #c0c0c0; /* 시작 메뉴와 동일한 배경 */
-            border: 2px outset #ffffff; /* 시작 메뉴와 동일한 테두리 */
-            padding: 5px;
-            z-index: 1200; /* 시작 메뉴보다 위에 표시 */
-            list-style: none; /* 기본 list-style 제거 */
+            left: 100%;
+            top: -2px;   /* Adjusted for better alignment */
+            min-width: 220px;
+            background-color: #c0c0c0;
+            border: 2px outset #ffffff;
+            padding: 2px;
+            z-index: 1200;
+            list-style: none;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
         }
         .has-submenu .submenu li {
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 0.9em; /* Main menu item font size */
-            border: 1px solid transparent; /* Match main menu item border for hover */
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            padding: 5px 10px;
+            /* display: flex; align-items: center; already inherited from #start-menu li */
+            /* justify-content: space-between; inherited, but we want left-align for submenu items */
+            justify-content: flex-start; /* Ensure text & icon align left */
+            /* gap: 5px; is handled by .menu-text's gap now */
         }
-        .has-submenu .submenu li:hover {
+        /* Hover for submenu items can use the general #start-menu li:hover or be specific if needed */
+        /* .has-submenu .submenu li:hover {
             background-color: #0058a8;
             color: white;
             border: 1px dotted #fff;
-        }
+        } */ /* This is covered by the general #start-menu li:hover */
 
 
         /* Commenting out old styles */
@@ -1051,5 +1064,13 @@
     width: 25px; /* 아이콘 정렬을 위한 너비 */
     text-align: center;
 }
+
+[end of css/style.css]
+
+[end of css/style.css]
+
+[end of css/style.css]
+
+[end of css/style.css]
 
 [end of css/style.css]

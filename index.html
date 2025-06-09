@@ -68,17 +68,16 @@
 
         <div id="start-menu">
             <ul id="startMenuList"> <!-- ID 추가 -->
-                <li data-opens="projects-window">📁 프로그램</li>
                 <li class="has-submenu" id="all-programs-menu-item">
-                    <span class="menu-text">모든 프로그램</span>
+                    <span class="menu-text">프로그램</span>
                     <span class="submenu-arrow">▶</span>
                     <ul class="submenu" id="all-programs-submenu">
                         <!-- JavaScript가 이 목록을 채울 것입니다. -->
                     </ul>
                 </li>
-                <li data-opens="minesweeper-app">💣 Minesweeper</li>
-                <li data-opens="paint-app">🎨 Paint</li>
-                <li data-opens="calculator-app-window">🧮 Calculator</li> <!-- Corrected ID -->
+                <li data-opens="minesweeper-app-window">💣 Minesweeper</li>
+                <li data-opens="paint-app-window">🎨 Paint</li>
+                <li data-opens="calculator-app-window">🧮 Calculator</li>
                 <!-- Add more items as needed -->
             </ul>
         </div>
@@ -122,6 +121,25 @@
                 <button class="window-close-button">X</button>
             </div>
             <div class="window-body minesweeper-body">
+                <div class="ms-menubar">
+                    <ul class="ms-menu">
+                        <li class="ms-menu-item" id="ms-game-menu-item">
+                            <span>게임(G)</span>
+                            <ul class="ms-dropdown-menu" id="ms-game-dropdown">
+                                <li data-action="ms-new-game">새 게임(N)</li>
+                                <li data-action="ms-options">옵션(O)...</li>
+                                <li class="ms-separator"></li>
+                                <li data-action="ms-exit">끝내기(X)</li>
+                            </ul>
+                        </li>
+                        <li class="ms-menu-item" id="ms-help-menu-item">
+                            <span>도움말(H)</span>
+                            <ul class="ms-dropdown-menu" id="ms-help-dropdown">
+                                <li data-action="ms-about">지뢰찾기 정보(A)...</li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
                 <div class="minesweeper-controls">
                     <button id="minesweeperReset" class="minesweeper-reset-button">🙂</button>
                     <div class="minesweeper-difficulty-selector">

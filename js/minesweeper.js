@@ -5,7 +5,13 @@
 let msGridElement;
 let msFlagsLeftElement;
 let msResetButton;
-// msDifficultyElement is now a container, not a display. Buttons are selected in msInitGame.
+// msDifficultyElement was for a static display, now we have buttons.
+const msMenubar = document.querySelector('#minesweeper-app-window .ms-menubar'); // Menubar
+let msGameMenuItem; // Initialized in msInitGame
+let msGameDropdown; // Initialized in msInitGame
+let msHelpMenuItem; // Initialized in msInitGame
+let msHelpDropdown; // Initialized in msInitGame
+
 
 // --- Minesweeper Game Parameters and State Variables ---
 const msDifficultySettings = {
@@ -15,7 +21,6 @@ const msDifficultySettings = {
 };
 let msCurrentDifficulty = 'beginner';
 
-// These will be dynamically set by difficulty
 let msRows = msDifficultySettings[msCurrentDifficulty].rows;
 let msCols = msDifficultySettings[msCurrentDifficulty].cols;
 let msMines = msDifficultySettings[msCurrentDifficulty].mines;
@@ -28,6 +33,7 @@ let msFlagsUsed = 0;
 let msGameOver = false;
 let msRevealedCells = 0;
 let msGameInitialized = false;
+let activeMinesweeperMenu = null; // Tracks currently open dropdown
 
 // --- Minesweeper Game Functions ---
 function msCreateBoardData() {
@@ -247,49 +253,78 @@ function msAdjustWindowSize() {
     const minesweeperWindow = document.getElementById('minesweeper-app-window');
     if (!minesweeperWindow || !msGridElement) return;
 
+    const menubar = minesweeperWindow.querySelector('.ms-menubar');
     const controls = minesweeperWindow.querySelector('.minesweeper-controls');
     const header = minesweeperWindow.querySelector('.window-header');
 
-    if (!controls || !header) return;
+    if (!menubar || !controls || !header) return;
 
+    const menubarHeight = menubar.offsetHeight;
     const controlsHeight = controls.offsetHeight;
     const gridHeight = msGridElement.offsetHeight;
     const headerHeight = header.offsetHeight;
 
-    const windowBodyPadding = 20; // 10px top + 10px bottom from .minesweeper-body
-    const totalInternalHeight = controlsHeight + gridHeight + windowBodyPadding + 10; // Extra 10 for margin-bottom on controls
+    const windowBodyPadding = 20; // Approx 10px top + 10px bottom from .minesweeper-body
+    const totalInternalHeight = menubarHeight + controlsHeight + gridHeight + windowBodyPadding + 10; // Extra 10 for margin-bottom on controls
 
     const newWindowHeight = headerHeight + totalInternalHeight;
 
-    // Width: grid width + body padding + window border. Grid width is cols * cell size + grid border.
     const gridWidth = msCols * msCellSize + 6; // 6 for 3px border on each side
-    const windowBodySidePadding = 20; // 10px left + 10px right
-    const windowBorderWidth = 2; // 1px border on each side of .window
-    const newWindowWidth = gridWidth + windowBodySidePadding + windowBorderWidth;
+    const windowBodySidePadding = 20;
+    const windowBorderWidth = 2;
+    const newWindowWidth = Math.max(200, gridWidth + windowBodySidePadding + windowBorderWidth); // Ensure a min reasonable width
 
     minesweeperWindow.style.height = newWindowHeight + 'px';
     minesweeperWindow.style.width = newWindowWidth + 'px';
 }
 
+// --- Minesweeper Menu Logic ---
+function closeAllMinesweeperDropdowns() {
+    document.querySelectorAll('#minesweeper-app-window .ms-dropdown-menu').forEach(dd => {
+        dd.style.display = 'none';
+    });
+    document.querySelectorAll('#minesweeper-app-window .ms-menu-item').forEach(item => {
+         item.classList.remove('active');
+    });
+    activeMinesweeperMenu = null;
+}
+
+function toggleMinesweeperDropdown(menuItem, dropdownMenu) {
+    const isOpen = dropdownMenu.style.display === 'block';
+    const wasActiveMenu = activeMinesweeperMenu;
+    closeAllMinesweeperDropdowns();
+    if (!isOpen || (isOpen && dropdownMenu !== wasActiveMenu)) { // Open if closed, or if different menu was clicked
+        dropdownMenu.style.display = 'block';
+        menuItem.classList.add('active');
+        activeMinesweeperMenu = dropdownMenu;
+    } else {
+        // If the same menu was clicked and it was open, it's now closed by closeAll...
+        // menuItem.classList.remove('active'); // Already handled by closeAll...
+    }
+}
 
 function msInitGame() {
     msGridElement = document.getElementById('minesweeperGrid');
     msFlagsLeftElement = document.getElementById('minesweeperFlagsLeft');
     msResetButton = document.getElementById('minesweeperReset');
-    // Difficulty buttons are now part of setup
-    const difficultyButtons = document.querySelectorAll('.ms-difficulty-btn');
+    msGameMenuItem = document.getElementById('ms-game-menu-item');
+    msGameDropdown = document.getElementById('ms-game-dropdown');
+    msHelpMenuItem = document.getElementById('ms-help-menu-item');
+    msHelpDropdown = document.getElementById('ms-help-dropdown');
 
-    if (!msGridElement || !msFlagsLeftElement || !msResetButton || difficultyButtons.length === 0) {
+    const difficultyButtons = document.querySelectorAll('#minesweeper-app-window .ms-difficulty-btn');
+    const minesweeperWindowElement = document.getElementById('minesweeper-app-window');
+
+    if (!msGridElement || !msFlagsLeftElement || !msResetButton || difficultyButtons.length === 0 || !minesweeperWindowElement || !msGameMenuItem || !msGameDropdown || !msHelpMenuItem || !msHelpDropdown) {
         console.error("Minesweeper DOM elements not found. Cannot initialize game.");
         return;
     }
 
-    // Update game parameters based on current difficulty
     const settings = msDifficultySettings[msCurrentDifficulty];
     msRows = settings.rows;
     msCols = settings.cols;
     msMines = settings.mines;
-    msCellSize = settings.cellSize; // Ensure cell size is updated
+    msCellSize = settings.cellSize;
 
     msGameOver = false;
     msMinesPlaced = false;
@@ -298,7 +333,6 @@ function msInitGame() {
     msResetButton.textContent = '🙂';
     msFlagsLeftElement.textContent = `Mines: ${msMines - msFlagsUsed}`;
 
-    // Update active state on difficulty buttons
     difficultyButtons.forEach(btn => {
         if (btn.dataset.difficulty === msCurrentDifficulty) {
             btn.classList.add('active');
@@ -309,17 +343,72 @@ function msInitGame() {
 
     msCreateBoardData();
     msRenderBoard();
-    msAdjustWindowSize(); // Adjust window size after rendering the board
+    msAdjustWindowSize();
 
-    // Add event listeners to difficulty buttons only once during the first init
     if (!msGameInitialized) {
         difficultyButtons.forEach(button => {
             button.addEventListener('click', function() {
                 msCurrentDifficulty = this.dataset.difficulty;
-                msInitGame(); // Re-initialize game with new difficulty
+                msInitGame();
             });
         });
-        if(msResetButton) msResetButton.addEventListener('click', msInitGame);
+        msResetButton.addEventListener('click', msInitGame);
+
+        // Menu item listeners
+        msGameMenuItem.addEventListener('click', (event) => {
+            event.stopPropagation();
+            toggleMinesweeperDropdown(msGameMenuItem, msGameDropdown);
+        });
+        msHelpMenuItem.addEventListener('click', (event) => {
+            event.stopPropagation();
+            toggleMinesweeperDropdown(msHelpMenuItem, msHelpDropdown);
+        });
+
+        // Event delegation for dropdown actions
+        const menubar = minesweeperWindowElement.querySelector('.ms-menubar');
+        if (menubar) {
+            menubar.addEventListener('click', (event) => {
+                const target = event.target;
+                if (target.tagName === 'LI' && target.closest('.ms-dropdown-menu')) {
+                    const action = target.dataset.action;
+                    if (action) {
+                        switch (action) {
+                            case 'ms-new-game':
+                                msInitGame();
+                                break;
+                            case 'ms-options':
+                                console.log('Minesweeper options clicked (not implemented)');
+                                alert('Minesweeper Options: Not implemented yet.');
+                                break;
+                            case 'ms-exit':
+                                const minesweeperWindow = document.getElementById('minesweeper-app-window');
+                                if (minesweeperWindow) {
+                                    minesweeperWindow.classList.remove('active');
+                                    setTimeout(() => {
+                                        minesweeperWindow.style.display = 'none';
+                                    }, 200);
+                                }
+                                break;
+                            case 'ms-about':
+                                alert('Minesweeper v1.0\nCreated by AI Assistant for Web OS Simulation');
+                                break;
+                        }
+                        closeAllMinesweeperDropdowns();
+                    }
+                }
+            });
+        }
+
+        // Global click to close dropdowns
+        document.addEventListener('click', function(event) {
+            if (activeMinesweeperMenu) {
+                const menubarElement = minesweeperWindowElement.querySelector('.ms-menubar');
+                if (menubarElement && !menubarElement.contains(event.target)) {
+                    closeAllMinesweeperDropdowns();
+                }
+            }
+        });
         msGameInitialized = true;
     }
+    closeAllMinesweeperDropdowns(); // Ensure menus are closed on init/reset
 }

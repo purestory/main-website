@@ -3,6 +3,7 @@
 // --- Calculator DOM Selectors ---
 const calcDisplay = document.getElementById('calcDisplay');
 const calcButtons = document.querySelectorAll('.calc-btn'); // Query all calculator buttons
+const calculatorWindow = document.getElementById('calculator-app-window'); // Calculator window element
 
 // --- Calculator State Variables ---
 let calcCurrentOperand = '';
@@ -127,3 +128,13 @@ if (calcButtons.length > 0) { // Check if buttons were found
     // If calcDisplay is null, clearCalculator will also do nothing harmful.
     console.warn("Calculator buttons not found, calculator not initialized by default.");
 }
+
+// --- Calculator Keyboard Input Listener ---
+document.addEventListener('keydown', function(event) {
+    // Check if the calculator window is visible and active
+    if (calculatorWindow && calculatorWindow.style.display === 'block' && calculatorWindow.classList.contains('active')) {
+        // Key mapping logic will be implemented in the next step.
+        // For now, this structure ensures the listener is active only for the calculator.
+        // console.log('Key pressed for calculator:', event.key); // For testing
+    }
+});
