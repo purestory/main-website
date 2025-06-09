@@ -119,7 +119,7 @@ chmod 644 /home/purestory/main-website/index.html
 location = / {
     root /home/purestory/main-website;
     try_files /index.html =404;
-
+    
     # 실시간 업데이트를 위한 캐시 비활성화
     add_header Cache-Control "no-cache, no-store, must-revalidate";
     add_header Pragma "no-cache";
@@ -249,4 +249,8 @@ const projectsData = [
 
 ---
 
+<<<<<<< Updated upstream
 © 2025 ItsMyZone Windows Desktop Simulator - 향수를 불러일으키는 AI 서비스 통합 플랫폼
+=======
+© 2025 ItsMyZone Windows Desktop Simulator - 향수를 불러일으키는 AI 서비스 통합 플랫폼 
+>>>>>>> Stashed changes
