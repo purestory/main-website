@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
+            const postScreen = document.getElementById('post-screen');
+            const postMessagesContainer = document.getElementById('postMessages');
             const bootScreen = document.getElementById('boot-screen');
             const desktop = document.querySelector('.desktop');
             const bootMessageText = document.getElementById('bootMessageText');
@@ -15,9 +17,45 @@ document.addEventListener('DOMContentLoaded', function() {
                 { name: 'Ollama', description: '로컬 LLM 서버 (Docker)', link: '#', type: 'Dev/Ops Tool', status: 'Docker' }
             ];
 
-            // --- Boot Sequence Logic ---
+            // --- POST Screen Sequence Logic ---
+            const postScreenMessages = [
+                "AMIBIOS(C) 2023 American Megatrends Inc.",
+                "CPU: Generic x86-64 Processor @ 3.0GHz",
+                "Memory Test: 16384M OK",
+                "Initializing USB Controllers .. Done",
+                "Detecting IDE Devices...",
+                "  Primary Master: VBOX HARDDISK ATA Device",
+                "  Primary Slave: None",
+                "  Secondary Master: VBOX CD-ROM ATA Device",
+                "  Secondary Slave: None",
+                " ",
+                "Booting from Hard Disk...",
+            ];
+            let currentPostMessageIndex = 0;
+            const postMessageDelay = 250; // ms between each POST message
+
+            function showNextPostMessage() {
+                if (currentPostMessageIndex < postScreenMessages.length) {
+                    postMessagesContainer.textContent += postScreenMessages[currentPostMessageIndex] + '\n';
+                    currentPostMessageIndex++;
+                    setTimeout(showNextPostMessage, postMessageDelay);
+                } else {
+                    // After all POST messages, wait a bit then hide POST screen and start main boot
+                    setTimeout(() => {
+                        postScreen.style.display = 'none';
+                        startBootSequence(); // Proceed to the main boot sequence
+                    }, 500); // Brief pause after last POST message
+                }
+            }
+
+            function startPostScreenSequence() {
+                postScreen.style.display = 'block'; // Or 'flex' if CSS is set up for it
+                showNextPostMessage();
+            }
+
+            // --- Main Boot Sequence Logic ---
             const bootMessages = [
-                "POST: System Check...",
+                "POST: System Check...", // This is a bit redundant now, consider removing or rephrasing
                 "Memory Test: 16384MB OK",
                 "Initializing USB Controllers...",
                 "AHCI Driver Loaded.",
@@ -28,10 +66,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             let currentMessageIndex = 0;
             const numMessages = bootMessages.length;
-            // Aim for roughly 10 seconds total boot time.
-            // Let last message "Welcome!" stay for a bit longer.
-            const totalBootTime = 10000; // 10 seconds in ms
-            const messageInterval = (totalBootTime - 2000) / (numMessages -1) ; // Time per message, last one gets 2s
+            const totalBootTime = 10000;
+            const messageInterval = (totalBootTime - 2000) / (numMessages > 1 ? (numMessages -1) : 1) ;
 
             let bootStartTime;
             let progressUpdateIntervalId;
@@ -57,31 +93,32 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             function startBootSequence() {
+                bootScreen.style.display = 'flex'; // Ensure boot screen is visible
                 bootStartTime = Date.now();
-                // Set the CSS transition for the progress bar
                 bootProgressBar.style.transition = `width ${totalBootTime / 1000}s linear`;
-                // Trigger the progress bar animation
-                requestAnimationFrame(() => { // Ensure display is updated before transition starts
+                requestAnimationFrame(() => {
                     bootProgressBar.style.width = '100%';
                 });
 
-                showNextBootMessage(); // Start displaying messages
-                progressUpdateIntervalId = setInterval(updateBootProgress, 100); // Update percentage text
+                // Reset main boot message index if re-running (though not currently a feature)
+                currentMessageIndex = 0;
+                showNextBootMessage();
+                progressUpdateIntervalId = setInterval(updateBootProgress, 100);
 
-                // After total boot time, hide boot screen and show desktop
                 setTimeout(() => {
-                    clearInterval(progressUpdateIntervalId); // Ensure text update stops
-                    bootProgressText.textContent = '100%'; // Final assurance
+                    clearInterval(progressUpdateIntervalId);
+                    bootProgressText.textContent = '100%';
                     bootScreen.classList.add('hidden');
                     desktop.classList.add('visible');
 
                     setTimeout(() => {
                         bootScreen.style.display = 'none';
-                    }, 1000); // Matches CSS transition time for boot screen fade
+                    }, 1000);
                 }, totalBootTime);
             }
 
-            startBootSequence(); // Auto-start boot sequence on DOMContentLoaded
+            // Start with POST sequence
+            startPostScreenSequence();
 
             // --- Windowing Logic ---
             const projectsIcon = document.getElementById('icon-projects');
@@ -91,10 +128,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const projectsWindow = document.getElementById('projects-window');
             const projectsWindowBody = projectsWindow.querySelector('.window-body');
-            const projectsWindowCloseButton = projectsWindow.querySelector('.window-close-button');
-            // const projectsWindowTitle = projectsWindow.querySelector('.window-title'); // Not strictly needed if openWindow handles it
 
-            // Function to open a generic window (can be expanded later)
+            let currentMaxZIndex = 500;
+            let msGameInitialized = false; // Guard for Minesweeper init
+
             function openWindow(windowId, title) {
                 const windowElement = document.getElementById(windowId);
                 if (!windowElement) {
@@ -108,29 +145,53 @@ document.addEventListener('DOMContentLoaded', function() {
                     windowTitleElement.textContent = title;
                 }
 
-                // Default positioning, can be customized per window
-                windowElement.style.top = Math.random() * 100 + 50 + 'px'; // Random-ish position
-                windowElement.style.left = Math.random() * 200 + 50 + 'px';
+                currentMaxZIndex++;
+                windowElement.style.zIndex = currentMaxZIndex;
+
+                const openWindows = document.querySelectorAll('.window[style*="display: block"]').length;
+                const offsetIncrement = 20;
+                let topPosition = 50 + (openWindows * offsetIncrement);
+                let leftPosition = 50 + (openWindows * offsetIncrement);
+
+                if (leftPosition + windowElement.offsetWidth > desktop.clientWidth) {
+                    leftPosition = desktop.clientWidth - windowElement.offsetWidth - 10;
+                }
+                if (topPosition + windowElement.offsetHeight > desktop.clientHeight - 40) {
+                    topPosition = desktop.clientHeight - windowElement.offsetHeight - 40 - 10;
+                }
+                topPosition = Math.max(10, topPosition);
+                leftPosition = Math.max(10, leftPosition);
+
+
+                windowElement.style.top = topPosition + 'px';
+                windowElement.style.left = leftPosition + 'px';
 
                 windowElement.style.display = 'block';
-                // Ensure display:block is processed before adding .active for transition
                 requestAnimationFrame(() => {
-                    requestAnimationFrame(() => { // Double RAF for good measure in some browsers
+                    requestAnimationFrame(() => {
                         windowElement.classList.add('active');
                     });
                 });
 
-                // Specific content rendering if needed
                 if (windowId === 'projects-window') {
                     renderProjects(projectsWindowBody, projectsData);
+                } else if (windowId === 'minesweeper-app-window') {
+                    if (!msGameInitialized) { // Initialize game only once
+                        msInitGame();
+                        msGameInitialized = true;
+                    } else { // Or reset if already initialized and re-opened
+                        msInitGame(); // Ensures reset button smiley is correct etc.
+                    }
                 }
+                 // Bring to front when opened
+                activeWindow = windowElement; // Set as active for potential immediate drag/focus
+                activeWindow.style.zIndex = currentMaxZIndex;
             }
 
 
             function renderProjects(targetElement, projects) {
-                targetElement.innerHTML = ''; // Clear previous content
+                targetElement.innerHTML = '';
 
-                // Group projects by type
                 const groupedProjects = projects.reduce((acc, project) => {
                     acc[project.type] = acc[project.type] || [];
                     acc[project.type].push(project);
@@ -147,7 +208,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         const itemLink = document.createElement('a');
                         itemLink.className = 'project-item';
                         itemLink.href = project.link;
-                        if (project.link !== '#') { // Open external links in new tab
+                        if (project.link !== '#') {
                             itemLink.target = '_blank';
                         }
 
@@ -165,7 +226,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             const statusSpan = document.createElement('span');
                             statusSpan.className = 'project-status';
                             statusSpan.textContent = project.status;
-                            // Add specific status class, e.g., status-docker, status-active
                             statusSpan.classList.add(`status-${project.status.toLowerCase().replace(/[^a-z0-9]/g, '')}`);
                             itemLink.appendChild(statusSpan);
                         }
@@ -179,18 +239,15 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             minesweeperIcon.addEventListener('click', () => {
-                openWindow('minesweeper-app', 'Minesweeper');
+                openWindow('minesweeper-app-window', 'Minesweeper');
             });
             paintIcon.addEventListener('click', () => {
                 openWindow('paint-app', 'Paint');
             });
             calculatorIcon.addEventListener('click', () => {
-                openWindow('calculator-app-window', 'Calculator'); // Corrected ID
+                openWindow('calculator-app-window', 'Calculator');
             });
 
-            // Generic close button handler for any window that might be added later
-            // This assumes all close buttons will have the class 'window-close-button'
-            // and are children of a '.window' div.
             document.addEventListener('click', function(event) {
                 if (event.target.classList.contains('window-close-button')) {
                     const windowToClose = event.target.closest('.window');
@@ -198,7 +255,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         windowToClose.classList.remove('active');
                         setTimeout(() => {
                             windowToClose.style.display = 'none';
-                        }, 200); // Match CSS transition duration
+                        }, 200);
                     }
                 }
             });
@@ -222,11 +279,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 startMenu.classList.remove('active');
                 setTimeout(() => {
                     startMenu.style.display = 'none';
-                }, 150); // Match CSS transition duration
+                }, 150);
             }
 
             startButton.addEventListener('click', (event) => {
-                event.stopPropagation(); // Prevent click from immediately closing menu
+                event.stopPropagation();
                 if (startMenu.classList.contains('active')) {
                     hideStartMenu();
                 } else {
@@ -248,8 +305,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (windowIdToOpen === 'projects-window') {
                         openWindow('projects-window', 'Projects Explorer');
                     } else if (windowIdToOpen) {
-                         // For other apps, use the generic openWindow or specific logic
-                        const appName = item.textContent.trim().split(' ').slice(1).join(' '); // Get app name from text
+                        const appName = item.textContent.trim().split(' ').slice(1).join(' ');
                         openWindow(windowIdToOpen, appName || "Application");
                     }
                 });
@@ -262,16 +318,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const now = new Date();
                 let hours = now.getHours();
                 const minutes = now.getMinutes().toString().padStart(2, '0');
-                // const seconds = now.getSeconds().toString().padStart(2, '0'); // Optional: include seconds
                 const ampm = hours >= 12 ? 'PM' : 'AM';
                 hours = hours % 12;
-                hours = hours ? hours : 12; // the hour '0' should be '12'
-                // taskbarClock.textContent = `${hours}:${minutes}:${seconds} ${ampm}`;
+                hours = hours ? hours : 12;
                 taskbarClock.textContent = `${hours}:${minutes} ${ampm}`;
             }
 
-            updateClock(); // Initial call
-            setInterval(updateClock, 1000); // Update every second
+            updateClock();
+            setInterval(updateClock, 1000);
 
             // --- Calculator Logic ---
             const calcDisplay = document.getElementById('calcDisplay');
@@ -299,11 +353,10 @@ document.addEventListener('DOMContentLoaded', function() {
                     calcCurrentOperand = '';
                     calcDisplayNeedsReset = false;
                 }
-                if (calcCurrentOperand === '0' && digit === '0') return; // Prevent multiple leading zeros "00"
-                if (calcCurrentOperand === '0' && digit !== '0') { // Overwrite single "0" if another digit is pressed
+                if (calcCurrentOperand === '0' && digit === '0') return;
+                if (calcCurrentOperand === '0' && digit !== '0') {
                     calcCurrentOperand = digit;
                 } else {
-                    // Basic check to prevent extremely long numbers (optional)
                     if (calcCurrentOperand.length >= 15) return;
                     calcCurrentOperand += digit;
                 }
@@ -312,12 +365,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
             function chooseOperation(operation) {
                 if (calcCurrentOperand === '' && calcPreviousOperand !== '') {
-                    // Allow changing operation if no new operand entered yet
-                    // e.g. 5 + (then user clicks *) should change operation to *
                     calcOperation = operation;
                     return;
                 }
-                if (calcCurrentOperand === '') return; // Nothing to operate on yet
+                if (calcCurrentOperand === '') return;
 
                 if (calcPreviousOperand !== '') {
                     computeCalculation();
@@ -326,17 +377,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 calcPreviousOperand = calcCurrentOperand;
                 calcCurrentOperand = '';
                 calcDisplayNeedsReset = true;
-                // Display will show previousOperand or result of a prior computation;
-                // next digit entry should clear display for the new currentOperand
-                updateCalcDisplay(calcPreviousOperand); // Show the number that's now stored as previous
+                updateCalcDisplay(calcPreviousOperand);
             }
 
             function computeCalculation() {
                 let result;
-                const prev = parseFloat(calcPreviousOperand); // Use parseFloat for potential decimal results later
+                const prev = parseFloat(calcPreviousOperand);
                 const current = parseFloat(calcCurrentOperand);
 
-                if (isNaN(prev) || isNaN(current)) return; // Not enough numbers to compute
+                if (isNaN(prev) || isNaN(current)) return;
 
                 switch (calcOperation) {
                     case '+':
@@ -357,9 +406,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         result = prev / current;
                         break;
                     default:
-                        return; // No operation selected
+                        return;
                 }
-                // Handle potential floating point inaccuracies for V2, for V1 toString might be enough
                 calcCurrentOperand = result.toString();
                 updateCalcDisplay(calcCurrentOperand);
                 calcOperation = null;
@@ -387,7 +435,328 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
             });
 
-            clearCalculator(); // Initialize calculator display and state
+            clearCalculator();
+
+            // --- Minesweeper Game Logic ---
+            const msGridElement = document.getElementById('minesweeperGrid');
+            const msFlagsLeftElement = document.getElementById('minesweeperFlagsLeft');
+            const msResetButton = document.getElementById('minesweeperReset');
+
+            const msRows = 9;
+            const msCols = 9;
+            const msMines = 10;
+
+            let msBoard = [];
+            let msMinesPlaced = false;
+            let msFlagsUsed = 0;
+            let msGameOver = false;
+            let msRevealedCells = 0;
+
+            function msCreateBoardData() {
+                msBoard = [];
+                for (let r = 0; r < msRows; r++) {
+                    msBoard[r] = [];
+                    for (let c = 0; c < msCols; c++) {
+                        msBoard[r][c] = {
+                            isMine: false,
+                            isRevealed: false,
+                            isFlagged: false,
+                            adjacentMines: 0
+                        };
+                    }
+                }
+            }
+
+            function msPlaceMines(firstClickR, firstClickC) {
+                let minesToPlace = msMines;
+                while (minesToPlace > 0) {
+                    const r = Math.floor(Math.random() * msRows);
+                    const c = Math.floor(Math.random() * msCols);
+                    // Don't place on the first clicked cell or if already a mine
+                    if (!(r === firstClickR && c === firstClickC) && !msBoard[r][c].isMine) {
+                        msBoard[r][c].isMine = true;
+                        minesToPlace--;
+                    }
+                }
+                msMinesPlaced = true;
+                msCalculateAdjacentNumbers();
+            }
+
+            function msCalculateAdjacentNumbers() {
+                for (let r = 0; r < msRows; r++) {
+                    for (let c = 0; c < msCols; c++) {
+                        if (msBoard[r][c].isMine) continue;
+                        let count = 0;
+                        for (let dr = -1; dr <= 1; dr++) {
+                            for (let dc = -1; dc <= 1; dc++) {
+                                if (dr === 0 && dc === 0) continue;
+                                const nr = r + dr;
+                                const nc = c + dc;
+                                if (nr >= 0 && nr < msRows && nc >= 0 && nc < msCols && msBoard[nr][nc].isMine) {
+                                    count++;
+                                }
+                            }
+                        }
+                        msBoard[r][c].adjacentMines = count;
+                    }
+                }
+            }
+
+            function msUpdateCellAppearance(r, c) {
+                const cellElement = msGridElement.querySelector(`[data-row="${r}"][data-col="${c}"]`);
+                if (!cellElement) return;
+                const cellData = msBoard[r][c];
+
+                // Clear previous state classes and content
+                cellElement.innerHTML = '';
+                cellElement.className = 'ms-cell'; // Reset to base class
+
+                if (cellData.isFlagged) {
+                    cellElement.innerHTML = '🚩';
+                    cellElement.classList.add('flagged');
+                } else if (cellData.isRevealed) {
+                    cellElement.classList.add('revealed');
+                    if (cellData.isMine) {
+                        cellElement.innerHTML = '💣';
+                        cellElement.classList.add('mine');
+                    } else if (cellData.adjacentMines > 0) {
+                        cellElement.textContent = cellData.adjacentMines;
+                        cellElement.classList.add(`n${cellData.adjacentMines}`);
+                    }
+                }
+            }
+
+            function msRenderBoard() {
+                msGridElement.innerHTML = '';
+                msGridElement.style.gridTemplateColumns = `repeat(${msCols}, 25px)`;
+                msGridElement.style.gridTemplateRows = `repeat(${msRows}, 25px)`;
+
+                for (let r = 0; r < msRows; r++) {
+                    for (let c = 0; c < msCols; c++) {
+                        const cellElement = document.createElement('div');
+                        cellElement.classList.add('ms-cell');
+                        cellElement.dataset.row = r;
+                        cellElement.dataset.col = c;
+
+                        cellElement.addEventListener('click', () => msHandleCellClick(r, c));
+                        cellElement.addEventListener('contextmenu', (event) => msHandleCellRightClick(event, r, c));
+
+                        msGridElement.appendChild(cellElement);
+                        msUpdateCellAppearance(r,c); // Initial appearance
+                    }
+                }
+            }
+
+            function msHandleCellClick(r, c) {
+                if (msGameOver || msBoard[r][c].isRevealed || msBoard[r][c].isFlagged) {
+                    return;
+                }
+
+                if (!msMinesPlaced) {
+                    msPlaceMines(r, c);
+                }
+                msRevealCell(r, c);
+                msCheckWinCondition();
+            }
+
+            function msHandleCellRightClick(event, r, c) {
+                event.preventDefault();
+                if (msGameOver || msBoard[r][c].isRevealed) {
+                    return;
+                }
+
+                msBoard[r][c].isFlagged = !msBoard[r][c].isFlagged;
+                if (msBoard[r][c].isFlagged) {
+                    msFlagsUsed++;
+                } else {
+                    msFlagsUsed--;
+                }
+                msFlagsLeftElement.textContent = `Mines: ${msMines - msFlagsUsed}`;
+                msUpdateCellAppearance(r, c);
+            }
+
+            function msRevealCell(r, c) {
+                if (r < 0 || r >= msRows || c < 0 || c >= msCols || msBoard[r][c].isRevealed || msBoard[r][c].isFlagged) {
+                    return;
+                }
+
+                msBoard[r][c].isRevealed = true;
+                msRevealedCells++;
+                msUpdateCellAppearance(r, c);
+
+                if (msBoard[r][c].isMine) {
+                    msHandleGameOver(false); // Lose
+                } else if (msBoard[r][c].adjacentMines === 0) {
+                    // Flood fill for empty cells
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            if (dr === 0 && dc === 0) continue;
+                            msRevealCell(r + dr, c + dc);
+                        }
+                    }
+                }
+            }
+
+            function msHandleGameOver(isWin) {
+                msGameOver = true;
+                if (isWin) {
+                    msResetButton.textContent = '🥳';
+                    alert('You Win!');
+                     // Optionally flag all remaining mines
+                    for (let r = 0; r < msRows; r++) {
+                        for (let c = 0; c < msCols; c++) {
+                            if (msBoard[r][c].isMine && !msBoard[r][c].isFlagged) {
+                                msBoard[r][c].isFlagged = true;
+                                msUpdateCellAppearance(r,c);
+                            }
+                        }
+                    }
+                    msFlagsLeftElement.textContent = `Mines: 0`;
+
+
+                } else { // Lose
+                    msResetButton.textContent = '😵';
+                    // Reveal all mines
+                    for (let r = 0; r < msRows; r++) {
+                        for (let c = 0; c < msCols; c++) {
+                            if (msBoard[r][c].isMine) {
+                                msBoard[r][c].isRevealed = true; // Ensure it's marked revealed for styling
+                                msUpdateCellAppearance(r, c);
+                            }
+                        }
+                    }
+                    // Timeout for alert allows board to render mines before alert pops up
+                    setTimeout(() => alert('Game Over!'), 100);
+                }
+            }
+
+            function msCheckWinCondition() {
+                if (msGameOver) return; // Don't check if already won/lost
+                if ((msRows * msCols - msMines) === msRevealedCells) {
+                    msHandleGameOver(true);
+                }
+            }
+
+            function msInitGame() {
+                msGameOver = false;
+                msMinesPlaced = false;
+                msFlagsUsed = 0;
+                msRevealedCells = 0;
+                msResetButton.textContent = '🙂';
+                msFlagsLeftElement.textContent = `Mines: ${msMines - msFlagsUsed}`;
+
+                msCreateBoardData(); // Creates board data but doesn't place mines yet
+                msRenderBoard(); // Renders empty grid, ready for first click
+            }
+
+            if(msResetButton) { // Ensure button exists before adding listener
+                msResetButton.addEventListener('click', msInitGame);
+            }
+            // Initial game setup is now called from openWindow if windowId === 'minesweeper-app-window'
+
+
+            // --- Draggable Windows Logic ---
+            let activeWindow = null;
+            let offsetX, offsetY;
+
+            function dragWindow(event) {
+                if (!activeWindow) return;
+                event.preventDefault();
+
+                let newX = event.clientX - offsetX;
+                let newY = event.clientY - offsetY;
+
+                const headerHeight = activeWindow.querySelector('.window-header').offsetHeight;
+                const taskbarHeight = document.querySelector('.taskbar').offsetHeight;
+
+                newX = Math.max(-activeWindow.offsetWidth + 50, Math.min(newX, desktop.clientWidth - 50));
+                newY = Math.max(0, Math.min(newY, desktop.clientHeight - taskbarHeight - headerHeight + 20 ));
+
+                activeWindow.style.left = newX + 'px';
+                activeWindow.style.top = newY + 'px';
+            }
+
+            function stopDrag() {
+                if (!activeWindow) return;
+                document.body.style.userSelect = '';
+                document.removeEventListener('mousemove', dragWindow);
+                document.removeEventListener('mouseup', stopDrag);
+                activeWindow = null;
+            }
+
+            desktop.addEventListener('mousedown', function(event) {
+                const targetHeader = event.target.closest('.window-header');
+                if (targetHeader) {
+                    activeWindow = targetHeader.closest('.window');
+                    if (!activeWindow) return;
+
+                    currentMaxZIndex++;
+                    activeWindow.style.zIndex = currentMaxZIndex;
+
+                    const rect = activeWindow.getBoundingClientRect();
+                    offsetX = event.clientX - rect.left;
+                    offsetY = event.clientY - rect.top;
+
+                    document.body.style.userSelect = 'none';
+
+                    document.addEventListener('mousemove', dragWindow);
+                    document.addEventListener('mouseup', stopDrag);
+                }
+            });
+
+            // --- Resizable Windows Logic ---
+            let resizingWindow = null;
+            let initialMouseX, initialMouseY;
+            let initialWindowWidth, initialWindowHeight;
+
+            function resizeOnDrag(event) {
+                if (!resizingWindow) return;
+                event.preventDefault();
+
+                const dx = event.clientX - initialMouseX;
+                const dy = event.clientY - initialMouseY;
+
+                let newWidth = initialWindowWidth + dx;
+                let newHeight = initialWindowHeight + dy;
+
+                // Apply minimum size constraints
+                newWidth = Math.max(150, newWidth); // Min width 150px
+                newHeight = Math.max(100, newHeight); // Min height 100px
+
+                resizingWindow.style.width = newWidth + 'px';
+                resizingWindow.style.height = newHeight + 'px';
+            }
+
+            function stopResize() {
+                if (!resizingWindow) return;
+                document.body.style.userSelect = '';
+                document.removeEventListener('mousemove', resizeOnDrag);
+                document.removeEventListener('mouseup', stopResize);
+                resizingWindow = null;
+            }
+
+            desktop.addEventListener('mousedown', function(event) {
+                if (event.target.classList.contains('resize-handle')) {
+                    event.preventDefault(); // Prevent text selection and other default actions
+                    event.stopPropagation(); // Stop event from bubbling to window drag logic
+
+                    resizingWindow = event.target.closest('.window');
+                    if (!resizingWindow) return;
+
+                    // Bring window to front
+                    currentMaxZIndex++;
+                    resizingWindow.style.zIndex = currentMaxZIndex;
+
+                    initialMouseX = event.clientX;
+                    initialMouseY = event.clientY;
+                    initialWindowWidth = resizingWindow.offsetWidth;
+                    initialWindowHeight = resizingWindow.offsetHeight;
+
+                    document.body.style.userSelect = 'none';
+                    document.addEventListener('mousemove', resizeOnDrag);
+                    document.addEventListener('mouseup', stopResize);
+                }
+            });
 
         });
 

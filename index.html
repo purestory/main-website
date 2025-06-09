@@ -8,15 +8,18 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <div id="post-screen" style="display: none;">
+        <pre id="postMessages"></pre>
+    </div>
     <div id="boot-screen">
         <div class="boot-logo">🪟</div>
-        <div class="boot-messages">
-            <p id="bootMessageText">Starting Windows...</p>
-        </div>
         <div class="boot-progress-bar-container">
             <div id="bootProgressBar" class="boot-progress-bar"></div>
         </div>
         <p id="bootProgressText">0%</p>
+        <div class="boot-messages">
+            <p id="bootMessageText">Starting Windows...</p>
+        </div>
     </div>
     <div class="desktop"> <!-- Initially hidden by CSS, made visible by JS -->
         <div class="taskbar">
@@ -50,6 +53,7 @@
             <div class="window-body">
                 <!-- Content will be dynamically injected by JavaScript -->
             </div>
+            <div class="resize-handle"></div>
         </div>
 
         <div id="start-menu">
@@ -92,6 +96,24 @@
                     <button class="calc-btn calc-btn-operator" data-value="+">+</button>
                 </div>
             </div>
+            <div class="resize-handle"></div>
+        </div>
+
+        <div id="minesweeper-app-window" class="window" style="display: none;">
+            <div class="window-header">
+                <span class="window-title">Minesweeper</span>
+                <button class="window-close-button">X</button>
+            </div>
+            <div class="window-body minesweeper-body">
+                <div class="minesweeper-controls">
+                    <button id="minesweeperReset" class="minesweeper-reset-button">🙂</button>
+                    <div id="minesweeperFlagsLeft" class="minesweeper-info">Mines: 10</div>
+                </div>
+                <div id="minesweeperGrid" class="minesweeper-grid">
+                    <!-- Game grid will be populated by JavaScript -->
+                </div>
+            </div>
+            <div class="resize-handle"></div>
         </div>
     </div>
     <script src="js/script.js" defer></script>
