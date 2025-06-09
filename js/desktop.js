@@ -59,6 +59,7 @@ if (typeof startButton !== 'undefined' && startButton && typeof startMenu !== 'u
     function hideStartMenu() {
         startMenu.classList.remove('active');
         if (allProgramsSubmenu) { // Hide submenu when main menu is hidden
+            allProgramsSubmenu.classList.remove('visible');
             allProgramsSubmenu.style.display = 'none';
         }
         setTimeout(() => {
@@ -105,19 +106,40 @@ if (typeof startButton !== 'undefined' && startButton && typeof startMenu !== 'u
 
     // "All Programs" submenu logic
     if (allProgramsMenuItem && allProgramsSubmenu) {
+        // 클릭 이벤트 추가 - 모바일 및 클릭 지원
+        allProgramsMenuItem.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (allProgramsSubmenu.classList.contains('visible')) {
+                allProgramsSubmenu.classList.remove('visible');
+                allProgramsSubmenu.style.display = 'none';
+            } else {
+                // 서브메뉴가 비어있으면 다시 채우기
+                if (allProgramsSubmenu.children.length === 0) {
+                    populateAllProgramsSubmenu();
+                }
+                allProgramsSubmenu.classList.add('visible');
+                allProgramsSubmenu.style.display = 'block';
+            }
+        });
+
         allProgramsMenuItem.addEventListener('mouseenter', () => {
             if (hideSubmenuTimer) {
                 clearTimeout(hideSubmenuTimer);
                 hideSubmenuTimer = null;
             }
-            // Populate on hover is fine, or could be done once when start menu opens
-            // populateAllProgramsSubmenu(); // Already called when start menu opens
+            // 서브메뉴가 비어있으면 다시 채우기
+            if (allProgramsSubmenu.children.length === 0) {
+                populateAllProgramsSubmenu();
+            }
+            allProgramsSubmenu.classList.add('visible');
             allProgramsSubmenu.style.display = 'block';
-            // CSS should handle positioning: left: 100%; top: -5px (relative to allProgramsMenuItem)
         });
 
         allProgramsMenuItem.addEventListener('mouseleave', () => {
             hideSubmenuTimer = setTimeout(() => {
+                allProgramsSubmenu.classList.remove('visible');
                 allProgramsSubmenu.style.display = 'none';
             }, 300);
         });
@@ -131,6 +153,7 @@ if (typeof startButton !== 'undefined' && startButton && typeof startMenu !== 'u
 
         allProgramsSubmenu.addEventListener('mouseleave', () => {
             hideSubmenuTimer = setTimeout(() => {
+                allProgramsSubmenu.classList.remove('visible');
                 allProgramsSubmenu.style.display = 'none';
             }, 300);
         });
@@ -139,13 +162,23 @@ if (typeof startButton !== 'undefined' && startButton && typeof startMenu !== 'u
 }
 
 function populateAllProgramsSubmenu() {
-    if (!allProgramsSubmenu || !startMenu || !startMenu.contains(allProgramsSubmenu)) {
-         // Ensure submenu is part of the current startMenu context if startMenu can change
+    console.log('populateAllProgramsSubmenu 호출됨');
+    
+    if (!allProgramsSubmenu) {
+        console.error('allProgramsSubmenu 요소를 찾을 수 없습니다');
         return;
     }
+    
+    if (!startMenu || !startMenu.contains(allProgramsSubmenu)) {
+        console.error('startMenu 또는 allProgramsSubmenu 구조 문제');
+        return;
+    }
+    
     allProgramsSubmenu.innerHTML = ''; // Clear existing items
+    
+    console.log('projectsData 상태:', typeof projectsData, projectsData?.length);
 
-    if (typeof projectsData !== 'undefined' && projectsData.length > 0) {
+    if (typeof projectsData !== 'undefined' && projectsData && projectsData.length > 0) {
         projectsData.forEach(program => {
             const listItem = document.createElement('li');
 
@@ -213,11 +246,36 @@ function populateAllProgramsSubmenu() {
             allProgramsSubmenu.appendChild(listItem);
         });
     } else {
+        console.log('projectsData가 없거나 비어있음. 기본 항목 추가');
         const noProgramsItem = document.createElement('li');
-        noProgramsItem.textContent = '(비어 있음)';
+        noProgramsItem.textContent = '(프로그램이 없음)';
         noProgramsItem.style.fontStyle = 'italic';
         noProgramsItem.style.padding = '8px 12px';
+        noProgramsItem.style.color = '#666';
         allProgramsSubmenu.appendChild(noProgramsItem);
+        
+        // 디버깅을 위해 몇 개 기본 항목 추가
+        const debugItems = [
+            { name: 'Calculator', type: 'App' },
+            { name: 'Minesweeper', type: 'Game' },
+            { name: 'My Computer', type: 'System' }
+        ];
+        
+        debugItems.forEach(item => {
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = '#';
+            link.innerHTML = `<span style="margin-right: 8px;">📁</span><span class="menu-text">${item.name}</span>`;
+            
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log(`디버그 항목 클릭: ${item.name}`);
+                hideStartMenu();
+            });
+            
+            listItem.appendChild(link);
+            allProgramsSubmenu.appendChild(listItem);
+        });
     }
 }
 

@@ -542,7 +542,7 @@
         /* Submenu Styles */
         /* Generic submenu style (can be used if other submenus are added later) */
         .has-submenu > .submenu { /* Use > for direct child */
-            display: none;
+            display: none !important;
             position: absolute;
             left: 100%; /* Position to the right of the parent */
             top: -2px;   /* Default top alignment */
@@ -554,7 +554,13 @@
             list-style: none;
             max-height: calc(100vh - 100px); /* Default max height */
             overflow-y: auto;
+            overflow-x: hidden;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+        
+        /* 서브메뉴가 표시될 때 */
+        .has-submenu > .submenu.visible {
+            display: block !important;
         }
 
         /* Specific overrides for the All Programs submenu */
