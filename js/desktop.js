@@ -59,8 +59,8 @@ if (typeof startButton !== 'undefined' && startButton && typeof startMenu !== 'u
     function hideStartMenu() {
         startMenu.classList.remove('active');
         if (allProgramsSubmenu) { // Hide submenu when main menu is hidden
-            allProgramsSubmenu.classList.remove('visible');
             allProgramsSubmenu.style.display = 'none';
+            allProgramsSubmenu.style.visibility = 'hidden';
         }
         setTimeout(() => {
             startMenu.style.display = 'none';
@@ -72,6 +72,7 @@ if (typeof startButton !== 'undefined' && startButton && typeof startMenu !== 'u
         if (startMenu.classList.contains('active')) {
             hideStartMenu();
         } else {
+            console.log('스타트 메뉴 열기, projectsData 확인:', typeof projectsData, projectsData?.length);
             populateAllProgramsSubmenu(); // Populate "All Programs" when start menu is opened
             showStartMenu();
         }
@@ -111,16 +112,21 @@ if (typeof startButton !== 'undefined' && startButton && typeof startMenu !== 'u
             e.preventDefault();
             e.stopPropagation();
             
-            if (allProgramsSubmenu.classList.contains('visible')) {
-                allProgramsSubmenu.classList.remove('visible');
+            const isVisible = allProgramsSubmenu.style.display === 'block';
+            
+            if (isVisible) {
                 allProgramsSubmenu.style.display = 'none';
+                allProgramsSubmenu.style.visibility = 'hidden';
+                console.log('서브메뉴 숨김');
             } else {
                 // 서브메뉴가 비어있으면 다시 채우기
                 if (allProgramsSubmenu.children.length === 0) {
+                    console.log('서브메뉴 내용 채우는 중...');
                     populateAllProgramsSubmenu();
                 }
-                allProgramsSubmenu.classList.add('visible');
-                allProgramsSubmenu.style.display = 'block';
+                // 인라인 스타일로 강제 표시
+                allProgramsSubmenu.setAttribute('style', 'display: block !important; position: absolute !important; left: 100% !important; top: -3px !important; min-width: 230px !important; background-color: #c0c0c0 !important; border: 2px outset #ffffff !important; z-index: 1300 !important; padding: 2px !important; list-style: none !important; max-height: 350px !important; overflow-y: auto !important; box-shadow: 3px 3px 8px rgba(0,0,0,0.5) !important; visibility: visible !important;');
+                console.log('서브메뉴 표시됨, 자식 수:', allProgramsSubmenu.children.length);
             }
         });
 
@@ -133,14 +139,18 @@ if (typeof startButton !== 'undefined' && startButton && typeof startMenu !== 'u
             if (allProgramsSubmenu.children.length === 0) {
                 populateAllProgramsSubmenu();
             }
-            allProgramsSubmenu.classList.add('visible');
             allProgramsSubmenu.style.display = 'block';
+            allProgramsSubmenu.style.visibility = 'visible';
+            allProgramsSubmenu.style.position = 'absolute';
+            allProgramsSubmenu.style.left = '100%';
+            allProgramsSubmenu.style.top = '-2px';
+            allProgramsSubmenu.style.zIndex = '1200';
         });
 
         allProgramsMenuItem.addEventListener('mouseleave', () => {
             hideSubmenuTimer = setTimeout(() => {
-                allProgramsSubmenu.classList.remove('visible');
                 allProgramsSubmenu.style.display = 'none';
+                allProgramsSubmenu.style.visibility = 'hidden';
             }, 300);
         });
 
@@ -153,8 +163,8 @@ if (typeof startButton !== 'undefined' && startButton && typeof startMenu !== 'u
 
         allProgramsSubmenu.addEventListener('mouseleave', () => {
             hideSubmenuTimer = setTimeout(() => {
-                allProgramsSubmenu.classList.remove('visible');
                 allProgramsSubmenu.style.display = 'none';
+                allProgramsSubmenu.style.visibility = 'hidden';
             }, 300);
         });
     }
@@ -177,9 +187,25 @@ function populateAllProgramsSubmenu() {
     allProgramsSubmenu.innerHTML = ''; // Clear existing items
     
     console.log('projectsData 상태:', typeof projectsData, projectsData?.length);
+    
+    // projectsData가 없으면 기본 데이터 사용
+    let dataToUse = projectsData;
+    if (typeof projectsData === 'undefined' || !projectsData || projectsData.length === 0) {
+        console.log('projectsData가 없어서 기본 데이터 사용');
+        dataToUse = [
+            { name: 'OpenWebUI', description: 'Ollama용 웹 인터페이스', link: 'http://itsmyzone.iptime.org:3000/', type: 'AI/ML Service', status: 'Docker' },
+            { name: 'Amica AI', description: '3D AI 가상 비서', link: '/amica/', type: 'AI/ML Service', status: 'Active' },
+            { name: 'Translation Service', description: 'AI 기반 번역', link: '/translation/', type: 'AI/ML Service', status: 'Active' },
+            { name: 'Whisper STT', description: '음성-텍스트 변환', link: '/whisper/', type: 'AI/ML Service', status: 'Active' },
+            { name: 'EdgeTTS', description: 'TTS 서비스', link: '/edgetts/', type: 'AI/ML Service', status: 'Active' },
+            { name: 'Explorer', description: '파일 탐색기', link: '/explorer/', type: 'Web Service', status: 'Active' },
+            { name: 'N8N', description: '워크플로우 자동화', link: 'http://itsmyzone.iptime.org:5678/', type: 'Web Service', status: 'Docker' }
+        ];
+    }
 
-    if (typeof projectsData !== 'undefined' && projectsData && projectsData.length > 0) {
-        projectsData.forEach(program => {
+    if (dataToUse && dataToUse.length > 0) {
+        console.log(`${dataToUse.length}개의 프로그램 항목 생성 중...`);
+        dataToUse.forEach(program => {
             const listItem = document.createElement('li');
 
             // Create an anchor for better semantics and potential future right-click context menus
