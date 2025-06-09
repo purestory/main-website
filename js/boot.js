@@ -12,15 +12,15 @@
 const postScreenMessages = [
     "AMIBIOS(C) 2023 American Megatrends Inc.",
     "CPU: Generic x86-64 Processor @ 3.0GHz",
-    "Memory Test: 16384M OK",
-    "Initializing USB Controllers .. Done",
+    "Memory Test: 16384M <span class='post-message-highlight-ok'>OK</span>",
+    "Initializing USB Controllers .. <span class='post-message-highlight-ok'>Done</span>",
     "Detecting IDE Devices...",
     "  Primary Master: VBOX HARDDISK ATA Device",
     "  Primary Slave: None",
     "  Secondary Master: VBOX CD-ROM ATA Device",
     "  Secondary Slave: None",
     " ",
-    "Booting from Hard Disk...",
+    "<span class='post-message-highlight-info'>Booting from Hard Disk...</span>",
 ];
 let currentPostMessageIndex = 0;
 const postMessageDelay = 250; // ms between each POST message
@@ -29,21 +29,38 @@ function showNextPostMessage() {
     if (currentPostMessageIndex < postScreenMessages.length) {
         // Ensure common.js has loaded and postMessagesContainer is available
         if(typeof postMessagesContainer !== 'undefined' && postMessagesContainer) {
-            postMessagesContainer.textContent += postScreenMessages[currentPostMessageIndex] + '\n';
+            // Use innerHTML to render spans, and \n for newlines within <pre>
+            postMessagesContainer.innerHTML += postScreenMessages[currentPostMessageIndex] + '\n';
         }
         currentPostMessageIndex++;
         setTimeout(showNextPostMessage, postMessageDelay);
     } else {
+        // This is the existing timeout after the last message
         setTimeout(() => {
-            if(typeof postScreen !== 'undefined' && postScreen) postScreen.style.display = 'none';
-            startBootSequence();
-        }, 500);
+            if (typeof postScreen !== 'undefined' && postScreen) {
+                postScreen.style.opacity = '0'; // Start fade-out
+                setTimeout(() => { // After transition, hide and proceed
+                    postScreen.style.display = 'none';
+                    // Optional: Reset opacity if POST screen could be shown again, though not current behavior
+                    // postScreen.style.opacity = '1';
+                    startBootSequence();
+                }, 500); // This duration MUST match the CSS transition duration for opacity
+            } else {
+                startBootSequence(); // Fallback if postScreen isn't defined
+            }
+        }, 500); // Delay after the last POST message before starting fade-out
     }
 }
 
 function startPostScreenSequence() {
     // Ensure common.js has loaded and postScreen is available
-    if(typeof postScreen !== 'undefined' && postScreen) postScreen.style.display = 'block';
+    if(typeof postScreen !== 'undefined' && postScreen) {
+        postScreen.style.display = 'block';
+        if(typeof postMessagesContainer !== 'undefined' && postMessagesContainer) {
+            postMessagesContainer.innerHTML = ''; // Clear any previous messages
+        }
+    }
+    currentPostMessageIndex = 0; // Reset for potential re-runs (though not a current feature)
     showNextPostMessage();
 }
 
@@ -58,7 +75,7 @@ const bootMessages = [
     "Welcome!"
 ];
 
-let currentMessageIndex = 0; // This was 'currentMessageIndex' for boot, distinct from 'currentPostMessageIndex'
+let currentMessageIndex = 0;
 const numMessages = bootMessages.length;
 const totalBootTime = 10000;
 const messageInterval = (totalBootTime - 2000) / (numMessages > 1 ? (numMessages -1) : 1) ;
@@ -66,8 +83,8 @@ const messageInterval = (totalBootTime - 2000) / (numMessages > 1 ? (numMessages
 let bootStartTime;
 let progressUpdateIntervalId;
 
-function showNextBootMessage() { // This was 'showNextMessage' for boot messages
-    if (currentMessageIndex < numMessages) { // ensure using the correct message index
+function showNextBootMessage() {
+    if (currentMessageIndex < numMessages) {
         if(typeof bootMessageText !== 'undefined' && bootMessageText) bootMessageText.textContent = bootMessages[currentMessageIndex];
         currentMessageIndex++;
         if (currentMessageIndex < numMessages) {

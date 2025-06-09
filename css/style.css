@@ -41,6 +41,49 @@
             opacity: 1;
         }
 
+        #post-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            color: #ccc; /* Light grey text */
+            font-family: 'Lucida Console', Monaco, monospace;
+            font-size: 0.9rem;
+            z-index: 3000; /* Highest z-index */
+            padding: 20px;
+            overflow-y: auto; /* In case of many messages */
+            opacity: 1; /* Initially visible when display:block is set by JS */
+            transition: opacity 0.5s ease-out; /* Fade-out transition */
+        }
+
+        #postMessages {
+            margin: 0;
+            white-space: pre-wrap; /* Render newlines correctly */
+            word-break: break-all; /* Break long lines if necessary, though BIOS messages are usually short */
+        }
+
+        /* POST Screen Cursor Blink */
+        #postMessages::after {
+            content: '_'; /* Or a block cursor: '▋' */
+            animation: blinkCursor 1s step-end infinite;
+        }
+
+        @keyframes blinkCursor {
+            from, to { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* POST Screen Highlighted Text */
+        .post-message-highlight-ok {
+            color: #7CFC00; /* LawnGreen */
+        }
+        .post-message-highlight-info {
+            color: #FFFFFF; /* Bright white */
+        }
+
+
         #boot-screen {
             position: fixed;
             top: 0;
@@ -65,14 +108,30 @@
         }
 
         .boot-logo {
-            /* font-size: 4rem; */ /* Removed as it's no longer text */
-            width: 60px; /* Logo container width */
-            height: 60px; /* Logo container height */
+            width: 60px;
+            height: 60px;
             display: grid;
             grid-template-columns: 1fr 1fr;
             grid-template-rows: 1fr 1fr;
-            gap: 3px; /* Spacing between panes */
+            gap: 3px;
             margin-bottom: 30px;
+            animation: fadeInLogo 1s ease-out forwards, pulseLogo 2s infinite ease-in-out 1s; /* fadeIn 후 pulse 시작 */
+            opacity: 0; /* Initially hidden for fadeIn */
+        }
+
+        @keyframes fadeInLogo {
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulseLogo {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         .logo-pane {
@@ -103,10 +162,34 @@
         }
 
         .boot-progress-bar {
-            width: 0%; /* Initial width */
+            width: 0%;
             height: 100%;
-            background-color: #0078d4; /* Windows blue */
-            /* CSS transition will be set by JS to match totalBootTime */
+            background-color: #0078d4; /* Windows 파란색 계열 */
+            /* CSS transition (width)은 JS에서 동적으로 설정됩니다. */
+
+            /* 개미 행진 효과 추가 */
+            background-image: linear-gradient(
+                45deg,
+                rgba(255, 255, 255, .15) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255, 255, 255, .15) 50%,
+                rgba(255, 255, 255, .15) 75%,
+                transparent 75%,
+                transparent
+            );
+            background-size: 40px 40px; /* 줄무늬 크기 */
+            animation: progressBarStripes 2s linear infinite;
+            border-radius: 3px; /* 컨테이너와 일치시키거나 약간 작게 */
+        }
+
+        @keyframes progressBarStripes {
+            from {
+                background-position: 40px 0;
+            }
+            to {
+                background-position: 0 0;
+            }
         }
 
         #bootProgressText {
@@ -852,3 +935,5 @@
 .ms-cell.n6 { color: #008080; } /* Cyan/Teal */
 .ms-cell.n7 { color: #000000; } /* Black */
 .ms-cell.n8 { color: #808080; } /* Grey */
+
+[end of css/style.css]
