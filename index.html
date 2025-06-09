@@ -33,6 +33,10 @@
             <div id="taskbar-clock"></div>
         </div>
         <!-- Desktop icons will go here -->
+        <div class="desktop-icon" id="icon-my-computer">
+            <div class="icon-image">🖥️</div>
+            <span class="icon-label">내 컴퓨터</span>
+        </div>
         <div class="desktop-icon" id="icon-projects">
             <div class="icon-image">📁</div>
             <span class="icon-label">Projects</span>
@@ -49,15 +53,11 @@
             <div class="icon-image">🧮</div>
             <span class="icon-label">Calculator</span>
         </div>
-        <div class="desktop-icon" id="icon-my-computer">
-            <div class="icon-image">🖥️</div>
-            <span class="icon-label">내 컴퓨터</span>
-        </div>
 
         <!-- Window Templates -->
         <div class="window" id="projects-window">
             <div class="window-header">
-                <span class="window-title">Projects</span>
+                <span class="window-title">프로그램</span>
                 <button class="window-close-button">X</button>
             </div>
             <div class="window-body">
@@ -67,8 +67,15 @@
         </div>
 
         <div id="start-menu">
-            <ul>
-                <li data-opens="projects-window">📁 Projects</li>
+            <ul id="startMenuList"> <!-- ID 추가 -->
+                <li data-opens="projects-window">📁 프로그램</li>
+                <li class="has-submenu" id="all-programs-menu-item">
+                    <span class="menu-text">모든 프로그램</span>
+                    <span class="submenu-arrow">▶</span>
+                    <ul class="submenu" id="all-programs-submenu">
+                        <!-- JavaScript가 이 목록을 채울 것입니다. -->
+                    </ul>
+                </li>
                 <li data-opens="minesweeper-app">💣 Minesweeper</li>
                 <li data-opens="paint-app">🎨 Paint</li>
                 <li data-opens="calculator-app-window">🧮 Calculator</li> <!-- Corrected ID -->

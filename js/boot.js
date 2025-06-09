@@ -23,7 +23,7 @@ const postScreenMessages = [
     "<span class='post-message-highlight-info'>Booting from Hard Disk...</span>",
 ];
 let currentPostMessageIndex = 0;
-const postMessageDelay = 250; // ms between each POST message
+const postMessageDelay = 100; // 0.1 second per POST message
 
 function showNextPostMessage() {
     if (currentPostMessageIndex < postScreenMessages.length) {
@@ -77,7 +77,7 @@ const bootMessages = [
 
 let currentMessageIndex = 0;
 const numMessages = bootMessages.length;
-const totalBootTime = 4500; // 4.5 seconds
+const totalBootTime = 2500; // 2.5 seconds
 const messageInterval = (totalBootTime - 2000) / (numMessages > 1 ? (numMessages -1) : 1) ;
 
 let bootStartTime;

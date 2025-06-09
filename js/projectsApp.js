@@ -9,7 +9,7 @@ const projectsData = [
     // AI/ML 서비스
     { name: 'OpenWebUI', description: 'Ollama용 웹 인터페이스', link: 'http://itsmyzone.iptime.org:3000/', type: 'AI/ML Service', status: 'Docker' },
     { name: 'Amica AI', description: '3D AI 가상 비서 (내부용)', link: '/amica/', type: 'AI/ML Service', status: 'Active', iconUrl: 'https://cdn-icons-png.freepik.com/256/15675/15675914.png?ga=GA1.1.1145714982.1749450368&semt=ais_incoming' },
-    { name: 'Translation Service', description: 'AI 기반 다중 엔진 번역', link: '/translation/', type: 'AI/ML Service', status: 'Active' },
+    { name: 'Translation Service', description: 'AI 기반 다중 엔진 번역', link: '/translation/', type: 'AI/ML Service', status: 'Active', iconUrl: 'https://cdn-icons-png.freepik.com/256/4803/4803094.png?ga=GA1.1.1145714982.1749450368&semt=ais_incoming' },
     { name: 'Whisper STT', description: '고속 음성-텍스트 변환 (100+ 언어)', link: '/whisper/', type: 'AI/ML Service', status: 'Active' },
     { name: 'EdgeTTS', description: 'Microsoft Edge 고품질 TTS', link: '/edgetts/', type: 'AI/ML Service', status: 'Active' },
     { name: 'Zonos TTS', description: '고품질 텍스트-음성 변환 (200k시간 학습)', link: '/zonos/', type: 'AI/ML Service', status: 'Active' },
@@ -64,7 +64,7 @@ function renderProjects(targetElement, projects) { // Note: projectsData is pass
             projectLink.target = '_blank';
         }
         // Tooltip for more info
-        projectLink.title = `${project.name} - ${project.description}\nType: ${project.type}\nStatus: ${project.status}`;
+        projectLink.title = `${project.name} - ${project.description}\n종류: ${project.type}\n상태: ${project.status}`;
 
         const iconImage = document.createElement('div');
         iconImage.className = 'project-icon-image';
@@ -73,13 +73,11 @@ function renderProjects(targetElement, projects) { // Note: projectsData is pass
             const img = document.createElement('img');
             img.src = project.iconUrl;
             img.alt = project.name; // Alt text for accessibility
-            // Ensure CSS for .project-icon-image img handles sizing, e.g.:
-            // img.style.width = '100%'; // Or a fixed size like '32px'
-            // img.style.height = '100%'; // Or a fixed size like '32px'
-            // img.style.objectFit = 'contain';
+            iconImage.innerHTML = ''; // Clear any previous content (e.g., emoji)
             iconImage.appendChild(img);
         } else {
             // Fallback to emoji if iconUrl is not provided
+            iconImage.innerHTML = ''; // Clear any potential previous img for safety before setting textContent
             switch (project.type) {
                 case 'AI/ML Service':
                     iconImage.textContent = '🤖'; // Robot for AI/ML

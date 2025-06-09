@@ -506,9 +506,49 @@
             cursor: pointer;
             font-size: 0.9em;
             border: 1px solid transparent;
+            position: relative; /* 하위 메뉴 위치 기준점 */
+            display: flex; /* 텍스트와 화살표 정렬 */
+            justify-content: space-between; /* 텍스트와 화살표 양 끝으로 */
+            align-items: center;
+        }
+        #start-menu li .menu-text {
+            flex-grow: 1; /* 텍스트가 남은 공간 차지 */
+        }
+        #start-menu li .submenu-arrow {
+            font-size: 0.8em; /* 화살표 크기 */
+            margin-left: 5px;
         }
 
+
         #start-menu li:hover {
+            background-color: #0058a8;
+            color: white;
+            border: 1px dotted #fff;
+        }
+
+        /* Submenu Styles */
+        .has-submenu .submenu {
+            display: none; /* 기본적으로 숨김 */
+            position: absolute;
+            left: 100%; /* 부모 li의 오른쪽 바깥 */
+            top: -5px; /* 부모 li의 상단에서 약간 위 (-5px은 padding과 border 고려) */
+            min-width: 200px; /* 하위 메뉴 최소 너비 */
+            background-color: #c0c0c0; /* 시작 메뉴와 동일한 배경 */
+            border: 2px outset #ffffff; /* 시작 메뉴와 동일한 테두리 */
+            padding: 5px;
+            z-index: 1200; /* 시작 메뉴보다 위에 표시 */
+            list-style: none; /* 기본 list-style 제거 */
+        }
+        .has-submenu .submenu li {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9em; /* Main menu item font size */
+            border: 1px solid transparent; /* Match main menu item border for hover */
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .has-submenu .submenu li:hover {
             background-color: #0058a8;
             color: white;
             border: 1px dotted #fff;
@@ -1011,3 +1051,5 @@
     width: 25px; /* 아이콘 정렬을 위한 너비 */
     text-align: center;
 }
+
+[end of css/style.css]
