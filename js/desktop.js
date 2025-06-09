@@ -327,11 +327,6 @@ function populateAllProgramsSubmenu() {
     }
 }
 
-
-// --- Taskbar Clock Logic ---
-// const taskbarClock = document.getElementById('taskbar-clock'); // Now in common.js
-
-}
 }, 100); // setTimeout 종료
 
 // --- Taskbar Clock Logic ---
