@@ -1,0 +1,561 @@
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */ /* Removed old background */
+            /* color: #333; */ /* Removed old color */
+        }
+
+        .desktop {
+            height: 100vh;
+            background-color: #008080; /* Classic Windows teal background */
+            /* background-image: url('your-wallpaper.jpg'); */ /* Example wallpaper image */
+            background-size: cover;
+            position: relative;
+            /* overflow: hidden; */ /* Allow scroll if many icons, or manage layout */
+            overflow-y: auto; /* Allow vertical scroll for icons */
+            padding: 10px; /* Padding around desktop content */
+            padding-bottom: 50px; /* Space for taskbar (40px) + padding (10px) */
+            visibility: hidden; /* Initially hidden for boot sequence */
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .desktop.visible {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        #boot-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000; /* Higher than taskbar */
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 1s ease-in-out, visibility 1s ease-in-out;
+        }
+
+        #boot-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .boot-logo {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .boot-messages p {
+            font-family: 'Lucida Console', Monaco, monospace;
+            font-size: 1rem;
+            margin-bottom: 8px;
+            height: 1.2em; /* Reserve space for one line message */
+        }
+
+        .boot-progress-bar-container {
+            width: 300px; /* Fixed width for progress bar */
+            max-width: 70%; /* Max width relative to screen */
+            height: 16px;
+            border: 1px solid #555;
+            border-radius: 3px;
+            margin-top: 20px; /* Space below messages */
+            margin-bottom: 10px;
+            overflow: hidden; /* To contain the inner bar */
+        }
+
+        .boot-progress-bar {
+            width: 0%; /* Initial width */
+            height: 100%;
+            background-color: #0078d4; /* Windows blue */
+            /* CSS transition will be set by JS to match totalBootTime */
+        }
+
+        #bootProgressText {
+            font-family: 'Lucida Console', Monaco, monospace;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            height: 1em; /* Reserve space */
+        }
+
+        /* Desktop Icon Styles */
+        .desktop-icon {
+            display: inline-block; /* Or float: left; */
+            width: 80px; /* Includes padding/margin for the icon itself */
+            margin: 10px;
+            text-align: center;
+            color: white;
+            cursor: pointer;
+            vertical-align: top; /* Align icons from the top */
+        }
+
+        .desktop-icon:hover .icon-image {
+            background-color: rgba(255, 255, 255, 0.3); /* Highlight effect */
+        }
+        .desktop-icon:hover .icon-label {
+            /* text-decoration: underline; */ /* Optional: highlight label on hover */
+        }
+
+
+        .icon-image {
+            width: 60px; /* Actual visual part of the icon */
+            height: 60px;
+            background-color: rgba(255, 255, 255, 0.1); /* Slight background for the icon image area */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Slight border for the icon image area */
+            border-radius: 5px; /* Slightly rounded corners for icon block */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px; /* Size for emoji icons */
+            margin: 0 auto 5px auto; /* Center block and space for label */
+            transition: background-color 0.2s ease, transform 0.2s ease; /* Added transform transition */
+        }
+        .desktop-icon:hover .icon-image {
+            transform: scale(1.1); /* Added scale effect */
+        }
+
+        .icon-label {
+            font-size: 12px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.7); /* Readability */
+            display: block; /* Ensure label is on its own line */
+            word-wrap: break-word; /* Handle long names */
+            max-height: 2.4em; /* Limit to two lines approx */
+            overflow: hidden;
+            /* text-overflow: ellipsis; */ /* Not ideal for multi-line */
+        }
+
+        /* Window Styles */
+        .window {
+            position: absolute;
+            width: 400px;
+            height: 300px;
+            background-color: #f0f0f0; /* Light grey background */
+            border: 1px solid #888;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            display: none; /* Hidden by default */
+            z-index: 500; /* Above icons, below active modals if any */
+            border-radius: 5px;
+            overflow: hidden; /* Contains header and body */
+            /* Animation properties */
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+        }
+        .window.active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .window-header {
+            background-color: #0058a8; /* Classic Windows blue title bar */
+            color: white;
+            padding: 8px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move; /* For future dragging */
+            height: 35px; /* Fixed height for header */
+        }
+
+        .window-title {
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .window-close-button {
+            background-color: #ff6347; /* Tomato red */
+            color: white;
+            border: 1px solid #d9534f;
+            border-radius: 3px;
+            padding: 2px 8px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .window-close-button:hover {
+            background-color: #d9534f; /* Darker red on hover */
+        }
+
+        .window-body {
+            padding: 10px;
+            background-color: white; /* Typically white content area */
+            color: #333;
+            height: calc(100% - 35px); /* Full height minus header */
+            overflow-y: auto; /* Scroll if content exceeds body */
+        }
+
+        /* Project List Styles within Window */
+        .project-category-header {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            color: #0058a8; /* Same as window header text for consistency */
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 3px;
+        }
+        .project-category-header:first-child {
+            margin-top: 0;
+        }
+
+        .project-item {
+            display: block;
+            padding: 8px;
+            margin-bottom: 8px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 3px; /* Consistent border-radius */
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.2s ease;
+        }
+        .project-item:hover {
+            background-color: #eef4fa; /* Light blue hover */
+            border-color: #aaccf0;
+        }
+
+        .project-name {
+            font-weight: bold;
+            font-size: 1em;
+            margin-bottom: 3px;
+        }
+
+        .project-description {
+            font-size: 0.9em;
+            color: #555;
+            margin-bottom: 4px;
+        }
+
+        .project-status {
+            display: inline-block;
+            padding: 0.2em 0.5em;
+            border-radius: 10px;
+            font-size: 0.75em;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        .status-docker { background: #e3f2fd; color: #1565c0; }
+        .status-active { background: #e8f5e8; color: #2d5a2d; }
+        .status-devops { background: #fce4ec; color: #ad1457; } /* Example for Dev/Ops */
+        .status-external { background: #fff3e0; color: #e65100; }
+
+
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40px; /* Standard taskbar height */
+            background-color: #c0c0c0; /* Classic Windows grey, can be changed */
+            border-top: 1px solid #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* To push clock to the right */
+            padding: 0 5px;
+            z-index: 1000; /* Ensure taskbar is on top */
+        }
+
+        #taskbar-clock {
+            padding: 0 10px;
+            font-size: 0.9em;
+            color: #333; /* Or white if taskbar is dark */
+        }
+
+        .start-button {
+            padding: 5px 15px;
+            background-color: #c0c0c0; /* Same as taskbar or slightly different */
+            border: 2px outset #ffffff;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 3px; /* Added border-radius */
+        }
+        .start-button:active {
+            border-style: inset;
+        }
+
+        /* Start Menu Styles */
+        #start-menu {
+            display: none; /* Hidden by default */
+            position: absolute;
+            bottom: 40px; /* Height of the taskbar */
+            left: 0;
+            width: 250px; /* Typical start menu width */
+            max-height: 400px; /* Max height before scrolling */
+            overflow-y: auto;
+            background-color: #c0c0c0; /* Classic grey */
+            border: 2px outset #ffffff; /* Classic border */
+            box-shadow: 2px -2px 5px rgba(0,0,0,0.3);
+            z-index: 1100; /* Above taskbar and other desktop elements */
+            padding: 5px;
+            /* Animation properties */
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+        }
+        #start-menu.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #start-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        #start-menu li {
+            padding: 8px 12px;
+            cursor: pointer;
+            font-size: 0.9em;
+            border: 1px solid transparent; /* For hover effect */
+        }
+
+        #start-menu li:hover {
+            background-color: #0058a8; /* Windows blue for selection */
+            color: white;
+            border: 1px dotted #fff; /* Classic selection border */
+        }
+
+
+        /* Commenting out old styles */
+        /*
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            opacity: 0.8;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-category {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .service-category:hover {
+            transform: translateY(-5px);
+        }
+
+        .category-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .category-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .service-list {
+            padding: 1rem;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .service-item:hover {
+            background: #f8f9ff;
+            transform: translateX(5px);
+        }
+
+        .service-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+            width: 50px;
+            text-align: center;
+        }
+
+        .service-info {
+            flex: 1;
+        }
+
+        .service-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .service-desc {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .service-status {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2d5a2d;
+        }
+
+        .status-docker {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status-external {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .gpu-info {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .gpu-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .gpu-header h2 {
+            margin-left: 1rem;
+            color: #333;
+        }
+
+        .gpu-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .gpu-stat {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .gpu-stat h3 {
+            font-size: 1.5rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            width: 40%;
+            transition: width 0.3s ease;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: white;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+        }
+        */
