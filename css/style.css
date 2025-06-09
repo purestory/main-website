@@ -478,9 +478,10 @@
             position: absolute;
             bottom: 40px;
             left: 0;
-            width: 250px;
+            width: 250px; /* Fixed width for the main start menu */
             max-height: 400px;
-            overflow-y: auto;
+            overflow-y: auto;   /* Allow vertical scroll for main menu items */
+            overflow-x: hidden; /* Prevent horizontal scrollbars on main menu */
             background-color: #c0c0c0;
             border: 2px outset #ffffff;
             box-shadow: 2px -2px 5px rgba(0,0,0,0.3);
@@ -539,31 +540,48 @@
         }
 
         /* Submenu Styles */
-        .has-submenu .submenu { /* This is the <ul> for the submenu */
+        /* Generic submenu style (can be used if other submenus are added later) */
+        .has-submenu > .submenu { /* Use > for direct child */
             display: none;
             position: absolute;
-            left: 100%;
-            top: -2px;   /* Adjusted for better alignment with parent li's border/padding */
-            min-width: 220px;
+            left: 100%; /* Position to the right of the parent */
+            top: -2px;   /* Default top alignment */
+            min-width: 220px; /* Default min-width */
             background-color: #c0c0c0;
             border: 2px outset #ffffff;
-            padding: 2px;
-            z-index: 1200;
+            padding: 2px; /* Padding around the list of items */
+            z-index: 1200; /* Higher than main start menu */
             list-style: none;
-            max-height: calc(100vh - 100px);
+            max-height: calc(100vh - 100px); /* Default max height */
             overflow-y: auto;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
         }
-        /* Styles for li items specifically within a submenu */
-        .has-submenu .submenu li {
-            padding: 5px 10px;
-            /* display: flex; is inherited via #start-menu li */
-            /* align-items: center; is inherited via #start-menu li */
-            justify-content: flex-start; /* Override for submenu items to align content left */
-            /* .menu-text within these li will handle icon/text gap */
-        }
-        /* The hover effect for .has-submenu .submenu li is already covered by #start-menu li:hover */
 
+        /* Specific overrides for the All Programs submenu */
+        #all-programs-submenu {
+            /* display: none; is inherited from .has-submenu .submenu or set by JS initially */
+            /* position: absolute; is inherited */
+            /* left: 100%; is inherited */
+            top: -3px; /* Fine-tuned alignment: -2px (border) - 2px (padding parent) + 1px (border child) approx. */
+            min-width: 230px; /* Specific width for All Programs */
+            max-height: 350px; /* Specific max height */
+            /* Other inherited properties like background, border, z-index, etc., are fine */
+        }
+
+        /* Styles for li items specifically within any submenu, including #all-programs-submenu */
+        .has-submenu > .submenu li, /* Targeting direct child ul's li */
+        #all-programs-submenu li { /* Also target li items in #all-programs-submenu directly */
+            padding: 5px 10px;
+            /* justify-content: flex-start; is inherited from #start-menu li if structure is correct */
+            /* and overridden if needed */
+        }
+        /* Hover effect for submenu items is inherited from #start-menu li:hover */
+        /* If specific hover is needed:
+        #all-programs-submenu li:hover {
+            background-color: #0058a8;
+            color: white;
+        }
+        */
 
         /* Commenting out old styles */
         /*
@@ -1060,6 +1078,70 @@
     margin-right: 10px;
     width: 25px; /* 아이콘 정렬을 위한 너비 */
     text-align: center;
+}
+
+/* Minesweeper Menu Bar Styles */
+.ms-menubar {
+    display: flex;
+    background-color: #c0c0c0; /* Classic grey */
+    padding: 2px;
+    border-bottom: 1px solid #888; /* Separator */
+    width: 100%; /* Take full width of the window body's padding box */
+    margin-bottom: 5px; /* Space before controls/grid */
+}
+
+.ms-menu-item {
+    padding: 5px 8px;
+    cursor: default; /* Standard cursor for menu items */
+    font-size: 0.9em;
+    position: relative; /* Anchor for dropdown */
+    border: 1px solid transparent; /* For active state */
+}
+
+.ms-menu-item:hover {
+    background-color: #0058a8; /* Same as start menu hover */
+    color: white;
+}
+
+.ms-menu-item.active { /* If JS adds an active class */
+    background-color: #0058a8;
+    color: white;
+    border: 1px dotted #fff; /* Indicate active/open menu */
+}
+
+.ms-dropdown-menu {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 100%; /* Position below the menu item */
+    left: 0;
+    background-color: #c0c0c0; /* Match menubar */
+    border: 2px outset #ffffff; /* Classic 3D border */
+    min-width: 150px;
+    z-index: 10; /* Above other elements in .minesweeper-body */
+    padding: 2px; /* Inner padding for items */
+    list-style: none; /* Remove default list styling */
+}
+
+.ms-dropdown-menu li {
+    padding: 6px 12px; /* Padding for dropdown items */
+    font-size: 0.9em;
+    cursor: default; /* Standard cursor */
+    display: flex; /* For potential icons or shortcuts later */
+    justify-content: space-between; /* For shortcuts like Ctrl+N */
+}
+
+.ms-dropdown-menu li:hover {
+    background-color: #0058a8; /* Same as start menu hover */
+    color: white;
+}
+
+.ms-dropdown-menu li hr { /* Style for separators in menu */
+    border: 0;
+    border-top: 1px solid #888;
+    border-bottom: 1px solid #fff; /* Classic separator shadow */
+    margin: 4px 0;
+    padding: 0;
+    height: 0;
 }
 
 [end of css/style.css]
