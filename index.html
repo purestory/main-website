@@ -57,9 +57,41 @@
                 <li data-opens="projects-window">📁 Projects</li>
                 <li data-opens="minesweeper-app">💣 Minesweeper</li>
                 <li data-opens="paint-app">🎨 Paint</li>
-                <li data-opens="calculator-app">🧮 Calculator</li>
+                <li data-opens="calculator-app-window">🧮 Calculator</li> <!-- Corrected ID -->
                 <!-- Add more items as needed -->
             </ul>
+        </div>
+
+        <div id="calculator-app-window" class="window" style="display: none;">
+            <div class="window-header">
+                <span class="window-title">Calculator</span>
+                <button class="window-close-button">X</button>
+            </div>
+            <div class="window-body calculator-body">
+                <input type="text" id="calcDisplay" class="calculator-display" readonly value="0">
+                <div class="calculator-buttons">
+                    <!-- Row 1 -->
+                    <button class="calc-btn calc-btn-number" data-value="7">7</button>
+                    <button class="calc-btn calc-btn-number" data-value="8">8</button>
+                    <button class="calc-btn calc-btn-number" data-value="9">9</button>
+                    <button class="calc-btn calc-btn-operator" data-value="/">/</button>
+                    <!-- Row 2 -->
+                    <button class="calc-btn calc-btn-number" data-value="4">4</button>
+                    <button class="calc-btn calc-btn-number" data-value="5">5</button>
+                    <button class="calc-btn calc-btn-number" data-value="6">6</button>
+                    <button class="calc-btn calc-btn-operator" data-value="*">*</button>
+                    <!-- Row 3 -->
+                    <button class="calc-btn calc-btn-number" data-value="1">1</button>
+                    <button class="calc-btn calc-btn-number" data-value="2">2</button>
+                    <button class="calc-btn calc-btn-number" data-value="3">3</button>
+                    <button class="calc-btn calc-btn-operator" data-value="-">-</button>
+                    <!-- Row 4 -->
+                    <button class="calc-btn calc-btn-clear" data-value="C">C</button>
+                    <button class="calc-btn calc-btn-number" data-value="0">0</button>
+                    <button class="calc-btn calc-btn-equals" data-value="=">=</button>
+                    <button class="calc-btn calc-btn-operator" data-value="+">+</button>
+                </div>
+            </div>
         </div>
     </div>
     <script src="js/script.js" defer></script>

@@ -185,24 +185,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 openWindow('paint-app', 'Paint');
             });
             calculatorIcon.addEventListener('click', () => {
-                openWindow('calculator-app', 'Calculator');
+                openWindow('calculator-app-window', 'Calculator'); // Corrected ID
             });
 
-            // Assuming all windows will follow the same close button pattern.
-            // If different windows need different close logic, this would need to be more specific.
-            // For now, this targets the projects window's close button.
-            // If other windows are added as HTML, their close buttons would need similar event listeners.
-            if (projectsWindowCloseButton) { // Check if it exists, useful if projects-window is the only one for now
-                projectsWindowCloseButton.addEventListener('click', () => {
-                    const windowToClose = projectsWindowCloseButton.closest('.window');
+            // Generic close button handler for any window that might be added later
+            // This assumes all close buttons will have the class 'window-close-button'
+            // and are children of a '.window' div.
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('window-close-button')) {
+                    const windowToClose = event.target.closest('.window');
                     if (windowToClose) {
                         windowToClose.classList.remove('active');
                         setTimeout(() => {
                             windowToClose.style.display = 'none';
                         }, 200); // Match CSS transition duration
                     }
-                });
-            }
+                }
+            });
 
 
             // --- Start Menu Logic ---
@@ -273,6 +272,122 @@ document.addEventListener('DOMContentLoaded', function() {
 
             updateClock(); // Initial call
             setInterval(updateClock, 1000); // Update every second
+
+            // --- Calculator Logic ---
+            const calcDisplay = document.getElementById('calcDisplay');
+            const calcButtons = document.querySelectorAll('.calc-btn');
+
+            let calcCurrentOperand = '';
+            let calcPreviousOperand = '';
+            let calcOperation = null;
+            let calcDisplayNeedsReset = false;
+
+            function updateCalcDisplay(value) {
+                calcDisplay.value = value;
+            }
+
+            function clearCalculator() {
+                calcCurrentOperand = '';
+                calcPreviousOperand = '';
+                calcOperation = null;
+                calcDisplayNeedsReset = false;
+                updateCalcDisplay('0');
+            }
+
+            function appendDigit(digit) {
+                if (calcDisplayNeedsReset) {
+                    calcCurrentOperand = '';
+                    calcDisplayNeedsReset = false;
+                }
+                if (calcCurrentOperand === '0' && digit === '0') return; // Prevent multiple leading zeros "00"
+                if (calcCurrentOperand === '0' && digit !== '0') { // Overwrite single "0" if another digit is pressed
+                    calcCurrentOperand = digit;
+                } else {
+                    // Basic check to prevent extremely long numbers (optional)
+                    if (calcCurrentOperand.length >= 15) return;
+                    calcCurrentOperand += digit;
+                }
+                updateCalcDisplay(calcCurrentOperand);
+            }
+
+            function chooseOperation(operation) {
+                if (calcCurrentOperand === '' && calcPreviousOperand !== '') {
+                    // Allow changing operation if no new operand entered yet
+                    // e.g. 5 + (then user clicks *) should change operation to *
+                    calcOperation = operation;
+                    return;
+                }
+                if (calcCurrentOperand === '') return; // Nothing to operate on yet
+
+                if (calcPreviousOperand !== '') {
+                    computeCalculation();
+                }
+                calcOperation = operation;
+                calcPreviousOperand = calcCurrentOperand;
+                calcCurrentOperand = '';
+                calcDisplayNeedsReset = true;
+                // Display will show previousOperand or result of a prior computation;
+                // next digit entry should clear display for the new currentOperand
+                updateCalcDisplay(calcPreviousOperand); // Show the number that's now stored as previous
+            }
+
+            function computeCalculation() {
+                let result;
+                const prev = parseFloat(calcPreviousOperand); // Use parseFloat for potential decimal results later
+                const current = parseFloat(calcCurrentOperand);
+
+                if (isNaN(prev) || isNaN(current)) return; // Not enough numbers to compute
+
+                switch (calcOperation) {
+                    case '+':
+                        result = prev + current;
+                        break;
+                    case '-':
+                        result = prev - current;
+                        break;
+                    case '*':
+                        result = prev * current;
+                        break;
+                    case '/':
+                        if (current === 0) {
+                            alert('Error: Division by zero');
+                            clearCalculator();
+                            return;
+                        }
+                        result = prev / current;
+                        break;
+                    default:
+                        return; // No operation selected
+                }
+                // Handle potential floating point inaccuracies for V2, for V1 toString might be enough
+                calcCurrentOperand = result.toString();
+                updateCalcDisplay(calcCurrentOperand);
+                calcOperation = null;
+                calcPreviousOperand = '';
+                calcDisplayNeedsReset = true;
+            }
+
+            calcButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const value = button.dataset.value;
+                    const isNumber = button.classList.contains('calc-btn-number');
+                    const isOperator = button.classList.contains('calc-btn-operator');
+                    const isEquals = button.classList.contains('calc-btn-equals');
+                    const isClear = button.classList.contains('calc-btn-clear');
+
+                    if (isNumber) {
+                        appendDigit(value);
+                    } else if (isOperator) {
+                        chooseOperation(value);
+                    } else if (isEquals) {
+                        computeCalculation();
+                    } else if (isClear) {
+                        clearCalculator();
+                    }
+                });
+            });
+
+            clearCalculator(); // Initialize calculator display and state
 
         });
 

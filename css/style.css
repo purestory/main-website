@@ -559,3 +559,87 @@
             }
         }
         */
+
+/* Calculator Styles */
+#calculator-app-window {
+    width: 280px; /* Adjusted width */
+    height: auto; /* Height based on content */
+    /* It already inherits .window styles, so position, box-shadow, border-radius, etc. are applied */
+}
+
+.calculator-body {
+    padding: 10px; /* Standard padding from .window-body is fine, or override if needed */
+    display: flex;
+    flex-direction: column;
+}
+
+.calculator-display {
+    width: 100%;
+    padding: 10px;
+    font-size: 1.8em;
+    text-align: right;
+    border: 1px solid #bbb; /* Consistent with button borders */
+    background-color: #fdfdfd; /* Light background for display */
+    margin-bottom: 10px;
+    border-radius: 3px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* Slight inset shadow */
+}
+
+.calculator-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px; /* Slightly larger gap for calculator buttons */
+}
+
+.calc-btn {
+    padding: 15px;
+    font-size: 1.1em;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    background-color: #f0f0f0; /* Default button color, slightly lighter than general .window bg */
+    cursor: pointer;
+    transition: background-color 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+}
+
+.calc-btn:hover {
+    background-color: #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+.calc-btn:active {
+    background-color: #d0d0d0;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.calc-btn-operator {
+    background-color: #d8d8d8; /* Different shade for operators */
+}
+.calc-btn-operator:hover {
+    background-color: #c8c8c8;
+}
+.calc-btn-operator:active {
+    background-color: #b8b8b8;
+}
+
+.calc-btn-equals {
+    background-color: #0078d4; /* Windows blue for equals */
+    color: white;
+}
+.calc-btn-equals:hover {
+    background-color: #005a9e; /* Darker blue */
+}
+.calc-btn-equals:active {
+    background-color: #004c87;
+}
+
+.calc-btn-clear {
+    background-color: #e06c75; /* Softer red for clear */
+    color: white;
+}
+.calc-btn-clear:hover {
+    background-color: #d9534f; /* Original red for hover */
+}
+.calc-btn-clear:active {
+    background-color: #c9302c;
+}
