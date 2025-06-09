@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 AI Hub - AI & Web Services Hub</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card p {
+            opacity: 0.8;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .service-category {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .service-category:hover {
+            transform: translateY(-5px);
+        }
+
+        .category-header {
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .category-header h2 {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .service-list {
+            padding: 1rem;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .service-item:hover {
+            background: #f8f9ff;
+            transform: translateX(5px);
+        }
+
+        .service-icon {
+            font-size: 2rem;
+            margin-right: 1rem;
+            width: 50px;
+            text-align: center;
+        }
+
+        .service-info {
+            flex: 1;
+        }
+
+        .service-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .service-desc {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .service-status {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .status-active {
+            background: #e8f5e8;
+            color: #2d5a2d;
+        }
+
+        .status-docker {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .status-external {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .gpu-info {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .gpu-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .gpu-header h2 {
+            margin-left: 1rem;
+            color: #333;
+        }
+
+        .gpu-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+        }
+
+        .gpu-stat {
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9ff;
+            border-radius: 10px;
+        }
+
+        .gpu-stat h3 {
+            font-size: 1.5rem;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 1rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 4px;
+            width: 40%;
+            transition: width 0.3s ease;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 3rem;
+            color: white;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🤖 AI Hub</h1>
+            <p>AI & Web Services Hub - 다양한 AI 서비스와 웹 도구들을 한 곳에서</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>15+</h3>
+                <p>활성 서비스</p>
+            </div>
+            <div class="stat-card">
+                <h3>24GB</h3>
+                <p>GPU VRAM</p>
+            </div>
+            <div class="stat-card">
+                <h3>홈서버</h3>
+                <p>개인 프로젝트</p>
+            </div>
+            <div class="stat-card">
+                <h3>RTX 3090</h3>
+                <p>GPU 가속</p>
+            </div>
+        </div>
+
+        <div class="services-grid">
+            <!-- AI/ML 서비스 -->
+            <div class="service-category">
+                <div class="category-header">
+                    <h2>🤖 AI/ML 서비스</h2>
+                    <p>GPU 기반 고성능 AI 서비스</p>
+                </div>
+                <div class="service-list">
+                    <a href="http://itsmyzone.iptime.org:3000/" class="service-item" target="_blank">
+                        <div class="service-icon">💻</div>
+                        <div class="service-info">
+                            <div class="service-name">OpenWebUI</div>
+                            <div class="service-desc">Ollama용 웹 인터페이스</div>
+                            <span class="service-status status-docker">Docker</span>
+                        </div>
+                    </a>
+                    
+                    <a href="/amica/" class="service-item" target="_blank">
+                        <div class="service-icon">🤖</div>
+                        <div class="service-info">
+                            <div class="service-name">Amica AI</div>
+                            <div class="service-desc">3D AI 가상 비서 (내부용)</div>
+                            <span class="service-status status-active">활성</span>
+                        </div>
+                    </a>
+                    
+                    <a href="/translation/" class="service-item" target="_blank">
+                        <div class="service-icon">🌍</div>
+                        <div class="service-info">
+                            <div class="service-name">Translation Service</div>
+                            <div class="service-desc">AI 기반 다중 엔진 번역</div>
+                            <span class="service-status status-active">활성</span>
+                        </div>
+                    </a>
+                    
+                    <a href="/whisper/" class="service-item" target="_blank">
+                        <div class="service-icon">👂</div>
+                        <div class="service-info">
+                            <div class="service-name">Whisper STT</div>
+                            <div class="service-desc">고속 음성-텍스트 변환 (100+ 언어)</div>
+                            <span class="service-status status-active">활성</span>
+                        </div>
+                    </a>
+                    
+                    <a href="/edgetts/" class="service-item" target="_blank">
+                        <div class="service-icon">🔊</div>
+                        <div class="service-info">
+                            <div class="service-name">EdgeTTS</div>
+                            <div class="service-desc">Microsoft Edge 고품질 TTS</div>
+                            <span class="service-status status-active">활성</span>
+                        </div>
+                    </a>
+                    
+                    <a href="/zonos/" class="service-item" target="_blank">
+                        <div class="service-icon">🗣️</div>
+                        <div class="service-info">
+                            <div class="service-name">Zonos TTS</div>
+                            <div class="service-desc">고품질 텍스트-음성 변환 (200k시간 학습)</div>
+                            <span class="service-status status-active">활성</span>
+                        </div>
+                    </a>
+                    
+                    <a href="http://itsmyzone.iptime.org:3200/web/" class="service-item" target="_blank">
+                        <div class="service-icon">📢</div>
+                        <div class="service-info">
+                            <div class="service-name">Kokoro FastAPI</div>
+                            <div class="service-desc">다국어 TTS 서비스</div>
+                            <span class="service-status status-docker">Docker</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- 웹 서비스 -->
+            <div class="service-category">
+                <div class="category-header">
+                    <h2>🌐 웹 서비스</h2>
+                    <p>실용적인 웹 도구와 유틸리티</p>
+                </div>
+                <div class="service-list">
+                    <a href="/explorer/" class="service-item" target="_blank">
+                        <div class="service-icon">📁</div>
+                        <div class="service-info">
+                            <div class="service-name">Explorer</div>
+                            <div class="service-desc">웹 기반 파일 탐색기</div>
+                            <span class="service-status status-active">활성</span>
+                        </div>
+                    </a>
+                    
+                    <a href="http://itsmyzone.iptime.org:5678/" class="service-item" target="_blank">
+                        <div class="service-icon">🔀</div>
+                        <div class="service-info">
+                            <div class="service-name">N8N</div>
+                            <div class="service-desc">워크플로우 자동화</div>
+                            <span class="service-status status-docker">Docker</span>
+                        </div>
+                    </a>
+                    
+                    <a href="/tribler/" class="service-item" target="_blank">
+                        <div class="service-icon">🌊</div>
+                        <div class="service-info">
+                            <div class="service-name">Tribler</div>
+                            <div class="service-desc">P2P 파일 공유</div>
+                            <span class="service-status status-docker">Docker</span>
+                        </div>
+                    </a>
+                    
+                    <a href="/cobalt/" class="service-item" target="_blank">
+                        <div class="service-icon">📥</div>
+                        <div class="service-info">
+                            <div class="service-name">Cobalt</div>
+                            <div class="service-desc">소셜 미디어 다운로더</div>
+                            <span class="service-status status-active">활성</span>
+                        </div>
+                    </a>
+                    
+                                    <a href="/webtools/" class="service-item" target="_blank">
+                    <div class="service-icon">🔄</div>
+                    <div class="service-info">
+                        <div class="service-name">WebTools</div>
+                        <div class="service-desc">이미지 변환 도구</div>
+                        <span class="service-status status-active">활성</span>
+                    </div>
+                </a>
+                </div>
+            </div>
+
+            <!-- 개발/운영 도구 -->
+            <div class="service-category">
+                <div class="category-header">
+                    <h2>🔧 개발/운영 도구</h2>
+                    <p>시스템 관리 및 개발 도구</p>
+                </div>
+                <div class="service-list">
+                    <div class="service-item">
+                        <div class="service-icon">🦙</div>
+                        <div class="service-info">
+                            <div class="service-name">Ollama</div>
+                            <div class="service-desc">로컬 LLM 서버 (Docker)</div>
+                            <span class="service-status status-docker">Docker</span>
+                        </div>
+                    </div>
+                    
+                    <div class="service-item">
+                        <div class="service-icon">📺</div>
+                        <div class="service-info">
+                            <div class="service-name">YouTube Tools</div>
+                            <div class="service-desc">유튜브 관련 도구</div>
+                            <span class="service-status status-active">활성</span>
+                        </div>
+                    </div>
+                    
+                    <div class="service-item">
+                        <div class="service-icon">📊</div>
+                        <div class="service-info">
+                            <div class="service-name">GPU 모니터링</div>
+                            <div class="service-desc">실시간 GPU 사용률 및 메모리 관리</div>
+                            <span class="service-status status-active">활성</span>
+                        </div>
+                    </div>
+                    
+                    <div class="service-item">
+                        <div class="service-icon">🔧</div>
+                        <div class="service-info">
+                            <div class="service-name">서비스 관리</div>
+                            <div class="service-desc">systemd 서비스 상태 모니터링</div>
+                            <span class="service-status status-active">활성</span>
+                        </div>
+                    </div>
+                    
+                    <div class="service-item">
+                        <div class="service-icon">🐳</div>
+                        <div class="service-info">
+                            <div class="service-name">Docker 관리</div>
+                            <div class="service-desc">컨테이너 상태 및 리소스 관리</div>
+                            <span class="service-status status-docker">Docker</span>
+                        </div>
+                    </div>
+                    
+                    <div class="service-item">
+                        <div class="service-icon">📈</div>
+                        <div class="service-info">
+                            <div class="service-name">성능 모니터링</div>
+                            <div class="service-desc">CPU, 메모리, 디스크 사용률</div>
+                            <span class="service-status status-active">활성</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- GPU 정보 -->
+        <div class="gpu-info">
+            <div class="gpu-header">
+                <div class="service-icon">🎮</div>
+                <h2>GPU 시스템 정보</h2>
+            </div>
+            <div class="gpu-stats">
+                <div class="gpu-stat">
+                    <h3>RTX 3090</h3>
+                    <p>GPU 모델</p>
+                </div>
+                <div class="gpu-stat">
+                    <h3>24GB</h3>
+                    <p>총 VRAM</p>
+                </div>
+                <div class="gpu-stat">
+                    <h3>0.4GB</h3>
+                    <p>사용 중</p>
+                </div>
+                <div class="gpu-stat">
+                    <h3>23.6GB</h3>
+                    <p>여유 공간</p>
+                </div>
+            </div>
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: 2%;"></div>
+            </div>
+            <p style="text-align: center; margin-top: 1rem; color: #666;">
+                GPU 사용률: 2% (Whisper 0.4GB, Zonos는 1시간 타이머로 언로드됨)
+            </p>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 ItsMyZone Server - Ubuntu 서버에서 운영되는 다양한 AI 및 웹 서비스</p>
+            <p>서버 상태 문의: 관리자에게 연락하세요</p>
+        </div>
+    </div>
+
+    <script>
+        // 페이지 로드 시 애니메이션
+        window.addEventListener('load', function() {
+            // 서비스 카드 애니메이션
+            const serviceCards = document.querySelectorAll('.service-category');
+            serviceCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.5s ease';
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html> 
