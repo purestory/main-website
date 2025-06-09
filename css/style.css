@@ -56,6 +56,18 @@
             overflow-y: auto; /* In case of many messages */
             opacity: 1; /* Initially visible when display:block is set by JS */
             transition: opacity 0.5s ease-out; /* Fade-out transition */
+            display: flex; /* Added to allow centering of content */
+            flex-direction: column; /* Stack logo and messages vertically */
+            justify-content: center; /* Center content vertically */
+            align-items: center; /* Center content horizontally */
+        }
+
+        #postBiosLogo {
+            display: block;
+            max-width: 300px;
+            width: 50%;
+            margin: 0 auto 20px auto;
+            filter: brightness(0.8) grayscale(0.2) contrast(1.2);
         }
 
         #postMessages {
@@ -935,5 +947,7 @@
 .ms-cell.n6 { color: #008080; } /* Cyan/Teal */
 .ms-cell.n7 { color: #000000; } /* Black */
 .ms-cell.n8 { color: #808080; } /* Grey */
+
+[end of css/style.css]
 
 [end of css/style.css]

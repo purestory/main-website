@@ -28,6 +28,11 @@ if (typeof calculatorIcon !== 'undefined' && calculatorIcon) {
         openWindow('calculator-app-window', 'Calculator');
     });
 }
+if (typeof myComputerIcon !== 'undefined' && myComputerIcon) { // Added for My Computer
+    myComputerIcon.addEventListener('click', () => {
+        openWindow('my-computer-window', '내 컴퓨터');
+    });
+}
 
 // --- Start Menu Logic ---
 // const startButton = document.querySelector('.start-button'); // Now in common.js

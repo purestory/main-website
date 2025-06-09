@@ -37,8 +37,18 @@ function openWindow(windowId, title) {
     windowElement.style.visibility = 'hidden'; // Prevent flash of content at 0,0
     windowElement.style.display = 'block';
 
-    const windowWidth = windowElement.offsetWidth;
-    const windowHeight = windowElement.offsetHeight;
+    let windowWidth, windowHeight;
+
+    if (windowId === 'projects-window') {
+        windowWidth = 600; // Desired width for projects window
+        windowHeight = 450; // Desired height for projects window
+        windowElement.style.width = windowWidth + 'px';
+        windowElement.style.height = windowHeight + 'px';
+    } else {
+        // For other windows, use their natural size from CSS or measure offsetWidth/Height
+        windowWidth = windowElement.offsetWidth;
+        windowHeight = windowElement.offsetHeight;
+    }
 
     let topPosition = 0;
     let leftPosition = 0;

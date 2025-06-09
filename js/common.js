@@ -20,6 +20,7 @@ const projectsIcon = document.getElementById('icon-projects');
 const minesweeperIcon = document.getElementById('icon-minesweeper');
 const paintIcon = document.getElementById('icon-paint');
 const calculatorIcon = document.getElementById('icon-calculator');
+const myComputerIcon = document.getElementById('icon-my-computer'); // Added
 
 const startButton = document.querySelector('.start-button');
 const startMenu = document.getElementById('start-menu');

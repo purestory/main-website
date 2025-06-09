@@ -9,6 +9,7 @@
 </head>
 <body>
     <div id="post-screen" style="display: none;">
+        <img id="postBiosLogo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/American_Megatrends_logo.svg/960px-American_Megatrends_logo.svg.png?20160501035338" alt="BIOS Logo">
         <pre id="postMessages"></pre>
     </div>
     <div id="boot-screen" style="display: none;">
@@ -47,6 +48,10 @@
         <div class="desktop-icon" id="icon-calculator">
             <div class="icon-image">🧮</div>
             <span class="icon-label">Calculator</span>
+        </div>
+        <div class="desktop-icon" id="icon-my-computer">
+            <div class="icon-image">🖥️</div>
+            <span class="icon-label">내 컴퓨터</span>
         </div>
 
         <!-- Window Templates -->
@@ -125,6 +130,42 @@
             </div>
             <div class="resize-handle"></div>
         </div>
+
+        <div id="my-computer-window" class="window" style="display: none;">
+            <div class="window-header">
+                <span class="window-title">내 컴퓨터</span>
+                <button class="window-close-button">X</button>
+            </div>
+            <div class="window-body my-computer-body">
+                <p><strong>시스템 정보 (가상)</strong></p>
+                <ul>
+                    <li>운영체제: Web OS Simulation</li>
+                    <li>CPU: Simulated Web CPU</li>
+                    <li>RAM: User's Browser Memory</li>
+                </ul>
+                <hr>
+                <p><strong>드라이브 (가상)</strong></p>
+                <div class="drive-item" id="drive-c-link"> <!-- id 추가 -->
+                    <span class="drive-icon">💾</span> C: (Web Drive)
+                </div>
+                <div class="drive-item">
+                    <span class="drive-icon">💿</span> D: (CD-ROM - 가상)
+                </div>
+            </div>
+            <div class="resize-handle"></div>
+        </div>
+
+        <div id="explorer-app-window" class="window" style="display: none;">
+            <div class="window-header">
+                <span class="window-title">Explorer</span>
+                <button class="window-close-button">X</button>
+            </div>
+            <div class="window-body explorer-app-body">
+                <p>파일 탐색기 로딩 중...</p>
+                <!-- 실제 파일 탐색기 내용은 추후 iframe 또는 JS로 구현 -->
+            </div>
+            <div class="resize-handle"></div>
+        </div>
     </div>
     <!--
         Order of scripts:
@@ -141,6 +182,7 @@
     <script src="js/minesweeper.js" defer></script>
     <script src="js/calculator.js" defer></script>
     <script src="js/windowManager.js" defer></script>
+    <script src="js/myComputerApp.js" defer></script> <!-- Added here -->
     <script src="js/desktop.js" defer></script>
     <script src="js/boot.js" defer></script>
 </body>

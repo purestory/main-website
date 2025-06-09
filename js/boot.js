@@ -77,7 +77,7 @@ const bootMessages = [
 
 let currentMessageIndex = 0;
 const numMessages = bootMessages.length;
-const totalBootTime = 10000;
+const totalBootTime = 4500; // 4.5 seconds
 const messageInterval = (totalBootTime - 2000) / (numMessages > 1 ? (numMessages -1) : 1) ;
 
 let bootStartTime;
