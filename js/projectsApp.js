@@ -22,13 +22,7 @@ const projectsData = [
     { name: 'Cobalt', description: '소셜 미디어 다운로더', link: '/cobalt/', type: 'Web Service', status: 'Active' },
     { name: 'WebTools', description: '이미지 변환 도구', link: '/webtools/', type: 'Web Service', status: 'Active' },
 
-    // 개발/운영 도구
-    { name: 'Ollama', description: '로컬 LLM 서버 (Docker)', link: '#', type: 'Dev/Ops Tool', status: 'Docker' },
-    { name: 'YouTube Tools', description: '유튜브 관련 도구', link: '#', type: 'Dev/Ops Tool', status: 'Active' },
-    { name: 'GPU 모니터링', description: '실시간 GPU 사용률 및 메모리 관리', link: '#', type: 'Dev/Ops Tool', status: 'Active' },
-    { name: '서비스 관리', description: 'systemd 서비스 상태 모니터링', link: '#', type: 'Dev/Ops Tool', status: 'Active' },
-    { name: 'Docker 관리', description: '컨테이너 상태 및 리소스 관리', link: '#', type: 'Dev/Ops Tool', status: 'Docker' },
-    { name: '성능 모니터링', description: 'CPU, 메모리, 디스크 사용률', link: '#', type: 'Dev/Ops Tool', status: 'Active' }
+    // 개발/운영 도구 - 제거됨
 ];
 
 // --- Project Rendering Logic ---

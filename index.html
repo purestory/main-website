@@ -71,20 +71,17 @@
                 <li class="has-submenu" id="all-programs-menu-item" onclick="toggleProgramsSubmenu()" onmouseenter="showProgramsSubmenu()" onmouseleave="hideProgramsSubmenu()">
                     <span class="menu-text">프로그램</span>
                     <span class="submenu-arrow">▶</span>
-                    <ul class="submenu" id="all-programs-submenu" style="display: none; position: absolute; left: 100%; top: -3px; min-width: 230px; background-color: #c0c0c0; border: 2px outset #ffffff; z-index: 1300; padding: 2px; list-style: none; max-height: 350px; overflow-y: auto; box-shadow: 3px 3px 8px rgba(0,0,0,0.5);" onmouseenter="clearHideTimer()" onmouseleave="hideProgramsSubmenu()">
-                        <!-- 실제 프로그램 목록 -->
-                        <li style="padding: 5px 10px;"><a href="http://itsmyzone.iptime.org:3000/" target="_blank" style="text-decoration: none; color: black;">🤖 OpenWebUI</a></li>
-                        <li style="padding: 5px 10px;"><a href="/amica/" target="_blank" style="text-decoration: none; color: black;">🤖 Amica AI</a></li>
-                        <li style="padding: 5px 10px;"><a href="/translation/" target="_blank" style="text-decoration: none; color: black;">🤖 Translation Service</a></li>
-                        <li style="padding: 5px 10px;"><a href="/whisper/" target="_blank" style="text-decoration: none; color: black;">🤖 Whisper STT</a></li>
-                        <li style="padding: 5px 10px;"><a href="/edgetts/" target="_blank" style="text-decoration: none; color: black;">🤖 EdgeTTS</a></li>
-                        <li style="padding: 5px 10px;"><a href="/zonos/" target="_blank" style="text-decoration: none; color: black;">🤖 Zonos TTS</a></li>
-                        <li style="padding: 5px 10px;"><a href="http://itsmyzone.iptime.org:3200/web/" target="_blank" style="text-decoration: none; color: black;">🤖 Kokoro FastAPI</a></li>
-                        <li style="padding: 5px 10px;"><a href="/explorer/" target="_blank" style="text-decoration: none; color: black;">🌐 Explorer</a></li>
-                        <li style="padding: 5px 10px;"><a href="http://itsmyzone.iptime.org:5678/" target="_blank" style="text-decoration: none; color: black;">🌐 N8N</a></li>
-                        <li style="padding: 5px 10px;"><a href="/tribler/" target="_blank" style="text-decoration: none; color: black;">🌐 Tribler</a></li>
-                        <li style="padding: 5px 10px;"><a href="/cobalt/" target="_blank" style="text-decoration: none; color: black;">🌐 Cobalt</a></li>
-                        <li style="padding: 5px 10px;"><a href="/webtools/" target="_blank" style="text-decoration: none; color: black;">🌐 WebTools</a></li>
+                    <ul class="submenu" id="all-programs-submenu"  onmouseenter="clearHideTimer()" onmouseleave="hideProgramsSubmenu()">
+                        <!-- 외부 웹 서비스만 유지 -->
+                        <li><a href="/amica/" target="_blank">🤖 Amica AI</a></li>
+                        <li><a href="/translation/" target="_blank">🤖 Translation Service</a></li>
+                        <li><a href="/whisper/" target="_blank">🤖 Whisper STT</a></li>
+                        <li><a href="/edgetts/" target="_blank">🤖 EdgeTTS</a></li>
+                        <li><a href="/zonos/" target="_blank">🤖 Zonos TTS</a></li>
+                        <li><a href="/explorer/" target="_blank">🌐 Explorer</a></li>
+                        <li><a href="/tribler/" target="_blank">🌐 Tribler</a></li>
+                        <li><a href="/cobalt/" target="_blank">🌐 Cobalt</a></li>
+                        <li><a href="/webtools/" target="_blank">🌐 WebTools</a></li>
                     </ul>
                 </li>
                 <li data-opens="minesweeper-app-window">💣 Minesweeper</li>
@@ -139,7 +136,14 @@
                             <span>게임(G)</span>
                             <ul class="ms-dropdown-menu" id="ms-game-dropdown">
                                 <li data-action="ms-new-game">새 게임(N)</li>
-                                <li data-action="ms-options">옵션(O)...</li>
+                                <li class="ms-submenu-item">
+                                    <span>옵션(O)...</span>
+                                    <ul class="ms-difficulty-submenu">
+                                        <li data-action="ms-difficulty" data-difficulty="beginner">초급</li>
+                                        <li data-action="ms-difficulty" data-difficulty="intermediate">중급</li>
+                                        <li data-action="ms-difficulty" data-difficulty="expert">고급</li>
+                                    </ul>
+                                </li>
                                 <li class="ms-separator"></li>
                                 <li data-action="ms-exit">끝내기(X)</li>
                             </ul>
@@ -226,12 +230,10 @@
         function toggleProgramsSubmenu() {
             const submenu = document.getElementById('all-programs-submenu');
             if (submenu) {
-                if (submenu.style.display === 'block') {
-                    submenu.style.display = 'none';
-                    console.log('서브메뉴 토글로 숨김');
+                if (submenu.classList.contains('visible')) {
+                    submenu.classList.remove('visible');
                 } else {
-                    submenu.style.display = 'block';
-                    console.log('서브메뉴 토글로 표시');
+                    submenu.classList.add('visible');
                 }
             }
         }
@@ -243,8 +245,7 @@
                     clearTimeout(submenuHideTimer);
                     submenuHideTimer = null;
                 }
-                submenu.style.display = 'block';
-                console.log('서브메뉴 마우스오버로 표시');
+                submenu.classList.add('visible');
             }
         }
         
@@ -252,8 +253,7 @@
             submenuHideTimer = setTimeout(() => {
                 const submenu = document.getElementById('all-programs-submenu');
                 if (submenu) {
-                    submenu.style.display = 'none';
-                    console.log('서브메뉴 마우스아웃으로 숨김');
+                    submenu.classList.remove('visible');
                 }
             }, 300);
         }

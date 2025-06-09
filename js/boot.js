@@ -11,8 +11,9 @@
 // --- POST Screen Sequence Logic ---
 const postScreenMessages = [
     "AMIBIOS(C) 2023 American Megatrends Inc.",
-    "CPU: Generic x86-64 Processor @ 3.0GHz",
-    "Memory Test: 16384M <span class='post-message-highlight-ok'>OK</span>",
+    "CPU: Intel Core i9-13900HK @ 5.1GHz (24 Cores)",
+    "Memory Test: 32768M <span class='post-message-highlight-ok'>OK</span>",
+    "GPU: NVIDIA GeForce RTX 3090 24GB",
     "Initializing USB Controllers .. <span class='post-message-highlight-ok'>Done</span>",
     "Detecting IDE Devices...",
     "  Primary Master: VBOX HARDDISK ATA Device",
@@ -67,7 +68,7 @@ function startPostScreenSequence() {
 // --- Main Boot Sequence Logic ---
 const bootMessages = [
     "POST: System Check...",
-    "Memory Test: 16384MB OK",
+    "Memory Test: 32768MB OK",
     "Initializing USB Controllers...",
     "AHCI Driver Loaded.",
     "Loading Kernel (core.sys)...",
