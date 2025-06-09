@@ -12,7 +12,12 @@
         <pre id="postMessages"></pre>
     </div>
     <div id="boot-screen">
-        <div class="boot-logo">🪟</div>
+        <div class="boot-logo">
+            <div class="logo-pane"></div>
+            <div class="logo-pane"></div>
+            <div class="logo-pane"></div>
+            <div class="logo-pane"></div>
+        </div>
         <div class="boot-progress-bar-container">
             <div id="bootProgressBar" class="boot-progress-bar"></div>
         </div>
@@ -107,6 +112,7 @@
             <div class="window-body minesweeper-body">
                 <div class="minesweeper-controls">
                     <button id="minesweeperReset" class="minesweeper-reset-button">🙂</button>
+                    <div id="minesweeperDifficulty" class="minesweeper-info">Beginner</div>
                     <div id="minesweeperFlagsLeft" class="minesweeper-info">Mines: 10</div>
                 </div>
                 <div id="minesweeperGrid" class="minesweeper-grid">
@@ -116,6 +122,20 @@
             <div class="resize-handle"></div>
         </div>
     </div>
-    <script src="js/script.js" defer></script>
+    <!--
+        Order of scripts:
+        1. projectsApp.js (defines projectsData, renderProjects)
+        2. minesweeper.js (defines msInitGame, msGameInitialized flag)
+        3. calculator.js (defines calculator logic, clearCalculator)
+        4. windowManager.js (defines openWindow, drag/resize logic, uses functions from app-specific files)
+        5. desktop.js (handles desktop icons, start menu, clock - calls openWindow)
+        6. boot.js (handles boot sequence, should be last to start the sequence after everything is defined)
+    -->
+    <script src="js/projectsApp.js" defer></script>
+    <script src="js/minesweeper.js" defer></script>
+    <script src="js/calculator.js" defer></script>
+    <script src="js/windowManager.js" defer></script>
+    <script src="js/desktop.js" defer></script>
+    <script src="js/boot.js" defer></script>
 </body>
 </html>

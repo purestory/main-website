@@ -65,8 +65,20 @@
         }
 
         .boot-logo {
-            font-size: 4rem; /* Increased size */
-            margin-bottom: 30px; /* Increased bottom margin */
+            /* font-size: 4rem; */ /* Removed as it's no longer text */
+            width: 60px; /* Logo container width */
+            height: 60px; /* Logo container height */
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 3px; /* Spacing between panes */
+            margin-bottom: 30px;
+        }
+
+        .logo-pane {
+            background-color: #5091CC; /* Sky blue, matching new desktop default */
+            border: 1px solid #fff; /* Optional: for slight definition */
+            /* border-radius: 1px; */ /* Optional: very subtle rounding */
         }
 
         .boot-messages p {
@@ -213,13 +225,14 @@
             overflow-y: auto; /* Scroll if content exceeds body */
         }
 
-        /* Project List Styles within Window */
+        /* Old Project List Styles within Window - Commented Out */
+        /*
         .project-category-header {
             font-size: 1.1em;
             font-weight: bold;
             margin-top: 10px;
             margin-bottom: 5px;
-            color: #0058a8; /* Same as window header text for consistency */
+            color: #0058a8;
             border-bottom: 1px solid #ccc;
             padding-bottom: 3px;
         }
@@ -233,13 +246,13 @@
             margin-bottom: 8px;
             background-color: #f9f9f9;
             border: 1px solid #ddd;
-            border-radius: 3px; /* Consistent border-radius */
+            border-radius: 3px;
             text-decoration: none;
             color: #333;
             transition: background-color 0.2s ease;
         }
         .project-item:hover {
-            background-color: #eef4fa; /* Light blue hover */
+            background-color: #eef4fa;
             border-color: #aaccf0;
         }
 
@@ -263,9 +276,56 @@
             font-weight: 500;
             text-transform: uppercase;
         }
+        */
+
+        /* New Project Icon Styles */
+        .project-icons-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px; /* Spacing between icons */
+            padding: 10px;
+            justify-content: flex-start; /* Align icons to the start */
+            align-items: flex-start;
+            height: 100%; /* Ensure it takes up window body height */
+            overflow-y: auto; /* Scroll if many icons */
+        }
+
+        .project-icon-item { /* This is the <a> tag */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px; /* Width of the icon + label area */
+            padding: 8px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333; /* Text color for labels */
+            transition: background-color 0.2s ease;
+            cursor: pointer;
+        }
+        .project-icon-item:hover {
+            background-color: #e9e9e9; /* Similar to desktop icon hover */
+        }
+
+        .project-icon-image {
+            font-size: 3em; /* Size of the folder emoji */
+            margin-bottom: 5px;
+            color: #000; /* Default emoji color, can be styled if using icon font/SVG */
+        }
+
+        .project-icon-label {
+            font-size: 0.85em; /* Slightly smaller than desktop icon labels */
+            text-align: center;
+            word-wrap: break-word;
+            max-height: 2.6em; /* Approx 2 lines */
+            overflow: hidden;
+            line-height: 1.3em;
+        }
+
+
+        /* Status colors (can be reused if needed, or new ones added) */
         .status-docker { background: #e3f2fd; color: #1565c0; }
         .status-active { background: #e8f5e8; color: #2d5a2d; }
-        .status-devops { background: #fce4ec; color: #ad1457; } /* Example for Dev/Ops */
+        .status-devops { background: #fce4ec; color: #ad1457; }
         .status-external { background: #fff3e0; color: #e65100; }
 
 
