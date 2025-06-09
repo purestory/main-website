@@ -8,7 +8,7 @@
 const projectsData = [
     // AI/ML 서비스
     { name: 'OpenWebUI', description: 'Ollama용 웹 인터페이스', link: 'http://itsmyzone.iptime.org:3000/', type: 'AI/ML Service', status: 'Docker' },
-    { name: 'Amica AI', description: '3D AI 가상 비서 (내부용)', link: '/amica/', type: 'AI/ML Service', status: 'Active' },
+    { name: 'Amica AI', description: '3D AI 가상 비서 (내부용)', link: '/amica/', type: 'AI/ML Service', status: 'Active', iconUrl: 'https://cdn-icons-png.freepik.com/256/15675/15675914.png?ga=GA1.1.1145714982.1749450368&semt=ais_incoming' },
     { name: 'Translation Service', description: 'AI 기반 다중 엔진 번역', link: '/translation/', type: 'AI/ML Service', status: 'Active' },
     { name: 'Whisper STT', description: '고속 음성-텍스트 변환 (100+ 언어)', link: '/whisper/', type: 'AI/ML Service', status: 'Active' },
     { name: 'EdgeTTS', description: 'Microsoft Edge 고품질 TTS', link: '/edgetts/', type: 'AI/ML Service', status: 'Active' },
@@ -43,20 +43,18 @@ function renderProjects(targetElement, projects) { // Note: projectsData is pass
     const iconContainer = document.createElement('div');
     iconContainer.className = 'project-icons-container';
 
-    // TODO: To use custom image icons for projects, modify the section below.
-    // You could add an 'iconUrl' property to each project in projectsData,
-    // and then instead of setting textContent, create an <img> element:
-    // if (project.iconUrl) {
-    //   const img = document.createElement('img');
-    //   img.src = project.iconUrl;
-    //   img.alt = project.name;
-    //   img.style.width = '32px'; // Or some consistent size
-    //   img.style.height = '32px';
-    //   iconImage.appendChild(img); // Assuming iconImage is a container
-    // } else {
-    //   // Fallback to emoji or default
-    //   iconImage.textContent = '📁';
-    // }
+    /*
+      Comment regarding custom image icons:
+      To use custom image icons for projects, you can extend this section.
+      Ensure each project object in `projectsData` has an `iconUrl` property
+      if you want to use a specific image. The code below now checks for `project.iconUrl`.
+      CSS for `.project-icon-image img` might be needed to control image size, e.g.:
+      .project-icon-image img { max-width: 100%; max-height: 100%; object-fit: contain; }
+      The current .project-icon-image CSS sets a font-size for emojis, so if using mixed
+      image and emoji, ensure that font-size doesn't negatively impact image display,
+      or create a separate class/container for images if they need different sizing rules
+      than the emoji textContent. For now, the image will be a child of .project-icon-image.
+    */
 
     projects.forEach(project => {
         const projectLink = document.createElement('a');
@@ -71,18 +69,30 @@ function renderProjects(targetElement, projects) { // Note: projectsData is pass
         const iconImage = document.createElement('div');
         iconImage.className = 'project-icon-image';
 
-        switch (project.type) {
-            case 'AI/ML Service':
-                iconImage.textContent = '🤖'; // Robot for AI/ML
-                break;
-            case 'Web Service':
-                iconImage.textContent = '🌐'; // Globe for Web
-                break;
-            case 'Dev/Ops Tool':
-                iconImage.textContent = '🛠️'; // Hammer and wrench for Dev/Ops
-                break;
-            default:
-                iconImage.textContent = '📁'; // Default folder
+        if (project.iconUrl) {
+            const img = document.createElement('img');
+            img.src = project.iconUrl;
+            img.alt = project.name; // Alt text for accessibility
+            // Ensure CSS for .project-icon-image img handles sizing, e.g.:
+            // img.style.width = '100%'; // Or a fixed size like '32px'
+            // img.style.height = '100%'; // Or a fixed size like '32px'
+            // img.style.objectFit = 'contain';
+            iconImage.appendChild(img);
+        } else {
+            // Fallback to emoji if iconUrl is not provided
+            switch (project.type) {
+                case 'AI/ML Service':
+                    iconImage.textContent = '🤖'; // Robot for AI/ML
+                    break;
+                case 'Web Service':
+                    iconImage.textContent = '🌐'; // Globe for Web
+                    break;
+                case 'Dev/Ops Tool':
+                    iconImage.textContent = '🛠️'; // Hammer and wrench for Dev/Ops
+                    break;
+                default:
+                    iconImage.textContent = '📁'; // Default folder
+            }
         }
         projectLink.appendChild(iconImage);
 
