@@ -512,11 +512,12 @@
             align-items: center;
         }
         /* Adjust padding for items that are direct actions vs those with submenus */
-        #startMenuList > li:not(.has-submenu) {
+        /* This selector needs to be specific to direct children of startMenuList to avoid affecting submenu li */
+        #startMenuList > li:not(.has-submenu) { /* Applied to direct children li that are not .has-submenu */
             padding: 8px 12px;
         }
-        #startMenuList > li.has-submenu {
-            padding: 8px 6px 8px 12px; /* Less padding on the right for the arrow */
+        #startMenuList > li.has-submenu { /* Applied to direct children li that ARE .has-submenu */
+            padding: 8px 6px 8px 12px;
         }
 
 
@@ -527,22 +528,22 @@
             gap: 8px;
         }
         #start-menu li .submenu-arrow {
-            font-size: 0.7em; /* Slightly smaller arrow */
-            margin-left: 8px; /* More space for arrow */
+            font-size: 0.7em;
+            margin-left: 8px;
         }
 
-        #start-menu li:hover {
+        #start-menu li:hover { /* This applies to all li items in start menu, including submenu items */
             background-color: #0058a8;
             color: white;
             border: 1px dotted #fff;
         }
 
         /* Submenu Styles */
-        .has-submenu .submenu {
+        .has-submenu .submenu { /* This is the <ul> for the submenu */
             display: none;
             position: absolute;
             left: 100%;
-            top: -2px;   /* Adjusted for better alignment */
+            top: -2px;   /* Adjusted for better alignment with parent li's border/padding */
             min-width: 220px;
             background-color: #c0c0c0;
             border: 2px outset #ffffff;
@@ -553,19 +554,15 @@
             overflow-y: auto;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
         }
+        /* Styles for li items specifically within a submenu */
         .has-submenu .submenu li {
             padding: 5px 10px;
-            /* display: flex; align-items: center; already inherited from #start-menu li */
-            /* justify-content: space-between; inherited, but we want left-align for submenu items */
-            justify-content: flex-start; /* Ensure text & icon align left */
-            /* gap: 5px; is handled by .menu-text's gap now */
+            /* display: flex; is inherited via #start-menu li */
+            /* align-items: center; is inherited via #start-menu li */
+            justify-content: flex-start; /* Override for submenu items to align content left */
+            /* .menu-text within these li will handle icon/text gap */
         }
-        /* Hover for submenu items can use the general #start-menu li:hover or be specific if needed */
-        /* .has-submenu .submenu li:hover {
-            background-color: #0058a8;
-            color: white;
-            border: 1px dotted #fff;
-        } */ /* This is covered by the general #start-menu li:hover */
+        /* The hover effect for .has-submenu .submenu li is already covered by #start-menu li:hover */
 
 
         /* Commenting out old styles */

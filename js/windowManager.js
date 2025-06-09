@@ -15,9 +15,12 @@ let initialWindowWidth, initialWindowHeight; // For resizing
 // Also depends on projectsWindowBody being available if projects-window is opened.
 // Consider passing callbacks or using custom events for more robust decoupling later.
 function openWindow(windowId, title) {
+    console.log('Opening window with ID:', windowId, 'Title:', title); // Debugging log
     const windowElement = document.getElementById(windowId);
     // Ensure projectsWindowBody is selected if needed, or passed if it's specific to that app
     const projectsWindowBody = (windowId === 'projects-window') ? document.getElementById('projects-window')?.querySelector('.window-body') : null;
+
+    console.log('Found element for ID', windowId, ':', windowElement); // Debugging log
 
     if (!windowElement) {
         alert(`${title} app not implemented yet.`);

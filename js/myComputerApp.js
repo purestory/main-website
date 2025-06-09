@@ -4,17 +4,16 @@
 
 function initializeMyComputerApp() {
     const driveCLink = document.getElementById('drive-c-link');
-    // const myComputerWindow = document.getElementById('my-computer-window'); // Not strictly needed for this logic
+    // const myComputerWindow = document.getElementById('my-computer-window'); // This variable is not currently used directly in the C: drive click logic.
+
+    console.log('Attempting to initialize My Computer App. driveCLink element:', driveCLink); // Debugging log
 
     if (driveCLink) {
         driveCLink.addEventListener('click', () => {
-            // Check if the "My Computer" window is actually open and visible before allowing C drive click.
-            // This might be desirable UX, but for now, allow opening Explorer regardless.
-            // const myCompWindow = document.getElementById('my-computer-window');
-            // if (myCompWindow && myCompWindow.style.display === 'block' && myCompWindow.classList.contains('active')) {
+            console.log('C: drive clicked. Attempting to open Explorer.'); // Debugging log
 
             if (typeof openWindow === 'function') {
-                openWindow('explorer-app-window', 'Explorer - C:\\'); // Using backslash for path display
+                openWindow('explorer-app-window', 'Explorer - C:\\');
             } else {
                 console.error('openWindow function is not defined. Ensure windowManager.js is loaded before myComputerApp.js.');
             }
