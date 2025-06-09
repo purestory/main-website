@@ -6,12 +6,29 @@
 // Making projectsData global for simplicity in this refactoring phase.
 // A more advanced setup might use modules or a shared application state.
 const projectsData = [
+    // AI/ML 서비스
     { name: 'OpenWebUI', description: 'Ollama용 웹 인터페이스', link: 'http://itsmyzone.iptime.org:3000/', type: 'AI/ML Service', status: 'Docker' },
     { name: 'Amica AI', description: '3D AI 가상 비서 (내부용)', link: '/amica/', type: 'AI/ML Service', status: 'Active' },
+    { name: 'Translation Service', description: 'AI 기반 다중 엔진 번역', link: '/translation/', type: 'AI/ML Service', status: 'Active' },
+    { name: 'Whisper STT', description: '고속 음성-텍스트 변환 (100+ 언어)', link: '/whisper/', type: 'AI/ML Service', status: 'Active' },
+    { name: 'EdgeTTS', description: 'Microsoft Edge 고품질 TTS', link: '/edgetts/', type: 'AI/ML Service', status: 'Active' },
+    { name: 'Zonos TTS', description: '고품질 텍스트-음성 변환 (200k시간 학습)', link: '/zonos/', type: 'AI/ML Service', status: 'Active' },
+    { name: 'Kokoro FastAPI', description: '다국어 TTS 서비스', link: 'http://itsmyzone.iptime.org:3200/web/', type: 'AI/ML Service', status: 'Docker' },
+
+    // 웹 서비스
     { name: 'Explorer', description: '웹 기반 파일 탐색기', link: '/explorer/', type: 'Web Service', status: 'Active' },
     { name: 'N8N', description: '워크플로우 자동화', link: 'http://itsmyzone.iptime.org:5678/', type: 'Web Service', status: 'Docker' },
-    { name: 'GPU Monitoring', description: '실시간 GPU 사용률 및 메모리 관리', link: '#', type: 'Dev/Ops Tool', status: 'Active' },
-    { name: 'Ollama', description: '로컬 LLM 서버 (Docker)', link: '#', type: 'Dev/Ops Tool', status: 'Docker' }
+    { name: 'Tribler', description: 'P2P 파일 공유', link: '/tribler/', type: 'Web Service', status: 'Docker' },
+    { name: 'Cobalt', description: '소셜 미디어 다운로더', link: '/cobalt/', type: 'Web Service', status: 'Active' },
+    { name: 'WebTools', description: '이미지 변환 도구', link: '/webtools/', type: 'Web Service', status: 'Active' },
+
+    // 개발/운영 도구
+    { name: 'Ollama', description: '로컬 LLM 서버 (Docker)', link: '#', type: 'Dev/Ops Tool', status: 'Docker' },
+    { name: 'YouTube Tools', description: '유튜브 관련 도구', link: '#', type: 'Dev/Ops Tool', status: 'Active' },
+    { name: 'GPU 모니터링', description: '실시간 GPU 사용률 및 메모리 관리', link: '#', type: 'Dev/Ops Tool', status: 'Active' },
+    { name: '서비스 관리', description: 'systemd 서비스 상태 모니터링', link: '#', type: 'Dev/Ops Tool', status: 'Active' },
+    { name: 'Docker 관리', description: '컨테이너 상태 및 리소스 관리', link: '#', type: 'Dev/Ops Tool', status: 'Docker' },
+    { name: '성능 모니터링', description: 'CPU, 메모리, 디스크 사용률', link: '#', type: 'Dev/Ops Tool', status: 'Active' }
 ];
 
 // --- Project Rendering Logic ---
@@ -26,6 +43,21 @@ function renderProjects(targetElement, projects) { // Note: projectsData is pass
     const iconContainer = document.createElement('div');
     iconContainer.className = 'project-icons-container';
 
+    // TODO: To use custom image icons for projects, modify the section below.
+    // You could add an 'iconUrl' property to each project in projectsData,
+    // and then instead of setting textContent, create an <img> element:
+    // if (project.iconUrl) {
+    //   const img = document.createElement('img');
+    //   img.src = project.iconUrl;
+    //   img.alt = project.name;
+    //   img.style.width = '32px'; // Or some consistent size
+    //   img.style.height = '32px';
+    //   iconImage.appendChild(img); // Assuming iconImage is a container
+    // } else {
+    //   // Fallback to emoji or default
+    //   iconImage.textContent = '📁';
+    // }
+
     projects.forEach(project => {
         const projectLink = document.createElement('a');
         projectLink.className = 'project-icon-item';
@@ -38,8 +70,20 @@ function renderProjects(targetElement, projects) { // Note: projectsData is pass
 
         const iconImage = document.createElement('div');
         iconImage.className = 'project-icon-image';
-        // Basic icon, could be enhanced later based on type
-        iconImage.textContent = '📁'; // Default folder icon
+
+        switch (project.type) {
+            case 'AI/ML Service':
+                iconImage.textContent = '🤖'; // Robot for AI/ML
+                break;
+            case 'Web Service':
+                iconImage.textContent = '🌐'; // Globe for Web
+                break;
+            case 'Dev/Ops Tool':
+                iconImage.textContent = '🛠️'; // Hammer and wrench for Dev/Ops
+                break;
+            default:
+                iconImage.textContent = '📁'; // Default folder
+        }
         projectLink.appendChild(iconImage);
 
         const iconLabel = document.createElement('span');

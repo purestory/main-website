@@ -33,28 +33,34 @@ function openWindow(windowId, title) {
     currentMaxZIndex++;
     windowElement.style.zIndex = currentMaxZIndex;
 
-    // Basic staggering for new windows, can be improved
-    const openWindows = document.querySelectorAll('.window[style*="display: block"]').length;
-    const offsetIncrement = 25;
-    let topPosition = 50 + (openWindows * offsetIncrement);
-    let leftPosition = 50 + (openWindows * offsetIncrement);
+    // Make window visible to get its dimensions for centering, but keep it transparent
+    windowElement.style.visibility = 'hidden'; // Prevent flash of content at 0,0
+    windowElement.style.display = 'block';
 
-    // Boundary check for initial position
-    if (typeof desktop !== 'undefined' && desktop) { // Make sure desktop is found (from common.js)
-        if (leftPosition + windowElement.offsetWidth > desktop.clientWidth) {
-            leftPosition = Math.max(10, desktop.clientWidth - windowElement.offsetWidth - 10);
-        }
-        if (topPosition + windowElement.offsetHeight > desktop.clientHeight - 40) { // 40 for taskbar
-            topPosition = Math.max(10, desktop.clientHeight - windowElement.offsetHeight - 40 - 10);
-        }
+    const windowWidth = windowElement.offsetWidth;
+    const windowHeight = windowElement.offsetHeight;
+
+    let topPosition = 0;
+    let leftPosition = 0;
+
+    if (typeof desktop !== 'undefined' && desktop) {
+        const desktopRect = desktop.getBoundingClientRect();
+        topPosition = (desktopRect.height - windowHeight) / 2;
+        leftPosition = (desktopRect.width - windowWidth) / 2;
+    } else { // Fallback if desktop dimensions somehow aren't available
+        topPosition = (window.innerHeight - windowHeight) / 2;
+        leftPosition = (window.innerWidth - windowWidth) / 2;
     }
+
+    // Ensure positions are non-negative and provide a small margin from edges
     topPosition = Math.max(10, topPosition);
     leftPosition = Math.max(10, leftPosition);
 
     windowElement.style.top = topPosition + 'px';
     windowElement.style.left = leftPosition + 'px';
+    windowElement.style.visibility = ''; // Make it visible again now that it's positioned
 
-    windowElement.style.display = 'block';
+    // Animation class
     requestAnimationFrame(() => {
         requestAnimationFrame(() => {
             windowElement.classList.add('active');

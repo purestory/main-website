@@ -11,7 +11,7 @@
     <div id="post-screen" style="display: none;">
         <pre id="postMessages"></pre>
     </div>
-    <div id="boot-screen">
+    <div id="boot-screen" style="display: none;">
         <div class="boot-logo">
             <div class="logo-pane"></div>
             <div class="logo-pane"></div>
@@ -112,7 +112,11 @@
             <div class="window-body minesweeper-body">
                 <div class="minesweeper-controls">
                     <button id="minesweeperReset" class="minesweeper-reset-button">🙂</button>
-                    <div id="minesweeperDifficulty" class="minesweeper-info">Beginner</div>
+                    <div class="minesweeper-difficulty-selector">
+                        <button class="ms-difficulty-btn active" data-difficulty="beginner">Beginner</button>
+                        <button class="ms-difficulty-btn" data-difficulty="intermediate">Intermediate</button>
+                        <button class="ms-difficulty-btn" data-difficulty="expert">Expert</button>
+                    </div>
                     <div id="minesweeperFlagsLeft" class="minesweeper-info">Mines: 10</div>
                 </div>
                 <div id="minesweeperGrid" class="minesweeper-grid">

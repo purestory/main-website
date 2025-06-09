@@ -166,16 +166,15 @@
         /* Window Styles */
         .window {
             position: absolute;
-            width: 400px;
-            height: 300px;
+            width: 400px; /* Default width, can be overridden by specific window styles or JS */
+            height: 300px; /* Default height, can be overridden by specific window styles or JS */
             background-color: #f0f0f0; /* Light grey background */
             border: 1px solid #888;
             box-shadow: 0 0 10px rgba(0,0,0,0.5);
             display: none; /* Hidden by default */
-            z-index: 500; /* Above icons, below active modals if any */
+            z-index: 500;
             border-radius: 5px;
-            overflow: hidden; /* Contains header and body */
-            /* Animation properties */
+            overflow: hidden;
             opacity: 0;
             transform: scale(0.95);
             transition: opacity 0.2s ease-out, transform 0.2s ease-out;
@@ -186,14 +185,14 @@
         }
 
         .window-header {
-            background-color: #0058a8; /* Classic Windows blue title bar */
+            background-color: #0058a8;
             color: white;
             padding: 8px 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            cursor: move; /* For future dragging */
-            height: 35px; /* Fixed height for header */
+            cursor: move;
+            height: 35px;
         }
 
         .window-title {
@@ -204,7 +203,7 @@
         }
 
         .window-close-button {
-            background-color: #ff6347; /* Tomato red */
+            background-color: #ff6347;
             color: white;
             border: 1px solid #d9534f;
             border-radius: 3px;
@@ -214,15 +213,15 @@
             font-size: 14px;
         }
         .window-close-button:hover {
-            background-color: #d9534f; /* Darker red on hover */
+            background-color: #d9534f;
         }
 
         .window-body {
             padding: 10px;
-            background-color: white; /* Typically white content area */
+            background-color: white;
             color: #333;
-            height: calc(100% - 35px); /* Full height minus header */
-            overflow-y: auto; /* Scroll if content exceeds body */
+            height: calc(100% - 35px);
+            overflow-y: auto;
         }
 
         /* Old Project List Styles within Window - Commented Out */
@@ -334,29 +333,29 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 40px; /* Standard taskbar height */
-            background-color: #c0c0c0; /* Classic Windows grey, can be changed */
+            height: 40px;
+            background-color: #c0c0c0;
             border-top: 1px solid #ffffff;
             display: flex;
             align-items: center;
-            justify-content: space-between; /* To push clock to the right */
+            justify-content: space-between;
             padding: 0 5px;
-            z-index: 1000; /* Ensure taskbar is on top */
+            z-index: 1000;
         }
 
         #taskbar-clock {
             padding: 0 10px;
             font-size: 0.9em;
-            color: #333; /* Or white if taskbar is dark */
+            color: #333;
         }
 
         .start-button {
             padding: 5px 15px;
-            background-color: #c0c0c0; /* Same as taskbar or slightly different */
+            background-color: #c0c0c0;
             border: 2px outset #ffffff;
             font-weight: bold;
             cursor: pointer;
-            border-radius: 3px; /* Added border-radius */
+            border-radius: 3px;
         }
         .start-button:active {
             border-style: inset;
@@ -364,19 +363,18 @@
 
         /* Start Menu Styles */
         #start-menu {
-            display: none; /* Hidden by default */
+            display: none;
             position: absolute;
-            bottom: 40px; /* Height of the taskbar */
+            bottom: 40px;
             left: 0;
-            width: 250px; /* Typical start menu width */
-            max-height: 400px; /* Max height before scrolling */
+            width: 250px;
+            max-height: 400px;
             overflow-y: auto;
-            background-color: #c0c0c0; /* Classic grey */
-            border: 2px outset #ffffff; /* Classic border */
+            background-color: #c0c0c0;
+            border: 2px outset #ffffff;
             box-shadow: 2px -2px 5px rgba(0,0,0,0.3);
-            z-index: 1100; /* Above taskbar and other desktop elements */
+            z-index: 1100;
             padding: 5px;
-            /* Animation properties */
             opacity: 0;
             transform: translateY(10px);
             transition: opacity 0.15s ease-out, transform 0.15s ease-out;
@@ -396,13 +394,13 @@
             padding: 8px 12px;
             cursor: pointer;
             font-size: 0.9em;
-            border: 1px solid transparent; /* For hover effect */
+            border: 1px solid transparent;
         }
 
         #start-menu li:hover {
-            background-color: #0058a8; /* Windows blue for selection */
+            background-color: #0058a8;
             color: white;
-            border: 1px dotted #fff; /* Classic selection border */
+            border: 1px dotted #fff;
         }
 
 
@@ -735,8 +733,9 @@
     /* Using width: auto; height: auto; for now, actual size will be dictated by grid */
     /* Or, for a fixed 9x9 grid + controls: */
     /* width: calc(9 * 25px + 20px + 4px); approx 249px for grid + padding + border */
-    width: fit-content; /* Let content dictate initial width */
-    height: fit-content; /* Let content dictate initial height */
+    /* width: fit-content; */ /* Let content dictate initial width - REMOVED */
+    /* height: fit-content; */ /* Let content dictate initial height - REMOVED */
+    /* Default .window width/height will apply, or JS will override */
 }
 
 .minesweeper-body {
@@ -757,6 +756,30 @@
     border: 2px inset #fff; /* Inset border for panel */
     background-color: #c0c0c0; /* Match body or slightly different */
 }
+
+.minesweeper-difficulty-selector {
+    display: flex;
+    gap: 5px;
+}
+
+.ms-difficulty-btn {
+    padding: 3px 8px;
+    font-size: 0.8em;
+    border: 1px solid #777;
+    background-color: #e0e0e0;
+    cursor: pointer;
+    border-radius: 3px; /* Consistent radius */
+}
+.ms-difficulty-btn:hover {
+    background-color: #d0d0d0;
+}
+.ms-difficulty-btn.active {
+    background-color: #b0b0b0;
+    font-weight: bold;
+    border-width: 2px; /* Make active button stand out more */
+    border-style: inset; /* Give it a pressed look */
+}
+
 
 .minesweeper-reset-button {
     font-size: 1.5em; /* Smiley size */
