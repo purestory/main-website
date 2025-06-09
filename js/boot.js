@@ -1,12 +1,12 @@
 // --- DOMContentLoaded will handle ensuring these are available ---
 // Selectors that might be needed by boot sequence
-const postScreen = document.getElementById('post-screen');
-const postMessagesContainer = document.getElementById('postMessages');
-const bootScreen = document.getElementById('boot-screen');
-const desktop = document.querySelector('.desktop'); // Used by startBootSequence to make desktop visible
-const bootMessageText = document.getElementById('bootMessageText');
-const bootProgressBar = document.getElementById('bootProgressBar');
-const bootProgressText = document.getElementById('bootProgressText');
+// const postScreen = document.getElementById('post-screen'); // Now in common.js
+// const postMessagesContainer = document.getElementById('postMessages'); // Now in common.js
+// const bootScreen = document.getElementById('boot-screen'); // Now in common.js
+// const desktop = document.querySelector('.desktop'); // Now in common.js
+// const bootMessageText = document.getElementById('bootMessageText'); // Now in common.js
+// const bootProgressBar = document.getElementById('bootProgressBar'); // Now in common.js
+// const bootProgressText = document.getElementById('bootProgressText'); // Now in common.js
 
 // --- POST Screen Sequence Logic ---
 const postScreenMessages = [
@@ -27,19 +27,23 @@ const postMessageDelay = 250; // ms between each POST message
 
 function showNextPostMessage() {
     if (currentPostMessageIndex < postScreenMessages.length) {
-        if(postMessagesContainer) postMessagesContainer.textContent += postScreenMessages[currentPostMessageIndex] + '\n';
+        // Ensure common.js has loaded and postMessagesContainer is available
+        if(typeof postMessagesContainer !== 'undefined' && postMessagesContainer) {
+            postMessagesContainer.textContent += postScreenMessages[currentPostMessageIndex] + '\n';
+        }
         currentPostMessageIndex++;
         setTimeout(showNextPostMessage, postMessageDelay);
     } else {
         setTimeout(() => {
-            if(postScreen) postScreen.style.display = 'none';
+            if(typeof postScreen !== 'undefined' && postScreen) postScreen.style.display = 'none';
             startBootSequence();
         }, 500);
     }
 }
 
 function startPostScreenSequence() {
-    if(postScreen) postScreen.style.display = 'block';
+    // Ensure common.js has loaded and postScreen is available
+    if(typeof postScreen !== 'undefined' && postScreen) postScreen.style.display = 'block';
     showNextPostMessage();
 }
 
@@ -64,7 +68,7 @@ let progressUpdateIntervalId;
 
 function showNextBootMessage() { // This was 'showNextMessage' for boot messages
     if (currentMessageIndex < numMessages) { // ensure using the correct message index
-        if(bootMessageText) bootMessageText.textContent = bootMessages[currentMessageIndex];
+        if(typeof bootMessageText !== 'undefined' && bootMessageText) bootMessageText.textContent = bootMessages[currentMessageIndex];
         currentMessageIndex++;
         if (currentMessageIndex < numMessages) {
            setTimeout(showNextBootMessage, messageInterval);
@@ -75,7 +79,7 @@ function showNextBootMessage() { // This was 'showNextMessage' for boot messages
 function updateBootProgress() {
     const elapsedTime = Date.now() - bootStartTime;
     let progressPercent = Math.min(100, Math.floor((elapsedTime / totalBootTime) * 100));
-    if(bootProgressText) bootProgressText.textContent = `${progressPercent}%`;
+    if(typeof bootProgressText !== 'undefined' && bootProgressText) bootProgressText.textContent = `${progressPercent}%`;
 
     if (progressPercent >= 100) {
         clearInterval(progressUpdateIntervalId);
@@ -83,9 +87,9 @@ function updateBootProgress() {
 }
 
 function startBootSequence() {
-    if(bootScreen) bootScreen.style.display = 'flex';
+    if(typeof bootScreen !== 'undefined' && bootScreen) bootScreen.style.display = 'flex';
     bootStartTime = Date.now();
-    if(bootProgressBar) {
+    if(typeof bootProgressBar !== 'undefined' && bootProgressBar) {
         bootProgressBar.style.transition = `width ${totalBootTime / 1000}s linear`;
         requestAnimationFrame(() => {
             bootProgressBar.style.width = '100%';
@@ -98,18 +102,18 @@ function startBootSequence() {
 
     setTimeout(() => {
         clearInterval(progressUpdateIntervalId);
-        if(bootProgressText) bootProgressText.textContent = '100%';
-        if(bootScreen) bootScreen.classList.add('hidden');
-        if(desktop) desktop.classList.add('visible');
+        if(typeof bootProgressText !== 'undefined' && bootProgressText) bootProgressText.textContent = '100%';
+        if(typeof bootScreen !== 'undefined' && bootScreen) bootScreen.classList.add('hidden');
+        if(typeof desktop !== 'undefined' && desktop) desktop.classList.add('visible');
 
         setTimeout(() => {
-            if(bootScreen) bootScreen.style.display = 'none';
+            if(typeof bootScreen !== 'undefined' && bootScreen) bootScreen.style.display = 'none';
         }, 1000);
     }, totalBootTime);
 }
 
 // Initial call to start the entire boot process
-// This assumes this script is loaded within DOMContentLoaded or with defer
+// This assumes this script is loaded after common.js and within DOMContentLoaded or with defer
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', startPostScreenSequence);
 } else {

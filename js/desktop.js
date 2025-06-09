@@ -1,39 +1,40 @@
 // Assumes openWindow is globally available from windowManager.js
 // Assumes DOM is ready (scripts deferred)
+// Assumes common DOM elements like projectsIcon, startButton, etc. are globally available from common.js
 
 // --- Desktop Icon Selectors & Event Listeners ---
-const projectsIcon = document.getElementById('icon-projects');
-const minesweeperIcon = document.getElementById('icon-minesweeper');
-const paintIcon = document.getElementById('icon-paint');
-const calculatorIcon = document.getElementById('icon-calculator');
+// const projectsIcon = document.getElementById('icon-projects'); // Now in common.js
+// const minesweeperIcon = document.getElementById('icon-minesweeper'); // Now in common.js
+// const paintIcon = document.getElementById('icon-paint'); // Now in common.js
+// const calculatorIcon = document.getElementById('icon-calculator'); // Now in common.js
 
-if (projectsIcon) {
+if (typeof projectsIcon !== 'undefined' && projectsIcon) {
     projectsIcon.addEventListener('click', () => {
         openWindow('projects-window', 'Projects Explorer');
     });
 }
-if (minesweeperIcon) {
+if (typeof minesweeperIcon !== 'undefined' && minesweeperIcon) {
     minesweeperIcon.addEventListener('click', () => {
         openWindow('minesweeper-app-window', 'Minesweeper');
     });
 }
-if (paintIcon) {
+if (typeof paintIcon !== 'undefined' && paintIcon) {
     paintIcon.addEventListener('click', () => {
         openWindow('paint-app', 'Paint');
     });
 }
-if (calculatorIcon) {
+if (typeof calculatorIcon !== 'undefined' && calculatorIcon) {
     calculatorIcon.addEventListener('click', () => {
         openWindow('calculator-app-window', 'Calculator');
     });
 }
 
 // --- Start Menu Logic ---
-const startButton = document.querySelector('.start-button');
-const startMenu = document.getElementById('start-menu');
+// const startButton = document.querySelector('.start-button'); // Now in common.js
+// const startMenu = document.getElementById('start-menu'); // Now in common.js
 
-if (startButton && startMenu) {
-    const startMenuItems = startMenu.querySelectorAll('li');
+if (typeof startButton !== 'undefined' && startButton && typeof startMenu !== 'undefined' && startMenu) {
+    const startMenuItems = startMenu.querySelectorAll('li'); // This selector is specific enough to stay here
 
     function showStartMenu() {
         startMenu.style.display = 'block';
@@ -71,23 +72,22 @@ if (startButton && startMenu) {
             const windowIdToOpen = item.getAttribute('data-opens');
             hideStartMenu();
 
-            // The openWindow function is expected to be globally available from windowManager.js
             if (typeof openWindow === 'function') {
                 if (windowIdToOpen) {
                     const appName = item.textContent.trim().split(' ').slice(1).join(' ') || item.textContent.trim();
                     openWindow(windowIdToOpen, appName);
                 }
             } else {
-                console.error("openWindow function not found. Ensure windowManager.js is loaded.");
+                console.error("openWindow function not found. Ensure windowManager.js is loaded before desktop.js.");
             }
         });
     });
 }
 
 // --- Taskbar Clock Logic ---
-const taskbarClock = document.getElementById('taskbar-clock');
+// const taskbarClock = document.getElementById('taskbar-clock'); // Now in common.js
 
-if (taskbarClock) {
+if (typeof taskbarClock !== 'undefined' && taskbarClock) {
     function updateClock() {
         const now = new Date();
         let hours = now.getHours();

@@ -1,5 +1,5 @@
 // DOM element that is a common parent for windows and where mouse events for drag/resize are delegated
-const desktop = document.querySelector('.desktop');
+// const desktop = document.querySelector('.desktop'); // Now in common.js
 
 // --- Windowing State & Z-index Management ---
 let currentMaxZIndex = 500;
@@ -16,7 +16,8 @@ let initialWindowWidth, initialWindowHeight; // For resizing
 // Consider passing callbacks or using custom events for more robust decoupling later.
 function openWindow(windowId, title) {
     const windowElement = document.getElementById(windowId);
-    const projectsWindowBody = document.getElementById('projects-window')?.querySelector('.window-body'); // Get it if it exists
+    // Ensure projectsWindowBody is selected if needed, or passed if it's specific to that app
+    const projectsWindowBody = (windowId === 'projects-window') ? document.getElementById('projects-window')?.querySelector('.window-body') : null;
 
     if (!windowElement) {
         alert(`${title} app not implemented yet.`);
@@ -39,7 +40,7 @@ function openWindow(windowId, title) {
     let leftPosition = 50 + (openWindows * offsetIncrement);
 
     // Boundary check for initial position
-    if (desktop) { // Make sure desktop is found
+    if (typeof desktop !== 'undefined' && desktop) { // Make sure desktop is found (from common.js)
         if (leftPosition + windowElement.offsetWidth > desktop.clientWidth) {
             leftPosition = Math.max(10, desktop.clientWidth - windowElement.offsetWidth - 10);
         }
@@ -60,16 +61,15 @@ function openWindow(windowId, title) {
         });
     });
 
-    if (windowId === 'projects-window' && typeof renderProjects === 'function' && projectsWindowBody) {
-        renderProjects(projectsWindowBody, projectsData); // projectsData should be global or passed
+    if (windowId === 'projects-window' && typeof renderProjects === 'function' && projectsWindowBody && typeof projectsData !== 'undefined') {
+        renderProjects(projectsWindowBody, projectsData);
     } else if (windowId === 'minesweeper-app-window' && typeof msInitGame === 'function') {
-        // msGameInitialized flag and logic would be part of minesweeper.js
         msInitGame();
     }
 
-    // Set focus to the newly opened/focused window for dragging
-    activeWindow = windowElement;
-    activeWindow.style.zIndex = currentMaxZIndex;
+    // Set focus to the newly opened/focused window
+    activeWindow = windowElement; // This ensures the new window is considered active for dragging
+    if(activeWindow) activeWindow.style.zIndex = currentMaxZIndex; // Ensure zIndex is applied
 }
 
 // --- Generic Window Close Button Handler ---
@@ -94,9 +94,9 @@ function dragWindow(event) {
     let newY = event.clientY - offsetY;
 
     const headerHeight = activeWindow.querySelector('.window-header').offsetHeight;
-    const taskbarHeight = document.querySelector('.taskbar')?.offsetHeight || 40; // Fallback if taskbar not found
+    const taskbarHeight = document.querySelector('.taskbar')?.offsetHeight || 40;
 
-    if (desktop) { // Make sure desktop is found
+    if (typeof desktop !== 'undefined' && desktop) {
         newX = Math.max(-activeWindow.offsetWidth + 50, Math.min(newX, desktop.clientWidth - 50));
         newY = Math.max(0, Math.min(newY, desktop.clientHeight - taskbarHeight - headerHeight + 20 ));
     }
@@ -113,7 +113,7 @@ function stopDrag() {
     activeWindow = null;
 }
 
-if (desktop) {
+if (typeof desktop !== 'undefined' && desktop) { // Check if desktop (from common.js) is defined
     desktop.addEventListener('mousedown', function(event) {
         const targetHeader = event.target.closest('.window-header');
         if (targetHeader) {
@@ -162,7 +162,7 @@ function stopResize() {
     resizingWindow = null;
 }
 
-if (desktop) {
+if (typeof desktop !== 'undefined' && desktop) { // Check if desktop (from common.js) is defined
     desktop.addEventListener('mousedown', function(event) {
         if (event.target.classList.contains('resize-handle')) {
             event.preventDefault();

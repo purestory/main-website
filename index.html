@@ -124,13 +124,15 @@
     </div>
     <!--
         Order of scripts:
-        1. projectsApp.js (defines projectsData, renderProjects)
-        2. minesweeper.js (defines msInitGame, msGameInitialized flag)
-        3. calculator.js (defines calculator logic, clearCalculator)
-        4. windowManager.js (defines openWindow, drag/resize logic, uses functions from app-specific files)
-        5. desktop.js (handles desktop icons, start menu, clock - calls openWindow)
-        6. boot.js (handles boot sequence, should be last to start the sequence after everything is defined)
+        1. common.js (defines common DOM element variables)
+        2. projectsApp.js (defines projectsData, renderProjects)
+        3. minesweeper.js (defines msInitGame, msGameInitialized flag)
+        4. calculator.js (defines calculator logic, clearCalculator)
+        5. windowManager.js (defines openWindow, drag/resize logic, uses functions from app-specific files)
+        6. desktop.js (handles desktop icons, start menu, clock - calls openWindow)
+        7. boot.js (handles boot sequence, should be last to start the sequence after everything is defined)
     -->
+    <script src="js/common.js" defer></script>
     <script src="js/projectsApp.js" defer></script>
     <script src="js/minesweeper.js" defer></script>
     <script src="js/calculator.js" defer></script>
