@@ -41,7 +41,28 @@ const allProgramsMenuItem = document.getElementById('all-programs-menu-item');
 const allProgramsSubmenu = document.getElementById('all-programs-submenu');
 let hideSubmenuTimer = null;
 
-if (typeof startButton !== 'undefined' && startButton && typeof startMenu !== 'undefined' && startMenu) {
+// 디버깅: DOM 요소들 확인
+console.log('=== DOM 요소 확인 ===');
+console.log('allProgramsMenuItem:', allProgramsMenuItem);
+console.log('allProgramsSubmenu:', allProgramsSubmenu);
+console.log('startButton:', typeof startButton, startButton);
+console.log('startMenu:', typeof startMenu, startMenu);
+
+// DOM이 완전히 로드될 때까지 기다리기
+setTimeout(() => {
+    const actualStartButton = document.querySelector('.start-button');
+    const actualStartMenu = document.getElementById('start-menu');
+    const actualAllProgramsMenuItem = document.getElementById('all-programs-menu-item');
+    const actualAllProgramsSubmenu = document.getElementById('all-programs-submenu');
+    
+    console.log('=== setTimeout에서 재확인 ===');
+    console.log('actualStartButton:', actualStartButton);
+    console.log('actualStartMenu:', actualStartMenu);
+    console.log('actualAllProgramsMenuItem:', actualAllProgramsMenuItem);
+    console.log('actualAllProgramsSubmenu:', actualAllProgramsSubmenu);
+    
+if ((typeof startButton !== 'undefined' && startButton && typeof startMenu !== 'undefined' && startMenu) || 
+    (actualStartButton && actualStartMenu)) {
     const startMenuList = document.getElementById('startMenuList'); // Get the main list
     // QuerySelectorAll on startMenu for direct children li of startMenuList to avoid submenu items
     const startMenuItems = startMenuList ? startMenuList.querySelectorAll(':scope > li') : [];
@@ -107,6 +128,7 @@ if (typeof startButton !== 'undefined' && startButton && typeof startMenu !== 'u
 
     // "All Programs" submenu logic
     if (allProgramsMenuItem && allProgramsSubmenu) {
+        console.log('=== 서브메뉴 이벤트 리스너 등록 중 ===');
         // 클릭 이벤트 추가 - 모바일 및 클릭 지원
         allProgramsMenuItem.addEventListener('click', (e) => {
             e.preventDefault();
@@ -305,6 +327,12 @@ function populateAllProgramsSubmenu() {
     }
 }
 
+
+// --- Taskbar Clock Logic ---
+// const taskbarClock = document.getElementById('taskbar-clock'); // Now in common.js
+
+}
+}, 100); // setTimeout 종료
 
 // --- Taskbar Clock Logic ---
 // const taskbarClock = document.getElementById('taskbar-clock'); // Now in common.js
