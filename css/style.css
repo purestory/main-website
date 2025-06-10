@@ -312,6 +312,33 @@
             background-color: #d9534f;
         }
 
+        /* Styles for the button container in window header */
+        .window-header > div {
+            display: flex;
+            align-items: center; /* Vertically align buttons */
+        }
+
+        .window-maximize-button {
+            background: none;
+            border: none;
+            color: white;
+            padding: 2px 5px; /* Similar padding to close button */
+            font-size: 16px;  /* For '❐' character, adjust as needed */
+            line-height: 1;   /* To better center the character if it's text */
+            cursor: pointer;
+            margin-right: 4px; /* Space between maximize and close */
+            border-radius: 3px; /* Match close button */
+        }
+        .window-maximize-button:hover {
+            background-color: rgba(255, 255, 255, 0.2); /* Subtle hover effect */
+        }
+
+        .window.maximized {
+            /* transition: width 0.05s ease-out, height 0.05s ease-out, top 0.05s ease-out, left 0.05s ease-out; */ /* Optional: very quick transition */
+            border-radius: 0; /* Maximized windows usually don't have rounded corners */
+            /* box-shadow: none; */ /* Optional: remove shadow when maximized */
+        }
+
         .window-body {
             padding: 10px;
             background-color: white;

@@ -281,8 +281,8 @@ window.populateAllProgramsSubmenu = function populateAllProgramsSubmenu() {
         ];
     }
 
-    // Filter out 'Explorer' before iterating
-    dataToUse = dataToUse.filter(program => program.name !== 'Explorer');
+    // Filter out 'Explorer' before iterating - Re-adding Explorer to the menu
+    // dataToUse = dataToUse.filter(program => program.name !== 'Explorer');
 
     if (dataToUse && dataToUse.length > 0) {
         console.log(`${dataToUse.length}개의 프로그램 항목 생성 중...`);

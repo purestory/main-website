@@ -3,6 +3,7 @@
 
 // --- Windowing State & Z-index Management ---
 let currentMaxZIndex = 500;
+let preMaximizedStates = {}; // To store { windowId: { width, height, top, left } }
 let activeWindow = null; // For dragging
 let offsetX, offsetY;    // For dragging
 
@@ -45,6 +46,11 @@ function openWindow(windowId, title) {
     if (windowId === 'projects-window') {
         windowWidth = 600; // Desired width for projects window
         windowHeight = 450; // Desired height for projects window
+        windowElement.style.width = windowWidth + 'px';
+        windowElement.style.height = windowHeight + 'px';
+    } else if (windowId === 'explorer-app-window') {
+        windowWidth = 800; // New desired width for Explorer
+        windowHeight = 600; // New desired height for Explorer
         windowElement.style.width = windowWidth + 'px';
         windowElement.style.height = windowHeight + 'px';
     } else {
@@ -108,22 +114,81 @@ function openWindow(windowId, title) {
     if(activeWindow) activeWindow.style.zIndex = currentMaxZIndex; // Ensure zIndex is applied
 }
 
-// --- Generic Window Close Button Handler ---
-document.addEventListener('click', function(event) {
-    if (event.target.classList.contains('window-close-button')) {
-        const windowToClose = event.target.closest('.window');
-        if (windowToClose) {
-            windowToClose.classList.remove('active');
-            setTimeout(() => {
-                windowToClose.style.display = 'none';
-            }, 200);
+// --- Maximize/Restore Window Function ---
+function toggleMaximizeWindow(windowElement) {
+    if (!windowElement) return;
+    const windowId = windowElement.id;
+    // Assuming 'desktop' is globally available from common.js
+    if (typeof desktop === 'undefined' || !desktop) {
+        console.error("Desktop element not found for maximizing window.");
+        return;
+    }
+    const desktopRect = desktop.getBoundingClientRect();
+    const taskbarHeight = document.querySelector('.taskbar')?.offsetHeight || 40;
+
+    const maximizeButton = windowElement.querySelector('.window-maximize-button');
+
+    if (windowElement.classList.contains('maximized')) {
+        // Restore window
+        if (preMaximizedStates[windowId]) {
+            windowElement.style.width = preMaximizedStates[windowId].width;
+            windowElement.style.height = preMaximizedStates[windowId].height;
+            windowElement.style.top = preMaximizedStates[windowId].top;
+            windowElement.style.left = preMaximizedStates[windowId].left;
+            delete preMaximizedStates[windowId];
         }
+        windowElement.classList.remove('maximized');
+        if (maximizeButton) maximizeButton.innerHTML = '❐'; // Restore icon
+        if (maximizeButton) maximizeButton.setAttribute('aria-label', 'Maximize');
+
+        const resizeHandle = windowElement.querySelector('.resize-handle');
+        if (resizeHandle) resizeHandle.style.display = '';
+    } else {
+        // Maximize window
+        preMaximizedStates[windowId] = {
+            width: windowElement.style.width || windowElement.offsetWidth + 'px',
+            height: windowElement.style.height || windowElement.offsetHeight + 'px',
+            top: windowElement.style.top || windowElement.offsetTop + 'px',
+            left: windowElement.style.left || windowElement.offsetLeft + 'px',
+        };
+
+        windowElement.style.width = desktopRect.width + 'px';
+        windowElement.style.height = (desktopRect.height - taskbarHeight) + 'px';
+        windowElement.style.top = '0px';
+        windowElement.style.left = '0px';
+
+        windowElement.classList.add('maximized');
+        if (maximizeButton) maximizeButton.innerHTML = '□'; // Restore down icon
+        if (maximizeButton) maximizeButton.setAttribute('aria-label', 'Restore');
+
+        const resizeHandle = windowElement.querySelector('.resize-handle');
+        if (resizeHandle) resizeHandle.style.display = 'none';
+    }
+    // Ensure the maximized/restored window is brought to front
+    currentMaxZIndex++;
+    windowElement.style.zIndex = currentMaxZIndex;
+}
+
+// --- Generic Window Control Button Handlers (Close, Maximize) ---
+document.addEventListener('click', function(event) {
+    const targetButton = event.target;
+    const windowElement = targetButton.closest('.window');
+
+    if (!windowElement) return;
+
+    if (targetButton.classList.contains('window-close-button')) {
+        windowElement.classList.remove('active');
+        setTimeout(() => {
+            windowElement.style.display = 'none';
+        }, 200);
+    } else if (targetButton.classList.contains('window-maximize-button')) {
+        toggleMaximizeWindow(windowElement);
     }
 });
 
 // --- Draggable Windows Logic ---
 function dragWindow(event) {
-    if (!activeWindow) return;
+    if (!activeWindow || activeWindow.classList.contains('maximized')) return; // Prevent drag if maximized
     event.preventDefault();
 
     let newX = event.clientX - offsetX;
@@ -205,7 +270,10 @@ if (typeof desktop !== 'undefined' && desktop) { // Check if desktop (from commo
             event.stopPropagation();
 
             resizingWindow = event.target.closest('.window');
-            if (!resizingWindow) return;
+            if (!resizingWindow || resizingWindow.classList.contains('maximized')) { // Prevent resize if maximized
+                resizingWindow = null;
+                return;
+            }
 
             currentMaxZIndex++;
             resizingWindow.style.zIndex = currentMaxZIndex;
