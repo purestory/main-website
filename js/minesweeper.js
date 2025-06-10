@@ -290,70 +290,41 @@ function msAdjustWindowSize() {
 
 // --- Minesweeper Menu Logic ---
 function closeAllMinesweeperDropdowns() {
-    const dropdowns = document.querySelectorAll('#minesweeper-app-window .ms-dropdown-menu');
-    const menuItems = document.querySelectorAll('#minesweeper-app-window .ms-menu-item');
-
-    dropdowns.forEach(dd => {
-        dd.style.display = 'none';
+    document.querySelectorAll('#minesweeper-app-window .ms-dropdown-menu, #minesweeper-app-window .ms-difficulty-submenu').forEach(menu => {
+        menu.style.display = 'none';
     });
-    menuItems.forEach(item => {
+    document.querySelectorAll('#minesweeper-app-window .ms-menu-item').forEach(item => {
         item.classList.remove('active');
     });
-    
     activeMinesweeperMenu = null;
 }
 
 // 연속 호출 방지를 위한 변수
-let isMenuToggling = false;
+// let isMenuToggling = false; // Already defined globally or should be if not
 
-function toggleMinesweeperDropdown(menuItem, dropdownMenu) {
-    // 연속 호출 방지
-    if (isMenuToggling) {
-        return;
-    }
-    
+function toggleMinesweeperDropdown(menuItemLI, dropdownUL) {
+    if (isMenuToggling) return;
     isMenuToggling = true;
-    
-    if (!menuItem || !dropdownMenu) {
-        console.error('menuItem 또는 dropdownMenu가 null입니다');
+
+    // Check if menuItemLI and dropdownUL are valid DOM elements
+    if (!(menuItemLI instanceof HTMLElement) || !(dropdownUL instanceof HTMLElement)) {
+        console.error('Invalid menuItemLI or dropdownUL passed to toggleMinesweeperDropdown');
         isMenuToggling = false;
         return;
     }
-    
-    // 현재 활성 메뉴가 클릭된 메뉴와 같은지 확인
-    const isSameMenu = activeMinesweeperMenu === dropdownMenu;
 
-    if (isSameMenu) {
-        // 같은 메뉴를 다시 클릭한 경우 -> 닫기
+    const isAlreadyOpen = dropdownUL.style.display === 'block' && activeMinesweeperMenu === dropdownUL;
+
+    if (isAlreadyOpen) {
         closeAllMinesweeperDropdowns();
     } else {
-        // 다른 메뉴이거나 메뉴가 열려있지 않은 경우 -> 열기
-        
-        // 다른 메뉴들만 닫기 (현재 열려고 하는 메뉴는 제외)
-        const dropdowns = document.querySelectorAll('#minesweeper-app-window .ms-dropdown-menu');
-        const menuItems = document.querySelectorAll('#minesweeper-app-window .ms-menu-item');
-        
-        dropdowns.forEach(dd => {
-            if (dd !== dropdownMenu) {
-                dd.style.display = 'none';
-            }
-        });
-        menuItems.forEach(item => {
-            if (item !== menuItem) {
-                item.classList.remove('active');
-            }
-        });
-        
-        // 현재 메뉴 열기
-        dropdownMenu.style.display = 'block';
-        menuItem.classList.add('active');
-        activeMinesweeperMenu = dropdownMenu;
+        closeAllMinesweeperDropdowns(); // Close everything first
+        dropdownUL.style.display = 'block';
+        menuItemLI.classList.add('active');
+        activeMinesweeperMenu = dropdownUL;
     }
-    
-    // 연속 호출 방지 플래그 해제
-    setTimeout(() => {
-        isMenuToggling = false;
-    }, 100);
+
+    setTimeout(() => { isMenuToggling = false; }, 100);
 }
 
 /**
@@ -361,13 +332,24 @@ function toggleMinesweeperDropdown(menuItem, dropdownMenu) {
  */
 function msInitGame() {
     // DOM 요소 선택
+    // DOM 요소 선택 (글로벌 변수에 할당)
     msGridElement = document.getElementById('minesweeperGrid');
     msFlagsLeftElement = document.getElementById('minesweeperFlagsLeft');
     msResetButton = document.getElementById('minesweeperReset');
     const minesweeperWindowElement = document.getElementById('minesweeper-app-window');
 
-    if (!msGridElement || !msFlagsLeftElement || !msResetButton || !minesweeperWindowElement) {
-        console.error("지뢰찾기 게임 요소를 찾을 수 없어 게임을 초기화할 수 없습니다.");
+    msGameMenuItem = document.getElementById('ms-game-menu-item'); // Global
+    msGameDropdown = document.getElementById('ms-game-dropdown');   // Global
+    msHelpMenuItem = document.getElementById('ms-help-menu-item'); // Global
+    msHelpDropdown = document.getElementById('ms-help-dropdown');   // Global
+
+    // Submenu items - can be local to msInitGame if only used for setup here
+    const optionSubmenuItemLI = msGameDropdown ? msGameDropdown.querySelector('.ms-submenu-item') : null;
+    const difficultySubmenuUL = optionSubmenuItemLI ? optionSubmenuItemLI.querySelector('.ms-difficulty-submenu') : null;
+
+
+    if (!msGridElement || !msFlagsLeftElement || !msResetButton || !minesweeperWindowElement || !msGameMenuItem || !msGameDropdown || !msHelpMenuItem || !msHelpDropdown) {
+        console.error("지뢰찾기 게임의 필수 UI 요소를 모두 찾을 수 없어 게임을 초기화할 수 없습니다.");
         return;
     }
     
@@ -394,8 +376,96 @@ function msInitGame() {
     // 게임 보드 생성 및 렌더링
     msCreateBoardData();
     msRenderBoard();
-    msAdjustWindowSize();
     
-    closeAllMinesweeperDropdowns();
+    // Event Listeners (only initialize once)
+    if (!minesweeperEventListenersInitialized) {
+        if (msGameMenuItem && msGameDropdown) {
+            msGameMenuItem.addEventListener('click', function(event) {
+                event.stopPropagation();
+                toggleMinesweeperDropdown(this, msGameDropdown);
+            });
+        }
+
+        if (msHelpMenuItem && msHelpDropdown) {
+            msHelpMenuItem.addEventListener('click', function(event) {
+                event.stopPropagation();
+                toggleMinesweeperDropdown(this, msHelpDropdown);
+            });
+        }
+
+        if (optionSubmenuItemLI && difficultySubmenuUL) {
+            optionSubmenuItemLI.addEventListener('click', function(event) {
+                event.stopPropagation(); // Prevent menu from closing immediately
+                const isVisible = difficultySubmenuUL.style.display === 'block';
+                // Hide other submenus if any (though not strictly necessary with current structure)
+                document.querySelectorAll('#minesweeper-app-window .ms-difficulty-submenu').forEach(sm => {
+                    if (sm !== difficultySubmenuUL) sm.style.display = 'none';
+                });
+                difficultySubmenuUL.style.display = isVisible ? 'none' : 'block';
+            });
+        }
+
+        if (minesweeperWindowElement) {
+            minesweeperWindowElement.addEventListener('click', function(event) {
+                // Close menus if click is outside of any menu item or dropdown content
+                if (!event.target.closest('.ms-menu-item') && !event.target.closest('.ms-dropdown-menu') && !event.target.closest('.ms-difficulty-submenu')) {
+                    closeAllMinesweeperDropdowns();
+                }
+            });
+        }
+
+        // Add listeners for menu actions (New Game, Difficulty, Exit, About)
+        const newGameAction = msGameDropdown ? msGameDropdown.querySelector('[data-action="ms-new-game"]') : null;
+        if (newGameAction) {
+            newGameAction.addEventListener('click', (event) => {
+                event.stopPropagation();
+                msInitGame(); // Re-initialize for a new game
+                closeAllMinesweeperDropdowns();
+            });
+        }
+
+        const difficultyActions = difficultySubmenuUL ? difficultySubmenuUL.querySelectorAll('[data-action="ms-difficulty"]') : [];
+        difficultyActions.forEach(action => {
+            action.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const newDifficulty = action.dataset.difficulty;
+                if (newDifficulty && msDifficultySettings[newDifficulty]) {
+                    msCurrentDifficulty = newDifficulty;
+                    msInitGame(); // Re-initialize with new difficulty
+                }
+                closeAllMinesweeperDropdowns();
+            });
+        });
+
+        const exitAction = msGameDropdown ? msGameDropdown.querySelector('[data-action="ms-exit"]') : null;
+        if (exitAction) {
+            exitAction.addEventListener('click', (event) => {
+                event.stopPropagation();
+                const windowToClose = document.getElementById('minesweeper-app-window');
+                if (windowToClose && typeof closeWindow === 'function') {
+                    closeWindow(windowToClose.id); // Assuming closeWindow exists
+                } else if (windowToClose) {
+                    windowToClose.style.display = 'none'; // Fallback
+                }
+                closeAllMinesweeperDropdowns();
+            });
+        }
+
+        const aboutAction = msHelpDropdown ? msHelpDropdown.querySelector('[data-action="ms-about"]') : null;
+        if (aboutAction) {
+            aboutAction.addEventListener('click', (event) => {
+                event.stopPropagation();
+                alert('Minesweeper - A Classic Game\nImplemented by AI');
+                closeAllMinesweeperDropdowns();
+            });
+        }
+
+
+        minesweeperEventListenersInitialized = true;
+        console.log('Minesweeper event listeners initialized.');
+    }
+
+    msAdjustWindowSize(); // Adjust size after board is rendered and listeners potentially set up
+    closeAllMinesweeperDropdowns(); // Ensure menus are closed on init
     console.log(`✨ 지뢰찾기 게임 시작: ${getDifficultyName(msCurrentDifficulty)}`);
 }
