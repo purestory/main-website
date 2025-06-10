@@ -34,6 +34,13 @@ if (typeof myComputerIcon !== 'undefined' && myComputerIcon) { // Added for My C
     });
 }
 
+const explorerIcon = document.getElementById('icon-explorer');
+if (typeof explorerIcon !== 'undefined' && explorerIcon) {
+    explorerIcon.addEventListener('click', () => {
+        openWindow('explorer-app-window', 'Explorer');
+    });
+}
+
 // --- Start Menu Logic ---
 // const startButton = document.querySelector('.start-button'); // Now in common.js
 // const startMenu = document.getElementById('start-menu'); // Now in common.js
@@ -273,6 +280,9 @@ window.populateAllProgramsSubmenu = function populateAllProgramsSubmenu() {
             { name: 'N8N', description: '워크플로우 자동화', link: 'http://itsmyzone.iptime.org:5678/', type: 'Web Service', status: 'Docker' }
         ];
     }
+
+    // Filter out 'Explorer' before iterating
+    dataToUse = dataToUse.filter(program => program.name !== 'Explorer');
 
     if (dataToUse && dataToUse.length > 0) {
         console.log(`${dataToUse.length}개의 프로그램 항목 생성 중...`);
