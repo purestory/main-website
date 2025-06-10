@@ -8,8 +8,8 @@
 const projectsData = [
     // AI/ML 서비스
     { name: 'OpenWebUI', description: 'Ollama용 웹 인터페이스', link: 'http://itsmyzone.iptime.org:3000/', type: 'AI/ML Service', status: 'Docker' },
-    { name: 'Amica AI', description: '3D AI 가상 비서 (내부용)', link: '/amica/', type: 'AI/ML Service', status: 'Active', iconUrl: 'https://cdn-icons-png.freepik.com/256/15675/15675914.png?ga=GA1.1.1145714982.1749450368&semt=ais_incoming' },
-    { name: 'Translation Service', description: 'AI 기반 다중 엔진 번역', link: '/translation/', type: 'AI/ML Service', status: 'Active', iconUrl: 'https://cdn-icons-png.freepik.com/256/4803/4803094.png?ga=GA1.1.1145714982.1749450368&semt=ais_incoming' },
+    { name: 'Amica AI', description: '3D AI 가상 비서 (내부용)', link: '/amica/', type: 'AI/ML Service', status: 'Active', iconUrl: 'images/amica_ai_icon.png' },
+    { name: 'Translation Service', description: 'AI 기반 다중 엔진 번역', link: '/translation/', type: 'AI/ML Service', status: 'Active', iconUrl: 'images/translation_service_icon.png' },
     { name: 'Whisper STT', description: '고속 음성-텍스트 변환 (100+ 언어)', link: '/whisper/', type: 'AI/ML Service', status: 'Active' },
     { name: 'EdgeTTS', description: 'Microsoft Edge 고품질 TTS', link: '/edgetts/', type: 'AI/ML Service', status: 'Active' },
     { name: 'Zonos TTS', description: '고품질 텍스트-음성 변환 (200k시간 학습)', link: '/zonos/', type: 'AI/ML Service', status: 'Active' },
@@ -70,20 +70,60 @@ function renderProjects(targetElement, projects) { // Note: projectsData is pass
             iconImage.innerHTML = ''; // Clear any previous content (e.g., emoji)
             iconImage.appendChild(img);
         } else {
-            // Fallback to emoji if iconUrl is not provided
+            // Fallback to emoji if iconUrl is not provided - 기능별 구체적 이모지
             iconImage.innerHTML = ''; // Clear any potential previous img for safety before setting textContent
-            switch (project.type) {
-                case 'AI/ML Service':
-                    iconImage.textContent = '🤖'; // Robot for AI/ML
+            
+            // 각 프로젝트별 맞춤 이모지
+            switch (project.name) {
+                // AI/ML 서비스들
+                case 'OpenWebUI':
+                    iconImage.textContent = '🤖'; // AI 인터페이스
                     break;
-                case 'Web Service':
-                    iconImage.textContent = '🌐'; // Globe for Web
+                case 'Whisper STT':
+                    iconImage.textContent = '🎤'; // 음성-텍스트 변환
                     break;
-                case 'Dev/Ops Tool':
-                    iconImage.textContent = '🛠️'; // Hammer and wrench for Dev/Ops
+                case 'EdgeTTS':
+                    iconImage.textContent = '🔊'; // 텍스트-음성 변환
                     break;
+                case 'Zonos TTS':
+                    iconImage.textContent = '🗣️'; // 고품질 TTS
+                    break;
+                case 'Kokoro FastAPI':
+                    iconImage.textContent = '🎵'; // 다국어 TTS
+                    break;
+                
+                // 웹 서비스들
+                case 'Explorer':
+                    iconImage.textContent = '📁'; // 파일 탐색기
+                    break;
+                case 'N8N':
+                    iconImage.textContent = '⚙️'; // 워크플로우 자동화
+                    break;
+                case 'Tribler':
+                    iconImage.textContent = '🔗'; // P2P 파일 공유
+                    break;
+                case 'Cobalt':
+                    iconImage.textContent = '📥'; // 소셜 미디어 다운로더
+                    break;
+                case 'WebTools':
+                    iconImage.textContent = '🖼️'; // 이미지 변환 도구
+                    break;
+                
+                // 타입별 기본값 (새로운 프로젝트용)
                 default:
-                    iconImage.textContent = '📁'; // Default folder
+                    switch (project.type) {
+                        case 'AI/ML Service':
+                            iconImage.textContent = '🤖'; // Robot for AI/ML
+                            break;
+                        case 'Web Service':
+                            iconImage.textContent = '🌐'; // Globe for Web
+                            break;
+                        case 'Dev/Ops Tool':
+                            iconImage.textContent = '🛠️'; // Hammer and wrench for Dev/Ops
+                            break;
+                        default:
+                            iconImage.textContent = '📁'; // Default folder
+                    }
             }
         }
         projectLink.appendChild(iconImage);

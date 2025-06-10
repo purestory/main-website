@@ -41,6 +41,55 @@ const allProgramsMenuItem = document.getElementById('all-programs-menu-item');
 const allProgramsSubmenu = document.getElementById('all-programs-submenu');
 let hideSubmenuTimer = null;
 
+// 글로벌 함수들 정의 (HTML에서 참조될 수 있음)
+window.toggleProgramsSubmenu = function() {
+    const submenu = document.getElementById('all-programs-submenu');
+    if (submenu) {
+        if (submenu.style.display === 'block') {
+            submenu.style.display = 'none';
+            submenu.style.visibility = 'hidden';
+        } else {
+            if (submenu.children.length === 0) {
+                populateAllProgramsSubmenu();
+            }
+            submenu.style.display = 'block';
+            submenu.style.visibility = 'visible';
+        }
+    }
+};
+
+window.showProgramsSubmenu = function() {
+    const submenu = document.getElementById('all-programs-submenu');
+    if (submenu) {
+        if (hideSubmenuTimer) {
+            clearTimeout(hideSubmenuTimer);
+            hideSubmenuTimer = null;
+        }
+        if (submenu.children.length === 0) {
+            populateAllProgramsSubmenu();
+        }
+        submenu.style.display = 'block';
+        submenu.style.visibility = 'visible';
+    }
+};
+
+window.hideProgramsSubmenu = function() {
+    hideSubmenuTimer = setTimeout(() => {
+        const submenu = document.getElementById('all-programs-submenu');
+        if (submenu) {
+            submenu.style.display = 'none';
+            submenu.style.visibility = 'hidden';
+        }
+    }, 300);
+};
+
+window.clearHideTimer = function() {
+    if (hideSubmenuTimer) {
+        clearTimeout(hideSubmenuTimer);
+        hideSubmenuTimer = null;
+    }
+};
+
 // 디버깅: DOM 요소들 확인
 console.log('=== DOM 요소 확인 ===');
 console.log('allProgramsMenuItem:', allProgramsMenuItem);
@@ -193,7 +242,7 @@ if ((typeof startButton !== 'undefined' && startButton && typeof startMenu !== '
 
 }
 
-function populateAllProgramsSubmenu() {
+window.populateAllProgramsSubmenu = function populateAllProgramsSubmenu() {
     console.log('populateAllProgramsSubmenu 호출됨');
     
     if (!allProgramsSubmenu) {
@@ -242,10 +291,30 @@ function populateAllProgramsSubmenu() {
                 iconContent = `<img src="${program.iconUrl}" alt="${program.name}" style="width: 16px; height: 16px; margin-right: 8px; object-fit: contain; vertical-align: middle;">`;
             } else {
                 let emoji = '📁'; // Default
-                switch (program.type) {
-                    case 'AI/ML Service': emoji = '🤖'; break;
-                    case 'Web Service': emoji = '🌐'; break;
-                    case 'Dev/Ops Tool': emoji = '🛠️'; break;
+                
+                // 각 프로젝트별 맞춤 이모지
+                switch (program.name) {
+                    // AI/ML 서비스들
+                    case 'OpenWebUI': emoji = '🤖'; break; // AI 인터페이스
+                    case 'Whisper STT': emoji = '🎤'; break; // 음성-텍스트 변환
+                    case 'EdgeTTS': emoji = '🔊'; break; // 텍스트-음성 변환
+                    case 'Zonos TTS': emoji = '🗣️'; break; // 고품질 TTS
+                    case 'Kokoro FastAPI': emoji = '🎵'; break; // 다국어 TTS
+                    
+                    // 웹 서비스들
+                    case 'Explorer': emoji = '📁'; break; // 파일 탐색기
+                    case 'N8N': emoji = '⚙️'; break; // 워크플로우 자동화
+                    case 'Tribler': emoji = '🔗'; break; // P2P 파일 공유
+                    case 'Cobalt': emoji = '📥'; break; // 소셜 미디어 다운로더
+                    case 'WebTools': emoji = '🖼️'; break; // 이미지 변환 도구
+                    
+                    // 타입별 기본값
+                    default:
+                        switch (program.type) {
+                            case 'AI/ML Service': emoji = '🤖'; break;
+                            case 'Web Service': emoji = '🌐'; break;
+                            case 'Dev/Ops Tool': emoji = '🛠️'; break;
+                        }
                 }
                 iconContent = `<span style="font-size: 16px; margin-right: 8px; vertical-align: middle;">${emoji}</span>`;
             }
@@ -253,6 +322,17 @@ function populateAllProgramsSubmenu() {
 
             link.addEventListener('click', (e) => {
                 e.preventDefault();
+                console.log(`프로그램 클릭: ${program.name}, 링크: ${program.link}`);
+                
+                // 외부 링크나 절대 경로를 가진 프로그램들은 새 탭에서 열기
+                if (program.link && program.link !== '#' && !program.link.startsWith('javascript:')) {
+                    console.log('외부 링크로 이동:', program.link);
+                    window.open(program.link, '_blank');
+                    hideStartMenu();
+                    return;
+                }
+                
+                // 내부 윈도우를 가진 프로그램들
                 let windowIdToOpen = program.name.toLowerCase().replace(/\s+/g, '-') + '-app-window';
 
                 // Specific known window IDs
@@ -267,25 +347,13 @@ function populateAllProgramsSubmenu() {
                 } else if (program.name === 'Explorer') {
                     windowIdToOpen = 'explorer-app-window';
                 }
-                // For items that have direct links and are not meant to open a window
-                else if (program.link && program.link !== '#') {
-                    // If it's an external link, it will open in a new tab due to target=_blank.
-                    // If it's an internal path like /amica/, it will navigate.
-                    // For this OS simulation, we might want all clicks to open windows or do nothing if no windowId.
-                    // For now, if no specific window ID is mapped, let openWindow handle it (which shows an alert).
-                    // If we want to prevent navigation for '#' links from here:
-                    if (link.href.endsWith('#')) {
-                         openWindow(windowIdToOpen, program.name);
-                    } else {
-                        // Let the browser handle the link if it's not just "#"
-                        // This means items like OpenWebUI will open in a new tab.
-                        // If we want them in a window, they need a specific windowId and iframe handling.
-                        // For now, this is okay.
-                    }
-                } else {
-                    openWindow(windowIdToOpen, program.name);
-                }
 
+                console.log('윈도우 열기 시도:', windowIdToOpen);
+                if (typeof openWindow === 'function') {
+                    openWindow(windowIdToOpen, program.name);
+                } else {
+                    console.error('openWindow 함수를 찾을 수 없습니다');
+                }
 
                 hideStartMenu(); // Hide entire start menu
             });
@@ -325,7 +393,7 @@ function populateAllProgramsSubmenu() {
             allProgramsSubmenu.appendChild(listItem);
         });
     }
-}
+};
 
 }, 100); // setTimeout 종료
 

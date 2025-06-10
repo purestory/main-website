@@ -9,7 +9,7 @@
 </head>
 <body>
     <div id="post-screen" style="display: none;">
-        <img id="postBiosLogo" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/02/American_Megatrends_logo.svg/960px-American_Megatrends_logo.svg.png?20160501035338" alt="BIOS Logo">
+        <img id="postBiosLogo" src="images/american_megatrends_logo.png" alt="BIOS Logo">
         <pre id="postMessages"></pre>
     </div>
     <div id="boot-screen" style="display: none;">
@@ -68,20 +68,11 @@
 
         <div id="start-menu">
             <ul id="startMenuList"> <!-- ID 추가 -->
-                <li class="has-submenu" id="all-programs-menu-item" onclick="toggleProgramsSubmenu()" onmouseenter="showProgramsSubmenu()" onmouseleave="hideProgramsSubmenu()">
+                <li class="has-submenu" id="all-programs-menu-item">
                     <span class="menu-text">프로그램</span>
                     <span class="submenu-arrow">▶</span>
-                    <ul class="submenu" id="all-programs-submenu"  onmouseenter="clearHideTimer()" onmouseleave="hideProgramsSubmenu()">
-                        <!-- 외부 웹 서비스만 유지 -->
-                        <li><a href="/amica/" target="_blank">🤖 Amica AI</a></li>
-                        <li><a href="/translation/" target="_blank">🤖 Translation Service</a></li>
-                        <li><a href="/whisper/" target="_blank">🤖 Whisper STT</a></li>
-                        <li><a href="/edgetts/" target="_blank">🤖 EdgeTTS</a></li>
-                        <li><a href="/zonos/" target="_blank">🤖 Zonos TTS</a></li>
-                        <li><a href="/explorer/" target="_blank">🌐 Explorer</a></li>
-                        <li><a href="/tribler/" target="_blank">🌐 Tribler</a></li>
-                        <li><a href="/cobalt/" target="_blank">🌐 Cobalt</a></li>
-                        <li><a href="/webtools/" target="_blank">🌐 WebTools</a></li>
+                    <ul class="submenu" id="all-programs-submenu">
+                        <!-- 동적으로 생성됨 -->
                     </ul>
                 </li>
                 <li data-opens="minesweeper-app-window">💣 Minesweeper</li>
@@ -223,47 +214,6 @@
     <script src="js/desktop.js" defer></script>
     <script src="js/boot.js" defer></script>
     
-    <!-- 서브메뉴 제어를 위한 간단한 함수들 -->
-    <script>
-        let submenuHideTimer = null;
-        
-        function toggleProgramsSubmenu() {
-            const submenu = document.getElementById('all-programs-submenu');
-            if (submenu) {
-                if (submenu.classList.contains('visible')) {
-                    submenu.classList.remove('visible');
-                } else {
-                    submenu.classList.add('visible');
-                }
-            }
-        }
-        
-        function showProgramsSubmenu() {
-            const submenu = document.getElementById('all-programs-submenu');
-            if (submenu) {
-                if (submenuHideTimer) {
-                    clearTimeout(submenuHideTimer);
-                    submenuHideTimer = null;
-                }
-                submenu.classList.add('visible');
-            }
-        }
-        
-        function hideProgramsSubmenu() {
-            submenuHideTimer = setTimeout(() => {
-                const submenu = document.getElementById('all-programs-submenu');
-                if (submenu) {
-                    submenu.classList.remove('visible');
-                }
-            }, 300);
-        }
-        
-        function clearHideTimer() {
-            if (submenuHideTimer) {
-                clearTimeout(submenuHideTimer);
-                submenuHideTimer = null;
-            }
-        }
-    </script>
+    <!-- 인라인 스크립트 제거 - 모든 기능은 desktop.js에서 처리 -->
 </body>
 </html>
