@@ -28,7 +28,7 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no purestory@itsmyzone.iptime.org << 'EOF'
           cd /home/purestory/main-website
-          git pull origin master
+          git pull origin main
           sudo systemctl reload nginx
         EOF
         
