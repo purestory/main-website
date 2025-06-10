@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>디버그 테스트</title>
+</head>
+<body>
+    <h1>JavaScript 디버그 테스트</h1>
+    <button onclick="testProjectsData()">projectsData 테스트</button>
+    <button onclick="testAllFunctions()">함수들 테스트</button>
+    <div id="result"></div>
+
+    <script>
+        function testProjectsData() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<h3>projectsData 테스트 결과:</h3>';
+            
+            if (typeof projectsData !== 'undefined') {
+                result.innerHTML += `<p>✅ projectsData 정의됨: ${projectsData.length}개 항목</p>`;
+                result.innerHTML += '<ul>';
+                projectsData.forEach(item => {
+                    result.innerHTML += `<li>${item.name} - ${item.link}</li>`;
+                });
+                result.innerHTML += '</ul>';
+            } else {
+                result.innerHTML += '<p>❌ projectsData가 정의되지 않음</p>';
+            }
+        }
+        
+        function testAllFunctions() {
+            const result = document.getElementById('result');
+            result.innerHTML = '<h3>함수들 테스트 결과:</h3>';
+            
+            const functions = ['openWindow', 'renderProjects', 'populateAllProgramsSubmenu'];
+            functions.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    result.innerHTML += `<p>✅ ${funcName} 함수 존재</p>`;
+                } else {
+                    result.innerHTML += `<p>❌ ${funcName} 함수 없음</p>`;
+                }
+            });
+        }
+    </script>
+    
+    <!-- 원본 스크립트들 로드 -->
+    <script src="js/common.js" defer></script>
+    <script src="js/projectsApp.js" defer></script>
+    <script src="js/minesweeper.js" defer></script>
+    <script src="js/calculator.js" defer></script>
+    <script src="js/windowManager.js" defer></script>
+    <script src="js/myComputerApp.js" defer></script>
+    <script src="js/desktop.js" defer></script>
+</body>
+</html> 
