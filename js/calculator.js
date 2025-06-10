@@ -96,6 +96,17 @@ function computeCalculation() {
     calcDisplayNeedsReset = true;
 }
 
+function removeLastDigit() {
+    if (calcDisplayNeedsReset) { // If a calculation was just done, don't modify the result with backspace
+        return;
+    }
+    if (calcCurrentOperand.length > 0) {
+        calcCurrentOperand = calcCurrentOperand.slice(0, -1);
+    }
+    // If operand becomes empty, display '0', otherwise display the new operand
+    updateCalcDisplay(calcCurrentOperand === '' ? '0' : calcCurrentOperand);
+}
+
 // --- Calculator Button Event Listeners ---
 if (calcButtons.length > 0) { // Check if buttons were found
     calcButtons.forEach(button => {
@@ -133,8 +144,30 @@ if (calcButtons.length > 0) { // Check if buttons were found
 document.addEventListener('keydown', function(event) {
     // Check if the calculator window is visible and active
     if (calculatorWindow && calculatorWindow.style.display === 'block' && calculatorWindow.classList.contains('active')) {
-        // Key mapping logic will be implemented in the next step.
-        // For now, this structure ensures the listener is active only for the calculator.
-        // console.log('Key pressed for calculator:', event.key); // For testing
+        event.preventDefault(); // Prevent default browser actions for handled keys
+
+        const key = event.key;
+
+        if (key >= '0' && key <= '9') {
+            appendDigit(key);
+        } else if (key === '.') {
+            // Add decimal point functionality if desired, for now, it's not explicitly in appendDigit
+            // appendDigit(key); // Or a new function handleDecimal()
+        } else if (key === '+') {
+            chooseOperation('+');
+        } else if (key === '-') {
+            chooseOperation('-');
+        } else if (key === '*') {
+            chooseOperation('*');
+        } else if (key === '/') {
+            chooseOperation('/');
+        } else if (key === 'Enter' || key === '=') {
+            computeCalculation();
+        } else if (key === 'Escape') {
+            clearCalculator();
+        } else if (key === 'Backspace') {
+            removeLastDigit(); // This function will be implemented in the next step
+        }
+        // console.log('Key pressed for calculator:', key); // For testing
     }
 });
