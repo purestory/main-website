@@ -84,6 +84,23 @@ function openWindow(windowId, title) {
         renderProjects(projectsWindowBody, projectsData);
     } else if (windowId === 'minesweeper-app-window' && typeof msInitGame === 'function') {
         msInitGame();
+    } else if (windowId === 'explorer-app-window') { // Added for Explorer
+        const explorerBody = windowElement.querySelector('.explorer-app-body');
+        if (explorerBody) {
+            explorerBody.innerHTML = ''; // Clear "Loading..." or previous content
+
+            const iframe = document.createElement('iframe');
+            iframe.src = '/explorer/'; // Path to the explorer app
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.border = 'none';
+            iframe.setAttribute('title', 'Explorer Content');
+
+            explorerBody.appendChild(iframe);
+            console.log('Explorer iframe created and appended.');
+        } else {
+            console.error('Explorer window body (.explorer-app-body) not found for ID:', windowId);
+        }
     }
 
     // Set focus to the newly opened/focused window
