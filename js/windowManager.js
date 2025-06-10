@@ -49,8 +49,8 @@ function openWindow(windowId, title) {
         windowElement.style.width = windowWidth + 'px';
         windowElement.style.height = windowHeight + 'px';
     } else if (windowId === 'explorer-app-window') {
-        windowWidth = 800; // New desired width for Explorer
-        windowHeight = 600; // New desired height for Explorer
+        windowWidth = 900; // Updated desired width for Explorer
+        windowHeight = 700; // Updated desired height for Explorer
         windowElement.style.width = windowWidth + 'px';
         windowElement.style.height = windowHeight + 'px';
     } else {
@@ -138,8 +138,8 @@ function toggleMaximizeWindow(windowElement) {
             delete preMaximizedStates[windowId];
         }
         windowElement.classList.remove('maximized');
-        if (maximizeButton) maximizeButton.innerHTML = '❐'; // Restore icon
-        if (maximizeButton) maximizeButton.setAttribute('aria-label', 'Maximize');
+        if (maximizeButton) maximizeButton.innerHTML = '□'; // Maximize icon (single square) - CORRECTED
+        if (maximizeButton) maximizeButton.setAttribute('aria-label', 'Maximize'); // CORRECTED
 
         const resizeHandle = windowElement.querySelector('.resize-handle');
         if (resizeHandle) resizeHandle.style.display = '';
@@ -158,8 +158,8 @@ function toggleMaximizeWindow(windowElement) {
         windowElement.style.left = '0px';
 
         windowElement.classList.add('maximized');
-        if (maximizeButton) maximizeButton.innerHTML = '□'; // Restore down icon
-        if (maximizeButton) maximizeButton.setAttribute('aria-label', 'Restore');
+        if (maximizeButton) maximizeButton.innerHTML = '❐'; // Restore icon (overlapping squares) - CORRECTED
+        if (maximizeButton) maximizeButton.setAttribute('aria-label', 'Restore'); // CORRECTED
 
         const resizeHandle = windowElement.querySelector('.resize-handle');
         if (resizeHandle) resizeHandle.style.display = 'none';
