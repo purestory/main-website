@@ -34,6 +34,24 @@ let msGameOver = false;
 let msRevealedCells = 0;
 let minesweeperEventListenersInitialized = false;
 let activeMinesweeperMenu = null; // Tracks currently open dropdown
+let isMenuToggling = false; // Menu toggle prevention variable
+
+// Timer related variables
+let msGameStartTime = null;
+let msGameEndTime = null;
+let msTimerInterval = null;
+let msTimerElement = null;
+
+// Score related variables
+let msScoresButton = null;
+
+// Mouse button tracking for chord clicks
+let msMouseButtonsPressed = {
+    left: false,
+    right: false,
+    middle: false
+};
+let msChordClickCell = null;
 
 // --- Minesweeper Helper Functions ---
 function getDifficultyName(difficulty) {
@@ -42,6 +60,218 @@ function getDifficultyName(difficulty) {
         case 'intermediate': return '중급';
         case 'expert': return '고급';
         default: return '알 수 없음';
+    }
+}
+
+// --- Timer Functions ---
+function msStartTimer() {
+    if (msTimerInterval) {
+        clearInterval(msTimerInterval);
+    }
+    
+    msGameStartTime = Date.now();
+    msGameEndTime = null;
+    
+    msTimerInterval = setInterval(() => {
+        if (msGameOver) return;
+        
+        const elapsed = Math.floor((Date.now() - msGameStartTime) / 1000);
+        msUpdateTimerDisplay(elapsed);
+    }, 1000);
+}
+
+function msStopTimer() {
+    if (msTimerInterval) {
+        clearInterval(msTimerInterval);
+        msTimerInterval = null;
+    }
+    msGameEndTime = Date.now();
+}
+
+function msUpdateTimerDisplay(seconds) {
+    if (msTimerElement) {
+        msTimerElement.textContent = `Time: ${seconds.toString().padStart(3, '0')}`;
+    }
+}
+
+function msGetElapsedTime() {
+    if (!msGameStartTime) return 0;
+    const endTime = msGameEndTime || Date.now();
+    return Math.floor((endTime - msGameStartTime) / 1000);
+}
+
+// --- Mouse Button Tracking Functions ---
+function msUpdateMouseButtons(event, isDown) {
+    switch (event.button) {
+        case 0: // Left button
+            msMouseButtonsPressed.left = isDown;
+            break;
+        case 1: // Middle button
+            msMouseButtonsPressed.middle = isDown;
+            break;
+        case 2: // Right button
+            msMouseButtonsPressed.right = isDown;
+            break;
+    }
+}
+
+function msIsChordClick() {
+    return (msMouseButtonsPressed.left && msMouseButtonsPressed.right) || msMouseButtonsPressed.middle;
+}
+
+function msPerformChordClick(r, c) {
+    const cellData = msBoard[r][c];
+    console.log(`Chord click on cell (${r}, ${c}), revealed: ${cellData.isRevealed}, mines: ${cellData.adjacentMines}`);
+    
+    if (cellData.isRevealed && cellData.adjacentMines > 0) {
+        let flaggedCount = 0;
+        const neighbors = [];
+        
+        for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+                if (dr === 0 && dc === 0) continue;
+                const nr = r + dr;
+                const nc = c + dc;
+                if (nr >= 0 && nr < msRows && nc >= 0 && nc < msCols) {
+                    neighbors.push({r: nr, c: nc});
+                    if (msBoard[nr][nc].isFlagged) {
+                        flaggedCount++;
+                    }
+                }
+            }
+        }
+
+        console.log(`Flagged count: ${flaggedCount}, Adjacent mines: ${cellData.adjacentMines}`);
+        if (flaggedCount === cellData.adjacentMines) {
+            console.log('Chord click activated - revealing neighbors');
+            for (const neighbor of neighbors) {
+                if (!msBoard[neighbor.r][neighbor.c].isFlagged && !msBoard[neighbor.r][neighbor.c].isRevealed) {
+                    msRevealCell(neighbor.r, neighbor.c);
+                    if (msGameOver) break;
+                }
+            }
+            msCheckWinCondition();
+        } else {
+            console.log('Chord click not activated - flag count mismatch');
+        }
+    } else {
+        console.log('Chord click not applicable - cell not revealed or no adjacent mines');
+    }
+}
+
+// --- Score Functions ---
+function msShowScoreDialog(elapsedTime) {
+    const playerName = prompt(`축하합니다! ${getDifficultyName(msCurrentDifficulty)} 난이도를 ${elapsedTime}초에 클리어했습니다!\n\n이름을 입력하세요:`);
+    
+    if (playerName && playerName.trim()) {
+        msSaveScore(playerName.trim(), elapsedTime, msCurrentDifficulty);
+    }
+}
+
+async function msSaveScore(playerName, time, difficulty) {
+    try {
+        const response = await fetch('/main-api/minesweeper/scores', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                player_name: playerName,
+                time: time,
+                difficulty: difficulty
+            })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+            alert(`점수가 저장되었습니다!\n${playerName}: ${time}초`);
+        } else {
+            alert('점수 저장에 실패했습니다: ' + result.error);
+        }
+    } catch (error) {
+        console.error('점수 저장 오류:', error);
+        alert('점수 저장 중 오류가 발생했습니다.');
+    }
+}
+
+function msShowScoresWindow() {
+    if (typeof openWindow === 'function') {
+        openWindow('minesweeper-scores-window');
+        msLoadScores('beginner'); // Load beginner scores by default
+    }
+}
+
+async function msLoadScores(difficulty) {
+    const loadingElement = document.getElementById('scores-loading');
+    const scoresListElement = document.getElementById('scores-list');
+    
+    if (loadingElement) loadingElement.style.display = 'block';
+    if (scoresListElement) scoresListElement.innerHTML = '';
+
+    try {
+        const response = await fetch(`/main-api/minesweeper/scores/${difficulty}`);
+        const scores = await response.json();
+        
+        if (loadingElement) loadingElement.style.display = 'none';
+        
+        msDisplayScores(scores, difficulty);
+    } catch (error) {
+        console.error('점수 로딩 오류:', error);
+        if (loadingElement) loadingElement.style.display = 'none';
+        if (scoresListElement) {
+            scoresListElement.innerHTML = '<div class="no-scores">점수를 불러올 수 없습니다.</div>';
+        }
+    }
+}
+
+function msDisplayScores(scores, difficulty) {
+    const scoresListElement = document.getElementById('scores-list');
+    
+    if (!scoresListElement) return;
+    
+    if (!scores || scores.length === 0) {
+        scoresListElement.innerHTML = '<div class="no-scores">등록된 기록이 없습니다.</div>';
+        return;
+    }
+    
+    scoresListElement.className = 'scores-list';
+    scoresListElement.innerHTML = scores.map((score, index) => `
+        <div class="score-item">
+            <div class="score-rank">${index + 1}.</div>
+            <div class="score-name">${score.name}</div>
+            <div class="score-time">${score.time}초</div>
+            <div class="score-date">${score.date}</div>
+        </div>
+    `).join('');
+}
+
+async function msResetAllScores() {
+    if (!confirm('모든 기록을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.')) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/main-api/minesweeper/scores', {
+            method: 'DELETE'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('모든 기록이 삭제되었습니다.');
+            // Reload current tab's scores
+            const activeTab = document.querySelector('.scores-tab.active');
+            if (activeTab) {
+                const difficulty = activeTab.dataset.difficulty;
+                msLoadScores(difficulty);
+            }
+        } else {
+            alert('기록 삭제에 실패했습니다: ' + result.error);
+        }
+    } catch (error) {
+        console.error('기록 삭제 오류:', error);
+        alert('기록 삭제 중 오류가 발생했습니다.');
     }
 }
 
@@ -123,6 +353,15 @@ function msHandleCellMouseDown(event, r, c) {
     event.preventDefault();
     if (msGameOver) return;
 
+    // Update button state
+    msUpdateMouseButtons(event, true);
+    
+    // Store cell for potential chord click
+    if (msIsChordClick()) {
+        msChordClickCell = {r, c};
+        return; // Don't perform normal click actions during chord
+    }
+
     const cellData = msBoard[r][c];
 
     switch (event.button) {
@@ -130,38 +369,13 @@ function msHandleCellMouseDown(event, r, c) {
             if (cellData.isRevealed || cellData.isFlagged) return;
             if (!msMinesPlaced) {
                 msPlaceMines(r, c);
+                msStartTimer(); // Start timer on first click
             }
             msRevealCell(r, c);
             msCheckWinCondition();
             break;
-        case 1: // Middle-click (Chord)
-            if (cellData.isRevealed && cellData.adjacentMines > 0) {
-                let flaggedCount = 0;
-                const neighbors = [];
-                for (let dr = -1; dr <= 1; dr++) {
-                    for (let dc = -1; dc <= 1; dc++) {
-                        if (dr === 0 && dc === 0) continue;
-                        const nr = r + dr;
-                        const nc = c + dc;
-                        if (nr >= 0 && nr < msRows && nc >= 0 && nc < msCols) {
-                            neighbors.push({r: nr, c: nc});
-                            if (msBoard[nr][nc].isFlagged) {
-                                flaggedCount++;
-                            }
-                        }
-                    }
-                }
-
-                if (flaggedCount === cellData.adjacentMines) {
-                    for (const neighbor of neighbors) {
-                        if (!msBoard[neighbor.r][neighbor.c].isFlagged && !msBoard[neighbor.r][neighbor.c].isRevealed) {
-                            msRevealCell(neighbor.r, neighbor.c);
-                            if (msGameOver) break;
-                        }
-                    }
-                    msCheckWinCondition();
-                }
-            }
+        case 1: // Middle-click (Chord) - now handled by chord system
+            msPerformChordClick(r, c);
             break;
         case 2: // Right-click
             if (cellData.isRevealed) return;
@@ -174,6 +388,25 @@ function msHandleCellMouseDown(event, r, c) {
             if(msFlagsLeftElement) msFlagsLeftElement.textContent = `Mines: ${msMines - msFlagsUsed}`;
             msUpdateCellAppearance(r, c);
             break;
+    }
+}
+
+function msHandleCellMouseUp(event, r, c) {
+    event.preventDefault();
+    if (msGameOver) return;
+
+    // Check if this was a chord click before updating button state
+    const wasChordClick = msIsChordClick();
+    
+    // Update button state
+    msUpdateMouseButtons(event, false);
+    
+    // If it was a chord click and now no buttons are pressed, perform the chord action
+    if (wasChordClick && !msMouseButtonsPressed.left && !msMouseButtonsPressed.right && !msMouseButtonsPressed.middle) {
+        if (msChordClickCell && msChordClickCell.r === r && msChordClickCell.c === c) {
+            msPerformChordClick(r, c);
+        }
+        msChordClickCell = null;
     }
 }
 
@@ -194,6 +427,20 @@ function msRenderBoard() {
             cellElement.style.height = `${msCellSize}px`;
 
             cellElement.addEventListener('mousedown', (event) => msHandleCellMouseDown(event, r, c));
+            cellElement.addEventListener('mouseup', (event) => msHandleCellMouseUp(event, r, c));
+            cellElement.addEventListener('mouseleave', (event) => {
+                // Reset button states if mouse leaves the cell
+                msMouseButtonsPressed.left = false;
+                msMouseButtonsPressed.right = false;
+                msMouseButtonsPressed.middle = false;
+                msChordClickCell = null;
+            });
+            cellElement.addEventListener('auxclick', (event) => {
+                // auxclick fires for middle button clicks
+                if (event.button === 1) {
+                    event.preventDefault();
+                }
+            });
             cellElement.addEventListener('contextmenu', (event) => event.preventDefault());
 
             msGridElement.appendChild(cellElement);
@@ -226,10 +473,11 @@ function msRevealCell(r, c) {
 
 function msHandleGameOver(isWin) {
     msGameOver = true;
+    msStopTimer(); // Stop the timer
+    
     if (msResetButton) msResetButton.textContent = isWin ? '🥳' : '😵';
 
     if (isWin) {
-        alert('You Win!');
         for (let r = 0; r < msRows; r++) {
             for (let c = 0; c < msCols; c++) {
                 if (msBoard[r][c].isMine && !msBoard[r][c].isFlagged) {
@@ -239,6 +487,12 @@ function msHandleGameOver(isWin) {
             }
         }
         if(msFlagsLeftElement) msFlagsLeftElement.textContent = `Mines: 0`;
+        
+        // Handle win - show score input dialog
+        const elapsedTime = msGetElapsedTime();
+        setTimeout(() => {
+            msShowScoreDialog(elapsedTime);
+        }, 500);
     } else {
         for (let r = 0; r < msRows; r++) {
             for (let c = 0; c < msCols; c++) {
@@ -336,6 +590,8 @@ function msInitGame() {
     msGridElement = document.getElementById('minesweeperGrid');
     msFlagsLeftElement = document.getElementById('minesweeperFlagsLeft');
     msResetButton = document.getElementById('minesweeperReset');
+    msTimerElement = document.getElementById('minesweeperTimer');
+    msScoresButton = document.getElementById('minesweeperScores');
     const minesweeperWindowElement = document.getElementById('minesweeper-app-window');
 
     msGameMenuItem = document.getElementById('ms-game-menu-item'); // Global
@@ -348,7 +604,7 @@ function msInitGame() {
     const difficultySubmenuUL = optionSubmenuItemLI ? optionSubmenuItemLI.querySelector('.ms-difficulty-submenu') : null;
 
 
-    if (!msGridElement || !msFlagsLeftElement || !msResetButton || !minesweeperWindowElement || !msGameMenuItem || !msGameDropdown || !msHelpMenuItem || !msHelpDropdown) {
+    if (!msGridElement || !msFlagsLeftElement || !msResetButton || !msTimerElement || !msScoresButton || !minesweeperWindowElement || !msGameMenuItem || !msGameDropdown || !msHelpMenuItem || !msHelpDropdown) {
         console.error("지뢰찾기 게임의 필수 UI 요소를 모두 찾을 수 없어 게임을 초기화할 수 없습니다.");
         return;
     }
@@ -365,9 +621,15 @@ function msInitGame() {
     msFlagsUsed = 0;
     msRevealedCells = 0;
     
+    // Timer 초기화
+    msStopTimer();
+    msGameStartTime = null;
+    msGameEndTime = null;
+    
     // UI 업데이트
     msResetButton.textContent = '🙂';
     msFlagsLeftElement.textContent = `Mines: ${msMines - msFlagsUsed}`;
+    msUpdateTimerDisplay(0);
     const windowTitle = minesweeperWindowElement.querySelector('.window-title');
     if (windowTitle) {
         windowTitle.textContent = `Minesweeper - ${getDifficultyName(msCurrentDifficulty)}`;
@@ -461,11 +723,103 @@ function msInitGame() {
         }
 
 
+        // Add scores button event listener
+        if (msScoresButton) {
+            msScoresButton.addEventListener('click', () => {
+                msShowScoresWindow();
+            });
+        }
+
+        // Add reset button event listener
+        if (msResetButton) {
+            msResetButton.addEventListener('click', () => {
+                msInitGame();
+            });
+        }
+
         minesweeperEventListenersInitialized = true;
         console.log('Minesweeper event listeners initialized.');
     }
+    
+    // Initialize scores window event listeners if not already done
+    msInitScoresWindow();
 
     msAdjustWindowSize(); // Adjust size after board is rendered and listeners potentially set up
     closeAllMinesweeperDropdowns(); // Ensure menus are closed on init
     console.log(`✨ 지뢰찾기 게임 시작: ${getDifficultyName(msCurrentDifficulty)}`);
 }
+
+// --- Scores Window Initialization ---
+let scoresWindowListenersInitialized = false;
+
+function msInitScoresWindow() {
+    if (scoresWindowListenersInitialized) return;
+    
+    // Initialize tab event listeners
+    const scoreTabs = document.querySelectorAll('.scores-tab');
+    scoreTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            // Remove active class from all tabs
+            scoreTabs.forEach(t => t.classList.remove('active'));
+            // Add active class to clicked tab
+            tab.classList.add('active');
+            // Load scores for selected difficulty
+            const difficulty = tab.dataset.difficulty;
+            msLoadScores(difficulty);
+        });
+    });
+    
+    // Initialize button event listeners
+    const resetScoresBtn = document.getElementById('resetScoresBtn');
+    if (resetScoresBtn) {
+        resetScoresBtn.addEventListener('click', msResetAllScores);
+    }
+    
+    const refreshScoresBtn = document.getElementById('refreshScoresBtn');
+    if (refreshScoresBtn) {
+        refreshScoresBtn.addEventListener('click', () => {
+            const activeTab = document.querySelector('.scores-tab.active');
+            if (activeTab) {
+                const difficulty = activeTab.dataset.difficulty;
+                msLoadScores(difficulty);
+            }
+        });
+    }
+    
+    scoresWindowListenersInitialized = true;
+}
+
+// --- Global event listeners for chord click support ---
+document.addEventListener('DOMContentLoaded', function() {
+    // Prevent default middle click behavior on the minesweeper grid
+    document.addEventListener('mousedown', function(event) {
+        if (event.target.closest('#minesweeperGrid')) {
+            if (event.button === 1) {
+                event.preventDefault(); // Prevent middle click default
+            }
+        }
+    });
+    
+    document.addEventListener('mouseup', function(event) {
+        if (!event.target.closest('#minesweeperGrid')) {
+            // Reset button states if mouse up outside the grid
+            msMouseButtonsPressed.left = false;
+            msMouseButtonsPressed.right = false;
+            msMouseButtonsPressed.middle = false;
+            msChordClickCell = null;
+        }
+    });
+    
+    document.addEventListener('auxclick', function(event) {
+        if (event.button === 1 && event.target.closest('#minesweeperGrid')) {
+            event.preventDefault();
+        }
+    });
+    
+    // Reset states on context menu (right click menu)
+    document.addEventListener('contextmenu', function(event) {
+        if (event.target.closest('#minesweeperGrid')) {
+            // Don't reset states here as it interferes with right-click flagging
+        }
+    });
+});

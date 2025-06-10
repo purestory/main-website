@@ -16,11 +16,9 @@ const projectsData = [
     { name: 'Kokoro FastAPI', description: '다국어 TTS 서비스', link: 'http://itsmyzone.iptime.org:3200/web/', type: 'AI/ML Service', status: 'Docker' },
 
     // 웹 서비스
-    { name: 'Explorer', description: '웹 기반 파일 탐색기', link: '#', type: 'Web Service', status: 'Active' },
     { name: 'N8N', description: '워크플로우 자동화', link: 'http://itsmyzone.iptime.org:5678/', type: 'Web Service', status: 'Docker' },
     { name: 'Tribler', description: 'P2P 파일 공유', link: '/tribler/', type: 'Web Service', status: 'Docker' },
-    { name: 'Cobalt', description: '소셜 미디어 다운로더', link: '/cobalt/', type: 'Web Service', status: 'Active' },
-    { name: 'WebTools', description: '이미지 변환 도구', link: '/webtools/', type: 'Web Service', status: 'Active' },
+        { name: 'Cobalt', description: '소셜 미디어 다운로더', link: '/cobalt/', type: 'Web Service', status: 'Active' }
 
     // 개발/운영 도구 - 제거됨
 ];
@@ -53,10 +51,25 @@ function renderProjects(targetElement, projects) { // Note: projectsData is pass
     projects.forEach(project => {
         const projectLink = document.createElement('a');
         projectLink.className = 'project-icon-item';
-        projectLink.href = project.link;
-        if (project.link !== '#') { // Open external links in new tab
-            projectLink.target = '_blank';
+        
+        // Special handling for Chrome - prevent default link and open internal window
+        if (project.name === 'Chrome') {
+            projectLink.href = '#';
+            projectLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (typeof openWindow === 'function') {
+                    openWindow('chrome-app-window', 'Chrome Browser');
+                } else {
+                    console.error('openWindow function not available');
+                }
+            });
+        } else {
+            projectLink.href = project.link;
+            if (project.link !== '#') { // Open external links in new tab
+                projectLink.target = '_blank';
+            }
         }
+        
         // Tooltip for more info
         projectLink.title = `${project.name} - ${project.description}\n종류: ${project.type}\n상태: ${project.status}`;
 
@@ -93,7 +106,7 @@ function renderProjects(targetElement, projects) { // Note: projectsData is pass
                     break;
                 
                 // 웹 서비스들
-                case 'Explorer':
+                case '파일 탐색기':
                     iconImage.textContent = '📁'; // 파일 탐색기
                     break;
                 case 'N8N':
@@ -105,9 +118,7 @@ function renderProjects(targetElement, projects) { // Note: projectsData is pass
                 case 'Cobalt':
                     iconImage.textContent = '📥'; // 소셜 미디어 다운로더
                     break;
-                case 'WebTools':
-                    iconImage.textContent = '🖼️'; // 이미지 변환 도구
-                    break;
+
                 
                 // 타입별 기본값 (새로운 프로젝트용)
                 default:

@@ -11,7 +11,7 @@
 // --- POST Screen Sequence Logic ---
 const postScreenMessages = [
     "AMIBIOS(C) 2023 American Megatrends Inc.",
-    "CPU: Intel Core i9-13900HK @ 5.1GHz (24 Cores)",
+    "CPU: Intel Core i9-13900HK @ 5.4GHz (14 Cores, 20 Threads)",
     "Memory Test: 32768M <span class='post-message-highlight-ok'>OK</span>",
     "GPU: NVIDIA GeForce RTX 3090 24GB",
     "Initializing USB Controllers .. <span class='post-message-highlight-ok'>Done</span>",

@@ -72,15 +72,20 @@ main-website/
 ├── README.md              # 프로젝트 문서
 ├── css/
 │   └── style.css          # 전체 스타일시트 (1074 lines)
-└── js/                    # 모듈화된 JavaScript (8개 파일)
-    ├── common.js          # 공통 DOM 요소 정의
-    ├── boot.js            # 부팅 시퀀스 처리
-    ├── desktop.js         # 데스크톱 아이콘 및 시작 메뉴
-    ├── windowManager.js   # 창 관리 시스템
-    ├── projectsApp.js     # AI 서비스 데이터 및 렌더링
-    ├── calculator.js      # 계산기 애플리케이션
-    ├── minesweeper.js     # 지뢰찾기 게임 로직
-    └── myComputerApp.js   # 시스템 정보 표시
+├── js/                    # 모듈화된 JavaScript (8개 파일)
+│   ├── common.js          # 공통 DOM 요소 정의
+│   ├── boot.js            # 부팅 시퀀스 처리
+│   ├── desktop.js         # 데스크톱 아이콘 및 시작 메뉴
+│   ├── windowManager.js   # 창 관리 시스템
+│   ├── projectsApp.js     # AI 서비스 데이터 및 렌더링
+│   ├── calculator.js      # 계산기 애플리케이션
+│   ├── minesweeper.js     # 지뢰찾기 게임 로직
+│   └── myComputerApp.js   # 시스템 정보 표시
+└── backend/               # Node.js 백엔드 서버
+    ├── server.js          # Express 서버 및 API
+    ├── package.json       # 백엔드 의존성
+    ├── start.sh           # 백엔드 시작 스크립트
+    └── minesweeper.db     # SQLite 데이터베이스 (자동생성)
 ```
 
 ## 🎨 UI/UX 디자인
@@ -143,10 +148,33 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
+## 🚀 실행 방법
+
+### 방법 1: 정적 파일 서빙 (localStorage 사용)
+브라우저에서 `index.html` 파일을 열거나 로컬 서버를 통해 실행하세요.
+
+### 방법 2: Node.js 백엔드 서버 (SQLite DB 사용) - 추천 ✅
+```bash
+# 백엔드 디렉토리로 이동
+cd backend
+
+# 자동 설치 및 실행
+./start.sh
+
+# 또는 수동 설치
+npm install
+npm start
+
+# 개발 모드 (nodemon 사용)
+npm run dev
+```
+
+서버 실행 후 브라우저에서 `http://localhost:8001` 으로 접속하세요.
+
 ## 🎮 사용 방법
 
 ### 웹사이트 접속
-1. **URL**: http://itsmyzone.iptime.org/
+1. **URL**: http://itsmyzone.iptime.org/ (또는 localhost:3000)
 2. **부팅 과정 관람**: POST → Windows 부팅 → 데스크톱 로드
 3. **데스크톱 탐색**: 아이콘 더블클릭으로 애플리케이션 실행
 

@@ -233,18 +233,26 @@
 
 
         .icon-image {
-            width: 60px; /* Actual visual part of the icon */
-            height: 60px;
+            width: 48px; /* Actual visual part of the icon */
+            height: 48px;
             background-color: rgba(255, 255, 255, 0.1); /* Slight background for the icon image area */
             border: 1px solid rgba(255, 255, 255, 0.2); /* Slight border for the icon image area */
             border-radius: 5px; /* Slightly rounded corners for icon block */
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 32px; /* Size for emoji icons */
+            font-size: 28px; /* Size for emoji icons */
             margin: 0 auto 5px auto; /* Center block and space for label */
             transition: background-color 0.2s ease, transform 0.2s ease; /* Added transform transition */
         }
+
+        .icon-image img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+
         .desktop-icon:hover .icon-image {
             transform: scale(1.1); /* Added scale effect */
         }
@@ -298,39 +306,101 @@
             text-overflow: ellipsis;
         }
 
-        .window-close-button {
-            background-color: #ff6347;
-            color: white;
-            border: 1px solid #d9534f;
-            border-radius: 3px;
-            padding: 2px 8px;
-            font-weight: bold;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .window-close-button:hover {
-            background-color: #d9534f;
-        }
-
         /* Styles for the button container in window header */
         .window-header > div {
             display: flex;
             align-items: center; /* Vertically align buttons */
         }
 
-        .window-maximize-button {
-            background: none;
+        /* Common button styles for all window control buttons */
+        .window-minimize-button,
+        .window-maximize-button,
+        .window-close-button {
+            width: 24px;
+            height: 24px;
             border: none;
-            color: white;
-            padding: 2px 5px; /* Similar padding to close button */
-            font-size: 16px;  /* For '❐' character, adjust as needed */
-            line-height: 1;   /* To better center the character if it's text */
+            background-color: transparent;
             cursor: pointer;
-            margin-right: 4px; /* Space between maximize and close */
-            border-radius: 3px; /* Match close button */
+            margin-left: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0; /* Hide original text */
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+            transition: background-color 0.2s ease;
+            position: relative;
+            color: transparent; /* Hide original text */
+            text-align: center;
+            line-height: 1;
+            padding: 0;
+            border-radius: 0;
         }
+
+        .window-minimize-button:hover,
         .window-maximize-button:hover {
-            background-color: rgba(255, 255, 255, 0.2); /* Subtle hover effect */
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .window-close-button:hover {
+            background-color: #e81123;
+        }
+
+        .window-minimize-button:active,
+        .window-maximize-button:active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .window-close-button:active {
+            background-color: #c50e1f;
+        }
+
+        /* Minimize button */
+        .window-minimize-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 1.5px;
+            background-color: #ffffff;
+            border: none;
+        }
+
+        /* Maximize/Restore button */
+        .window-maximize-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            border: 1.5px solid #ffffff;
+            background-color: transparent;
+        }
+
+        /* Close button */
+        .window-close-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            width: 10px;
+            height: 1.5px;
+            background-color: #ffffff;
+        }
+        
+        .window-close-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            width: 10px;
+            height: 1.5px;
+            background-color: #ffffff;
         }
 
         .window.maximized {
@@ -1035,6 +1105,31 @@
     line-height: 1; /* Ensure text fits well */
 }
 
+.minesweeper-scores-button {
+    background: linear-gradient(to bottom, #f8f8f8 0%, #e0e0e0 100%);
+    border: 2px outset #c0c0c0;
+    color: #000;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    padding: 4px 8px;
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.minesweeper-scores-button:hover {
+    background: linear-gradient(to bottom, #ffffff 0%, #e8e8e8 100%);
+}
+
+.minesweeper-scores-button:active {
+    background: linear-gradient(to bottom, #d0d0d0 0%, #f0f0f0 100%);
+    border: 2px inset #c0c0c0;
+}
+
 
 .minesweeper-grid {
     display: grid;
@@ -1131,6 +1226,111 @@
     margin-right: 10px;
     width: 25px; /* 아이콘 정렬을 위한 너비 */
     text-align: center;
+}
+
+/* Minesweeper Modal Styles */
+.ms-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ms-modal-content {
+    background-color: #c0c0c0;
+    border: 2px outset #c0c0c0;
+    min-width: 400px;
+    max-width: 600px;
+    max-height: 500px;
+    font-family: 'MS Sans Serif', sans-serif;
+    font-size: 11px;
+}
+
+.ms-modal-header {
+    background: linear-gradient(90deg, #0a5a84 0%, #0a5a84 100%);
+    color: white;
+    padding: 4px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ms-modal-header h3 {
+    margin: 0;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.ms-modal-close {
+    background: #c0c0c0;
+    border: 1px outset #c0c0c0;
+    width: 16px;
+    height: 14px;
+    font-size: 10px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+}
+
+.ms-modal-close:active {
+    border: 1px inset #c0c0c0;
+}
+
+.ms-modal-body {
+    padding: 16px;
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.ms-modal-footer {
+    padding: 8px 16px;
+    text-align: right;
+    border-top: 1px solid #808080;
+}
+
+.ms-modal-button {
+    background: #c0c0c0;
+    border: 1px outset #c0c0c0;
+    padding: 4px 12px;
+    margin-left: 8px;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.ms-modal-button:active {
+    border: 1px inset #c0c0c0;
+}
+
+.ms-score-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 8px;
+}
+
+.ms-score-table th,
+.ms-score-table td {
+    padding: 4px 8px;
+    text-align: left;
+    border-bottom: 1px solid #808080;
+}
+
+.ms-score-table th {
+    background-color: #e0e0e0;
+    font-weight: bold;
+}
+
+.ms-score-input {
+    width: 200px;
+    padding: 4px;
+    margin: 8px 0;
+    border: 1px inset #c0c0c0;
+    font-size: 11px;
 }
 
 /* Minesweeper Menu Bar Styles */
@@ -1252,5 +1452,196 @@
     display: block;
 }
 */
+
+/* Scores Window Styles */
+.scores-body {
+    padding: 10px;
+    min-width: 400px;
+    min-height: 300px;
+}
+
+.scores-tabs {
+    display: flex;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.scores-tab {
+    background: #f0f0f0;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 12px;
+    margin-right: 2px;
+}
+
+.scores-tab:hover {
+    background: #e8e8e8;
+}
+
+.scores-tab.active {
+    background: #ffffff;
+    border-bottom: 1px solid #ffffff;
+    position: relative;
+    z-index: 1;
+}
+
+.scores-content {
+    min-height: 200px;
+    margin-bottom: 10px;
+}
+
+.scores-list {
+    font-family: 'Lucida Console', Monaco, monospace;
+    font-size: 11px;
+}
+
+.score-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 8px;
+    border-bottom: 1px solid #eee;
+}
+
+.score-rank {
+    font-weight: bold;
+    width: 30px;
+}
+
+.score-name {
+    flex: 1;
+    text-align: left;
+    margin-left: 10px;
+}
+
+.score-time {
+    font-weight: bold;
+    color: #0066cc;
+    width: 60px;
+    text-align: right;
+}
+
+.score-date {
+    font-size: 10px;
+    color: #666;
+    width: 80px;
+    text-align: right;
+}
+
+.scores-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.btn {
+    padding: 6px 12px;
+    border: 1px outset #c0c0c0;
+    background: #f0f0f0;
+    cursor: pointer;
+    font-size: 11px;
+}
+
+.btn:hover {
+    background: #e8e8e8;
+}
+
+.btn:active {
+    border: 1px inset #c0c0c0;
+}
+
+.btn-primary {
+    background: #0078d4;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #106ebe;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.btn-danger:hover {
+    background: #c82333;
+}
+
+#scores-loading {
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+    color: #666;
+}
+
+.no-scores {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Chrome Browser Styles */
+#chrome-app-window {
+    width: 800px;
+    height: 600px;
+}
+
+.chrome-app-body {
+    padding: 0;
+}
+
+.chrome-browser {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.chrome-url-bar {
+    display: flex;
+    padding: 8px;
+    background-color: #f1f3f4;
+    border-bottom: 1px solid #dadce0;
+    align-items: center;
+    gap: 8px;
+}
+
+#chromeUrlInput {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #dadce0;
+    border-radius: 24px;
+    font-size: 14px;
+    outline: none;
+}
+
+#chromeUrlInput:focus {
+    border-color: #4285f4;
+    box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+}
+
+#chromeGoButton {
+    padding: 8px 16px;
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+#chromeGoButton:hover {
+    background-color: #3367d6;
+}
+
+#chromeFrame {
+    flex: 1;
+    border: none;
+}
 
 

@@ -37,7 +37,24 @@ if (typeof myComputerIcon !== 'undefined' && myComputerIcon) { // Added for My C
 const explorerIcon = document.getElementById('icon-explorer');
 if (typeof explorerIcon !== 'undefined' && explorerIcon) {
     explorerIcon.addEventListener('click', () => {
-        openWindow('explorer-app-window', 'Explorer');
+        openWindow('explorer-app-window', '파일 탐색기');
+    });
+}
+
+const chromeIcon = document.getElementById('icon-chrome');
+if (typeof chromeIcon !== 'undefined' && chromeIcon) {
+    chromeIcon.addEventListener('click', () => {
+        console.log('Chrome icon clicked. Opening Chrome browser window.');
+        openWindow('chrome-app-window', 'Chrome Browser');
+    });
+}
+
+const youtubeIcon = document.getElementById('icon-youtube');
+if (typeof youtubeIcon !== 'undefined' && youtubeIcon) {
+    youtubeIcon.addEventListener('click', () => {
+        console.log('YouTube icon clicked. Opening YouTube in new tab.');
+        // 윈도우 창 생성 없이 바로 새 탭에서 YouTube 열기
+        window.open('https://youtube.com', '_blank');
     });
 }
 
@@ -264,145 +281,112 @@ window.populateAllProgramsSubmenu = function populateAllProgramsSubmenu() {
     
     allProgramsSubmenu.innerHTML = ''; // Clear existing items
     
-    console.log('projectsData 상태:', typeof projectsData, projectsData?.length);
+    // 시작 메뉴 "프로그램": 프로젝트 내용 먼저, 그 다음 바탕화면 내장 프로그램들 (내컴퓨터, 프로젝트폴더 제외)
     
-    // projectsData가 없으면 기본 데이터 사용
-    let dataToUse = projectsData;
-    if (typeof projectsData === 'undefined' || !projectsData || projectsData.length === 0) {
-        console.log('projectsData가 없어서 기본 데이터 사용');
-        dataToUse = [
-            { name: 'OpenWebUI', description: 'Ollama용 웹 인터페이스', link: 'http://itsmyzone.iptime.org:3000/', type: 'AI/ML Service', status: 'Docker' },
-            { name: 'Amica AI', description: '3D AI 가상 비서', link: '/amica/', type: 'AI/ML Service', status: 'Active' },
-            { name: 'Translation Service', description: 'AI 기반 번역', link: '/translation/', type: 'AI/ML Service', status: 'Active' },
-            { name: 'Whisper STT', description: '음성-텍스트 변환', link: '/whisper/', type: 'AI/ML Service', status: 'Active' },
-            { name: 'EdgeTTS', description: 'TTS 서비스', link: '/edgetts/', type: 'AI/ML Service', status: 'Active' },
-            { name: 'Explorer', description: '파일 탐색기', link: '/explorer/', type: 'Web Service', status: 'Active' },
-            { name: 'N8N', description: '워크플로우 자동화', link: 'http://itsmyzone.iptime.org:5678/', type: 'Web Service', status: 'Docker' }
-        ];
-    }
-
-    // Filter out 'Explorer' before iterating - Re-adding Explorer to the menu
-    // dataToUse = dataToUse.filter(program => program.name !== 'Explorer');
-
-    if (dataToUse && dataToUse.length > 0) {
-        console.log(`${dataToUse.length}개의 프로그램 항목 생성 중...`);
-        dataToUse.forEach(program => {
+    // 프로젝트 데이터 먼저 추가 (실제 projectsData 사용)
+    if (typeof projectsData !== 'undefined' && projectsData && projectsData.length > 0) {
+        projectsData.forEach(project => {
             const listItem = document.createElement('li');
-
-            // Create an anchor for better semantics and potential future right-click context menus
             const link = document.createElement('a');
-            link.href = program.link || '#'; // Use program link or # if none
-             if (program.link && program.link !== '#') {
-                 link.target = '_blank';
-             }
+            link.href = project.link || '#';
+            if (project.link && project.link !== '#') {
+                link.target = '_blank';
+            }
 
             let iconContent = '';
-            if (program.iconUrl) {
-                iconContent = `<img src="${program.iconUrl}" alt="${program.name}" style="width: 16px; height: 16px; margin-right: 8px; object-fit: contain; vertical-align: middle;">`;
+            if (project.iconUrl) {
+                iconContent = `<img src="${project.iconUrl}" alt="${project.name}" style="width: 16px; height: 16px; margin-right: 8px; object-fit: contain; vertical-align: middle;">`;
             } else {
                 let emoji = '📁'; // Default
                 
-                // 각 프로젝트별 맞춤 이모지
-                switch (program.name) {
-                    // AI/ML 서비스들
-                    case 'OpenWebUI': emoji = '🤖'; break; // AI 인터페이스
-                    case 'Whisper STT': emoji = '🎤'; break; // 음성-텍스트 변환
-                    case 'EdgeTTS': emoji = '🔊'; break; // 텍스트-음성 변환
-                    case 'Zonos TTS': emoji = '🗣️'; break; // 고품질 TTS
-                    case 'Kokoro FastAPI': emoji = '🎵'; break; // 다국어 TTS
-                    
-                    // 웹 서비스들
-                    case 'Explorer': emoji = '📁'; break; // 파일 탐색기
-                    case 'N8N': emoji = '⚙️'; break; // 워크플로우 자동화
-                    case 'Tribler': emoji = '🔗'; break; // P2P 파일 공유
-                    case 'Cobalt': emoji = '📥'; break; // 소셜 미디어 다운로더
-                    case 'WebTools': emoji = '🖼️'; break; // 이미지 변환 도구
-                    
-                    // 타입별 기본값
+                // projectsApp.js와 동일한 이모지 매핑
+                switch (project.name) {
+                    case 'OpenWebUI': emoji = '🤖'; break;
+                    case 'Whisper STT': emoji = '🎤'; break;
+                    case 'EdgeTTS': emoji = '🔊'; break;
+                    case 'Zonos TTS': emoji = '🗣️'; break;
+                    case 'Kokoro FastAPI': emoji = '🎵'; break;
+                    case 'N8N': emoji = '⚙️'; break;
+                    case 'Tribler': emoji = '🔗'; break;
+                    case 'Cobalt': emoji = '📥'; break;
+
                     default:
-                        switch (program.type) {
+                        switch (project.type) {
                             case 'AI/ML Service': emoji = '🤖'; break;
                             case 'Web Service': emoji = '🌐'; break;
                             case 'Dev/Ops Tool': emoji = '🛠️'; break;
+                            default: emoji = '📁'; break;
                         }
                 }
                 iconContent = `<span style="font-size: 16px; margin-right: 8px; vertical-align: middle;">${emoji}</span>`;
             }
-            link.innerHTML = iconContent + `<span class="menu-text">${program.name}</span>`;
+            link.innerHTML = iconContent + `<span class="menu-text">${project.name}</span>`;
 
             link.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log(`프로그램 클릭: ${program.name}, 링크: ${program.link}`);
+                console.log(`프로젝트 클릭: ${project.name}, 링크: ${project.link}`);
                 
-                // 외부 링크나 절대 경로를 가진 프로그램들은 새 탭에서 열기
-                if (program.link && program.link !== '#' && !program.link.startsWith('javascript:')) {
-                    console.log('외부 링크로 이동:', program.link);
-                    window.open(program.link, '_blank');
-                    hideStartMenu();
-                    return;
+                if (project.link && project.link !== '#' && !project.link.startsWith('javascript:')) {
+                    console.log('외부 링크로 이동:', project.link);
+                    window.open(project.link, '_blank');
                 }
                 
-                // 내부 윈도우를 가진 프로그램들
-                let windowIdToOpen = program.name.toLowerCase().replace(/\s+/g, '-') + '-app-window';
-
-                // Specific known window IDs
-                if (program.name === 'Projects Explorer' || program.name === '프로그램') {
-                   windowIdToOpen = 'projects-window';
-                } else if (program.name === 'Calculator') {
-                    windowIdToOpen = 'calculator-app-window';
-                } else if (program.name === 'Minesweeper') {
-                    windowIdToOpen = 'minesweeper-app-window';
-                } else if (program.name === '내 컴퓨터') {
-                     windowIdToOpen = 'my-computer-window';
-                } else if (program.name === 'Explorer') {
-                    windowIdToOpen = 'explorer-app-window';
-                }
-
-                console.log('윈도우 열기 시도:', windowIdToOpen);
-                if (typeof openWindow === 'function') {
-                    openWindow(windowIdToOpen, program.name);
-                } else {
-                    console.error('openWindow 함수를 찾을 수 없습니다');
-                }
-
-                hideStartMenu(); // Hide entire start menu
-            });
-
-            listItem.appendChild(link);
-            allProgramsSubmenu.appendChild(listItem);
-        });
-    } else {
-        console.log('projectsData가 없거나 비어있음. 기본 항목 추가');
-        const noProgramsItem = document.createElement('li');
-        noProgramsItem.textContent = '(프로그램이 없음)';
-        noProgramsItem.style.fontStyle = 'italic';
-        noProgramsItem.style.padding = '8px 12px';
-        noProgramsItem.style.color = '#666';
-        allProgramsSubmenu.appendChild(noProgramsItem);
-        
-        // 디버깅을 위해 몇 개 기본 항목 추가
-        const debugItems = [
-            { name: 'Calculator', type: 'App' },
-            { name: 'Minesweeper', type: 'Game' },
-            { name: 'My Computer', type: 'System' }
-        ];
-        
-        debugItems.forEach(item => {
-            const listItem = document.createElement('li');
-            const link = document.createElement('a');
-            link.href = '#';
-            link.innerHTML = `<span style="margin-right: 8px;">📁</span><span class="menu-text">${item.name}</span>`;
-            
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                console.log(`디버그 항목 클릭: ${item.name}`);
                 hideStartMenu();
             });
-            
+
             listItem.appendChild(link);
             allProgramsSubmenu.appendChild(listItem);
         });
     }
+
+    // 구분선 추가
+
+    // 바탕화면 내장 프로그램들 추가 (내 컴퓨터, 프로젝트 폴더 제외)
+    const builtInPrograms = [
+        { name: 'Calculator', isImage: true, imageSrc: 'images/calculator-icon.png', windowId: 'calculator-app-window' },
+        { name: 'Minesweeper', emoji: '💣', windowId: 'minesweeper-app-window' },
+        { name: 'Paint', emoji: '🎨', windowId: 'paint-app-window' },
+        { name: '파일 탐색기', isImage: true, imageSrc: 'images/explorer_ICO_MYCOMPUTER.ico', windowId: 'explorer-app-window' },
+        { name: 'Chrome', isImage: true, imageSrc: 'images/chrome-logo.svg', windowId: 'chrome-app-window' },
+        { name: 'YouTube', isImage: true, imageSrc: 'images/youtube-logo.svg', windowId: 'youtube-app-window' }
+    ];
+
+    builtInPrograms.forEach(program => {
+        const listItem = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = '#';
+        
+        let iconContent = '';
+        if (program.isImage && program.imageSrc) {
+            iconContent = `<img src="${program.imageSrc}" alt="${program.name}" style="width: 16px; height: 16px; margin-right: 8px; object-fit: contain; vertical-align: middle;">`;
+        } else {
+            iconContent = `<span style="font-size: 16px; margin-right: 8px; vertical-align: middle;">${program.emoji}</span>`;
+        }
+        link.innerHTML = iconContent + `<span class="menu-text">${program.name}</span>`;
+
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log(`내장 프로그램 클릭: ${program.name}`);
+            
+            // YouTube는 바로 새 탭으로 열기
+            if (program.name === 'YouTube') {
+                console.log('YouTube - 새 탭으로 열기');
+                window.open('https://youtube.com', '_blank');
+            } else {
+                // 다른 프로그램들은 기존대로 윈도우 열기
+                if (typeof openWindow === 'function') {
+                    openWindow(program.windowId, program.name);
+                } else {
+                    console.error('openWindow 함수를 찾을 수 없습니다');
+                }
+            }
+
+            hideStartMenu(); // Hide entire start menu
+        });
+
+        listItem.appendChild(link);
+        allProgramsSubmenu.appendChild(listItem);
+    });
 };
 
 }, 100); // setTimeout 종료

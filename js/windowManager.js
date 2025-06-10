@@ -48,9 +48,24 @@ function openWindow(windowId, title) {
         windowHeight = 450; // Desired height for projects window
         windowElement.style.width = windowWidth + 'px';
         windowElement.style.height = windowHeight + 'px';
+    } else if (windowId === 'my-computer-window') {
+        windowWidth = 500; // Desired width for My Computer window (400 + 100)
+        windowHeight = 400; // Desired height for My Computer window
+        windowElement.style.width = windowWidth + 'px';
+        windowElement.style.height = windowHeight + 'px';
     } else if (windowId === 'explorer-app-window') {
-        windowWidth = 900; // Updated desired width for Explorer
-        windowHeight = 700; // Updated desired height for Explorer
+        windowWidth = 1000; // Updated desired width for 파일 탐색기 (900 + 100)
+        windowHeight = 800; // Updated desired height for 파일 탐색기 (700 + 100)
+        windowElement.style.width = windowWidth + 'px';
+        windowElement.style.height = windowHeight + 'px';
+    } else if (windowId === 'chrome-app-window') {
+        windowWidth = 1200; // Desired width for Chrome Browser
+        windowHeight = 800; // Desired height for Chrome Browser
+        windowElement.style.width = windowWidth + 'px';
+        windowElement.style.height = windowHeight + 'px';
+    } else if (windowId === 'youtube-app-window') {
+        windowWidth = 1200; // Desired width for YouTube
+        windowHeight = 800; // Desired height for YouTube
         windowElement.style.width = windowWidth + 'px';
         windowElement.style.height = windowHeight + 'px';
     } else {
@@ -90,7 +105,15 @@ function openWindow(windowId, title) {
         renderProjects(projectsWindowBody, projectsData);
     } else if (windowId === 'minesweeper-app-window' && typeof msInitGame === 'function') {
         msInitGame();
-    } else if (windowId === 'explorer-app-window') { // Added for Explorer
+    } else if (windowId === 'my-computer-window') { // Added for My Computer
+        // Update system information when My Computer window opens
+        if (typeof updateSystemInfo === 'function') {
+            updateSystemInfo();
+            console.log('My Computer system info updated.');
+        } else {
+            console.warn('updateSystemInfo function not found. System info may not be current.');
+        }
+            } else if (windowId === 'explorer-app-window') { // Added for 파일 탐색기
         const explorerBody = windowElement.querySelector('.explorer-app-body');
         if (explorerBody) {
             explorerBody.innerHTML = ''; // Clear "Loading..." or previous content
@@ -100,12 +123,32 @@ function openWindow(windowId, title) {
             iframe.style.width = '100%';
             iframe.style.height = '100%';
             iframe.style.border = 'none';
-            iframe.setAttribute('title', 'Explorer Content');
+            iframe.setAttribute('title', '파일 탐색기 Content');
 
             explorerBody.appendChild(iframe);
-            console.log('Explorer iframe created and appended.');
+            console.log('파일 탐색기 iframe created and appended.');
         } else {
-            console.error('Explorer window body (.explorer-app-body) not found for ID:', windowId);
+            console.error('파일 탐색기 window body (.explorer-app-body) not found for ID:', windowId);
+        }
+    } else if (windowId === 'chrome-app-window' && typeof createChromeApp === 'function') { // Added for Chrome Browser
+        const chromeBody = windowElement.querySelector('.chrome-app-body');
+        if (chromeBody) {
+            chromeBody.innerHTML = ''; // Clear any previous content
+            const chromeAppContent = createChromeApp();
+            chromeBody.appendChild(chromeAppContent);
+            console.log('Chrome browser app initialized.');
+        } else {
+            console.error('Chrome window body (.chrome-app-body) not found for ID:', windowId);
+        }
+    } else if (windowId === 'youtube-app-window' && typeof createYouTubeApp === 'function') { // Added for YouTube
+        const youtubeBody = windowElement.querySelector('.youtube-app-body');
+        if (youtubeBody) {
+            youtubeBody.innerHTML = ''; // Clear any previous content
+            const youtubeAppContent = createYouTubeApp();
+            youtubeBody.appendChild(youtubeAppContent);
+            console.log('YouTube app initialized.');
+        } else {
+            console.error('YouTube window body (.youtube-app-body) not found for ID:', windowId);
         }
     }
 
@@ -138,8 +181,7 @@ function toggleMaximizeWindow(windowElement) {
             delete preMaximizedStates[windowId];
         }
         windowElement.classList.remove('maximized');
-        if (maximizeButton) maximizeButton.innerHTML = '□'; // Maximize icon (single square) - CORRECTED
-        if (maximizeButton) maximizeButton.setAttribute('aria-label', 'Maximize'); // CORRECTED
+        if (maximizeButton) maximizeButton.setAttribute('aria-label', 'Maximize');
 
         const resizeHandle = windowElement.querySelector('.resize-handle');
         if (resizeHandle) resizeHandle.style.display = '';
@@ -158,8 +200,7 @@ function toggleMaximizeWindow(windowElement) {
         windowElement.style.left = '0px';
 
         windowElement.classList.add('maximized');
-        if (maximizeButton) maximizeButton.innerHTML = '❐'; // Restore icon (overlapping squares) - CORRECTED
-        if (maximizeButton) maximizeButton.setAttribute('aria-label', 'Restore'); // CORRECTED
+        if (maximizeButton) maximizeButton.setAttribute('aria-label', 'Restore');
 
         const resizeHandle = windowElement.querySelector('.resize-handle');
         if (resizeHandle) resizeHandle.style.display = 'none';
@@ -169,7 +210,7 @@ function toggleMaximizeWindow(windowElement) {
     windowElement.style.zIndex = currentMaxZIndex;
 }
 
-// --- Generic Window Control Button Handlers (Close, Maximize) ---
+// --- Generic Window Control Button Handlers (Close, Maximize, Minimize) ---
 document.addEventListener('click', function(event) {
     const targetButton = event.target;
     const windowElement = targetButton.closest('.window');
@@ -183,8 +224,27 @@ document.addEventListener('click', function(event) {
         }, 200);
     } else if (targetButton.classList.contains('window-maximize-button')) {
         toggleMaximizeWindow(windowElement);
+    } else if (targetButton.classList.contains('window-minimize-button')) {
+        minimizeWindow(windowElement);
     }
 });
+
+// --- Minimize Window Function ---
+function minimizeWindow(windowElement) {
+    if (!windowElement) return;
+    
+    // 윈도우를 숨기는 애니메이션 효과
+    windowElement.classList.remove('active');
+    windowElement.style.transform = 'scale(0.1)';
+    windowElement.style.opacity = '0';
+    
+    setTimeout(() => {
+        windowElement.style.display = 'none';
+        // 스타일 리셋 (다시 열 때를 위해)
+        windowElement.style.transform = '';
+        windowElement.style.opacity = '';
+    }, 200);
+}
 
 // --- Draggable Windows Logic ---
 function dragWindow(event) {

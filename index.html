@@ -50,12 +50,16 @@
             <span class="icon-label">Paint</span>
         </div>
         <div class="desktop-icon" id="icon-calculator">
-            <div class="icon-image">🧮</div>
+            <div class="icon-image"><img src="images/calculator-icon.png" alt="Calculator"></div>
             <span class="icon-label">Calculator</span>
         </div>
         <div id="icon-explorer" class="desktop-icon">
-            <div class="icon-image">📁</div>
+            <div class="icon-image"><img src="images/explorer_ICO_MYCOMPUTER.ico" alt="Explorer"></div>
             <span class="icon-label">Explorer</span>
+        </div>
+        <div class="desktop-icon" id="icon-chrome">
+            <div class="icon-image"><img src="images/chrome-logo.svg" alt="Chrome"></div>
+            <span class="icon-label">Chrome</span>
         </div>
 
         <!-- Window Templates -->
@@ -63,8 +67,9 @@
             <div class="window-header">
                 <span class="window-title">프로그램</span>
                 <div> <!-- Wrapper for buttons -->
-                    <button class="window-maximize-button" aria-label="Maximize">□</button>
-                    <button class="window-close-button" aria-label="Close">X</button>
+                    <button class="window-minimize-button" aria-label="Minimize"></button>
+                    <button class="window-maximize-button" aria-label="Maximize"></button>
+                    <button class="window-close-button" aria-label="Close"></button>
                 </div>
             </div>
             <div class="window-body">
@@ -93,8 +98,9 @@
             <div class="window-header">
                 <span class="window-title">Calculator</span>
                 <div> <!-- Wrapper for buttons -->
-                    <button class="window-maximize-button" aria-label="Maximize">□</button>
-                    <button class="window-close-button" aria-label="Close">X</button>
+                    <button class="window-minimize-button" aria-label="Minimize"></button>
+                    <button class="window-maximize-button" aria-label="Maximize"></button>
+                    <button class="window-close-button" aria-label="Close"></button>
                 </div>
             </div>
             <div class="window-body calculator-body">
@@ -129,8 +135,9 @@
             <div class="window-header">
                 <span class="window-title">Minesweeper</span>
                 <div> <!-- Wrapper for buttons -->
-                    <button class="window-maximize-button" aria-label="Maximize">□</button>
-                    <button class="window-close-button" aria-label="Close">X</button>
+                    <button class="window-minimize-button" aria-label="Minimize"></button>
+                    <button class="window-maximize-button" aria-label="Maximize"></button>
+                    <button class="window-close-button" aria-label="Close"></button>
                 </div>
             </div>
             <div class="window-body minesweeper-body">
@@ -161,12 +168,40 @@
                     </ul>
                 </div>
                 <div class="minesweeper-controls">
+                    <div id="minesweeperTimer" class="minesweeper-info">Time: 000</div>
                     <button id="minesweeperReset" class="minesweeper-reset-button">🙂</button>
                     <div id="minesweeperFlagsLeft" class="minesweeper-info">Mines: 10</div>
-                    <!-- Difficulty display/selector removed from here, will be handled by menu -->
+                    <button id="minesweeperScores" class="minesweeper-scores-button">🏆</button>
                 </div>
                 <div id="minesweeperGrid" class="minesweeper-grid">
                     <!-- Game grid will be populated by JavaScript -->
+                </div>
+            </div>
+            <div class="resize-handle"></div>
+        </div>
+
+        <div id="minesweeper-scores-window" class="window" style="display: none;">
+            <div class="window-header">
+                <span class="window-title">지뢰찾기 순위</span>
+                <div>
+                    <button class="window-minimize-button" aria-label="Minimize"></button>
+                    <button class="window-maximize-button" aria-label="Maximize"></button>
+                    <button class="window-close-button" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="window-body scores-body">
+                <div class="scores-tabs">
+                    <button class="scores-tab active" data-difficulty="beginner">초급</button>
+                    <button class="scores-tab" data-difficulty="intermediate">중급</button>
+                    <button class="scores-tab" data-difficulty="expert">고급</button>
+                </div>
+                <div class="scores-content">
+                    <div id="scores-loading" style="display: none;">로딩 중...</div>
+                    <div id="scores-list"></div>
+                </div>
+                <div class="scores-buttons">
+                    <button id="resetScoresBtn" class="btn btn-danger">기록 초기화</button>
+                    <button id="refreshScoresBtn" class="btn btn-primary">새로고침</button>
                 </div>
             </div>
             <div class="resize-handle"></div>
@@ -176,8 +211,9 @@
             <div class="window-header">
                 <span class="window-title">내 컴퓨터</span>
                 <div> <!-- Wrapper for buttons -->
-                    <button class="window-maximize-button" aria-label="Maximize">□</button>
-                    <button class="window-close-button" aria-label="Close">X</button>
+                    <button class="window-minimize-button" aria-label="Minimize"></button>
+                    <button class="window-maximize-button" aria-label="Maximize"></button>
+                    <button class="window-close-button" aria-label="Close"></button>
                 </div>
             </div>
             <div class="window-body my-computer-body">
@@ -203,13 +239,35 @@
             <div class="window-header">
                 <span class="window-title">Explorer</span>
                 <div> <!-- Wrapper for buttons -->
-                    <button class="window-maximize-button" aria-label="Maximize">□</button>
-                    <button class="window-close-button" aria-label="Close">X</button>
+                    <button class="window-minimize-button" aria-label="Minimize"></button>
+                    <button class="window-maximize-button" aria-label="Maximize"></button>
+                    <button class="window-close-button" aria-label="Close"></button>
                 </div>
             </div>
             <div class="window-body explorer-app-body">
                 <p>파일 탐색기 로딩 중...</p>
                 <!-- 실제 파일 탐색기 내용은 추후 iframe 또는 JS로 구현 -->
+            </div>
+            <div class="resize-handle"></div>
+        </div>
+
+        <div id="chrome-app-window" class="window" style="display: none;">
+            <div class="window-header">
+                <span class="window-title">Chrome Browser</span>
+                <div> <!-- Wrapper for buttons -->
+                    <button class="window-minimize-button" aria-label="Minimize"></button>
+                    <button class="window-maximize-button" aria-label="Maximize"></button>
+                    <button class="window-close-button" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="window-body chrome-app-body">
+                <div class="chrome-browser">
+                    <div class="chrome-url-bar">
+                        <input type="text" id="chromeUrlInput" placeholder="https://oo.ai" value="https://oo.ai">
+                        <button id="chromeGoButton">이동</button>
+                    </div>
+                    <iframe id="chromeFrame" src="https://oo.ai" style="width: 100%; height: calc(100% - 40px); border: none;"></iframe>
+                </div>
             </div>
             <div class="resize-handle"></div>
         </div>
@@ -228,6 +286,7 @@
     <script src="js/projectsApp.js" defer></script>
     <script src="js/minesweeper.js" defer></script>
     <script src="js/calculator.js" defer></script>
+    <script src="js/chromeApp.js" defer></script>
     <script src="js/windowManager.js" defer></script>
     <script src="js/myComputerApp.js" defer></script> <!-- Added here -->
     <script src="js/desktop.js" defer></script>
