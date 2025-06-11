@@ -1,0 +1,19 @@
+[Unit]
+Description=Main Website Backend Server
+After=network.target
+
+[Service]
+Type=simple
+User=purestory
+Group=purestory
+WorkingDirectory=/home/purestory/main-website/backend
+ExecStart=/home/purestory/.nvm/versions/node/v22.14.0/bin/node server.js
+Restart=always
+RestartSec=10
+Environment=NODE_ENV=production
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=main-website-backend
+
+[Install]
+WantedBy=multi-user.target 

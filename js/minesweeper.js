@@ -946,15 +946,41 @@ function msInitGame() {
         }
 
         if (optionSubmenuItemLI && difficultySubmenuUL) {
+            console.log('✅ 옵션 서브메뉴 요소 찾음:', optionSubmenuItemLI, difficultySubmenuUL);
             optionSubmenuItemLI.addEventListener('click', function(event) {
                 event.stopPropagation(); // Prevent menu from closing immediately
+                console.log('🖱️ 옵션(O) 클릭됨');
                 const isVisible = difficultySubmenuUL.style.display === 'block';
+                console.log('현재 표시 상태:', isVisible);
                 // Hide other submenus if any (though not strictly necessary with current structure)
                 document.querySelectorAll('#minesweeper-app-window .ms-difficulty-submenu').forEach(sm => {
                     if (sm !== difficultySubmenuUL) sm.style.display = 'none';
                 });
-                difficultySubmenuUL.style.display = isVisible ? 'none' : 'block';
+                
+                if (isVisible) {
+                    difficultySubmenuUL.style.display = 'none';
+                    difficultySubmenuUL.style.visibility = 'hidden';
+                } else {
+                    difficultySubmenuUL.style.display = 'block';
+                    difficultySubmenuUL.style.visibility = 'visible';
+                    difficultySubmenuUL.style.zIndex = '1003';
+                    difficultySubmenuUL.style.position = 'absolute';
+                    difficultySubmenuUL.style.backgroundColor = '#ffffff';
+                    difficultySubmenuUL.style.border = '2px solid red'; // 디버깅용 빨간 테두리
+                    difficultySubmenuUL.style.top = '0px';
+                    difficultySubmenuUL.style.left = '100%';
+                }
+                console.log('새로운 표시 상태:', difficultySubmenuUL.style.display);
+                console.log('서브메뉴 위치 정보:', {
+                    position: difficultySubmenuUL.style.position,
+                    top: difficultySubmenuUL.style.top,
+                    left: difficultySubmenuUL.style.left,
+                    zIndex: difficultySubmenuUL.style.zIndex,
+                    visibility: difficultySubmenuUL.style.visibility
+                });
             });
+        } else {
+            console.error('❌ 옵션 서브메뉴 요소를 찾을 수 없음:', { optionSubmenuItemLI, difficultySubmenuUL });
         }
 
         if (minesweeperWindowElement) {
