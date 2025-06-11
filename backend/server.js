@@ -74,7 +74,7 @@ app.get('/main-api/minesweeper/scores', (req, res) => {
             console.error('순위 조회 실패:', err.message);
             res.status(500).json({ error: '순위 조회 중 오류가 발생했습니다.' });
         } else {
-            // 난이도별로 그룹화하고 상위 10개만 반환
+            // 난이도별로 그룹화하고 상위 20개만 반환
             const scoresByDifficulty = {
                 beginner: [],
                 intermediate: [],
@@ -82,7 +82,7 @@ app.get('/main-api/minesweeper/scores', (req, res) => {
             };
             
             rows.forEach(row => {
-                if (scoresByDifficulty[row.difficulty] && scoresByDifficulty[row.difficulty].length < 10) {
+                if (scoresByDifficulty[row.difficulty] && scoresByDifficulty[row.difficulty].length < 20) {
                     scoresByDifficulty[row.difficulty].push({
                         name: row.player_name,
                         time: row.time,
@@ -114,6 +114,7 @@ app.post('/main-api/minesweeper/scores', (req, res) => {
         return res.status(400).json({ error: '올바르지 않은 시간입니다.' });
     }
     
+    // 점수 저장 후 해당 난이도의 기록이 20개를 초과하면 가장 느린 기록 삭제
     const insertQuery = `
         INSERT INTO scores (player_name, time, difficulty)
         VALUES (?, ?, ?)
@@ -125,6 +126,32 @@ app.post('/main-api/minesweeper/scores', (req, res) => {
             res.status(500).json({ error: '점수 저장 중 오류가 발생했습니다.' });
         } else {
             console.log(`새 점수 저장됨: ${player_name} - ${time}초 (${difficulty})`);
+            
+            // 해당 난이도의 기록 수 확인 및 20개 초과 시 삭제
+            const countQuery = 'SELECT COUNT(*) as count FROM scores WHERE difficulty = ?';
+            db.get(countQuery, [difficulty], (countErr, countResult) => {
+                if (!countErr && countResult.count > 20) {
+                    // 가장 느린 기록들 삭제 (20개만 유지)
+                    const deleteExcessQuery = `
+                        DELETE FROM scores 
+                        WHERE difficulty = ? 
+                        AND id NOT IN (
+                            SELECT id FROM scores 
+                            WHERE difficulty = ? 
+                            ORDER BY time ASC, date_created ASC 
+                            LIMIT 20
+                        )
+                    `;
+                    db.run(deleteExcessQuery, [difficulty, difficulty], (deleteErr) => {
+                        if (deleteErr) {
+                            console.error('초과 기록 삭제 실패:', deleteErr.message);
+                        } else {
+                            console.log(`${difficulty} 난이도 기록을 20개로 제한했습니다.`);
+                        }
+                    });
+                }
+            });
+            
             res.json({ 
                 success: true, 
                 id: this.lastID,
@@ -162,7 +189,7 @@ app.get('/main-api/minesweeper/scores/:difficulty', (req, res) => {
         FROM scores
         WHERE difficulty = ?
         ORDER BY time ASC
-        LIMIT 10
+        LIMIT 20
     `;
     
     db.all(query, [difficulty], (err, rows) => {

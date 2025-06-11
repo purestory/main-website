@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🤖 AI Hub - AI & Web Services Hub</title>
+    <title>AI Hub - AI & Web Services Hub</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤖</text></svg>">
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div id="post-screen" style="display: none;">
-        <img id="postBiosLogo" src="images/american_megatrends_logo.png" alt="BIOS Logo">
+        <img id="postBiosLogo" src="images/american_megatrends_logo2.png" alt="BIOS Logo">
         <pre id="postMessages"></pre>
     </div>
     <div id="boot-screen" style="display: none;">
@@ -147,6 +147,7 @@
                             <span>게임(G)</span>
                             <ul class="ms-dropdown-menu" id="ms-game-dropdown">
                                 <li data-action="ms-new-game">새 게임(N)</li>
+                                <li data-action="ms-scores">순위(R)...</li>
                                 <li class="ms-submenu-item">
                                     <span>옵션(O)...</span>
                                     <ul class="ms-difficulty-submenu">
@@ -155,7 +156,6 @@
                                         <li data-action="ms-difficulty" data-difficulty="expert">고급</li>
                                     </ul>
                                 </li>
-                                <li class="ms-separator"></li>
                                 <li data-action="ms-exit">끝내기(X)</li>
                             </ul>
                         </li>
@@ -171,7 +171,6 @@
                     <div id="minesweeperTimer" class="minesweeper-info">Time: 000</div>
                     <button id="minesweeperReset" class="minesweeper-reset-button">🙂</button>
                     <div id="minesweeperFlagsLeft" class="minesweeper-info">Mines: 10</div>
-                    <button id="minesweeperScores" class="minesweeper-scores-button">🏆</button>
                 </div>
                 <div id="minesweeperGrid" class="minesweeper-grid">
                     <!-- Game grid will be populated by JavaScript -->
@@ -270,6 +269,100 @@
                 </div>
             </div>
             <div class="resize-handle"></div>
+        </div>
+
+        <!-- 지뢰찾기 승리 이름 입력 대화상자 -->
+        <div id="ms-win-dialog" class="window dialog" style="display: none;">
+            <div class="window-header">
+                <span class="window-title">축하합니다!</span>
+                <div>
+                    <button class="window-close-button" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="window-body dialog-body">
+                <div class="dialog-content">
+                    <div class="dialog-icon">🎉</div>
+                    <div class="dialog-message" id="ms-win-message">
+                        축하합니다! 초급 난이도를 15초에 클리어했습니다!
+                    </div>
+                    <div class="dialog-input-section">
+                        <label for="ms-player-name">이름을 입력하세요:</label>
+                        <input type="text" id="ms-player-name" maxlength="20" placeholder="플레이어" autocomplete="off">
+                    </div>
+                    <div class="dialog-buttons">
+                        <button id="ms-win-save-btn" class="btn btn-primary">저장</button>
+                        <button id="ms-win-cancel-btn" class="btn btn-secondary">취소</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 지뢰찾기 게임 오버 대화상자 -->
+        <div id="ms-gameover-dialog" class="window dialog" style="display: none;">
+            <div class="window-header">
+                <span class="window-title">게임 오버</span>
+                <div>
+                    <button class="window-close-button" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="window-body dialog-body">
+                <div class="dialog-content">
+                    <div class="dialog-icon">💥</div>
+                    <div class="dialog-message">
+                        게임 오버! 지뢰를 밟았습니다.
+                    </div>
+                    <div class="dialog-buttons">
+                        <button id="ms-gameover-ok-btn" class="btn btn-primary">확인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 지뢰찾기 결과 알림 대화상자 -->
+        <div id="ms-result-dialog" class="window dialog" style="display: none;">
+            <div class="window-header">
+                <span class="window-title">알림</span>
+                <div>
+                    <button class="window-close-button" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="window-body dialog-body">
+                <div class="dialog-content">
+                    <div class="dialog-icon" id="ms-result-icon">ℹ️</div>
+                    <div class="dialog-message" id="ms-result-message">
+                        메시지가 여기에 표시됩니다.
+                    </div>
+                    <div class="dialog-buttons">
+                        <button id="ms-result-ok-btn" class="btn btn-primary">확인</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 지뢰찾기 순위 초기화 비밀번호 입력 대화상자 -->
+        <div id="ms-password-dialog" class="window dialog" style="display: none;">
+            <div class="window-header">
+                <span class="window-title">순위 초기화</span>
+                <div>
+                    <button class="window-close-button" aria-label="Close"></button>
+                </div>
+            </div>
+            <div class="window-body dialog-body">
+                <div class="dialog-content">
+                    <div class="dialog-icon">🔒</div>
+                    <div class="dialog-message">
+                        순위를 초기화하려면 비밀번호를 입력하세요.
+                    </div>
+                    <div class="dialog-input-section">
+                        <label for="ms-password-input">비밀번호:</label>
+                        <input type="password" id="ms-password-input" maxlength="10" placeholder="비밀번호" autocomplete="off">
+                    </div>
+                    <div class="dialog-buttons">
+                        <button id="ms-password-ok-btn" class="btn btn-primary">확인</button>
+                        <button id="ms-password-cancel-btn" class="btn btn-secondary">취소</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <!--

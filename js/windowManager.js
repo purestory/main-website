@@ -68,6 +68,12 @@ function openWindow(windowId, title) {
         windowHeight = 800; // Desired height for YouTube
         windowElement.style.width = windowWidth + 'px';
         windowElement.style.height = windowHeight + 'px';
+    } else if (windowId === 'minesweeper-app-window') {
+        // 지뢰찾기는 초기 크기를 초급 기준으로 설정하여 일관된 위치 계산
+        windowWidth = 245; // 초급 기준 고정 크기 (나중에 msAdjustWindowSize에서 조정)
+        windowHeight = 342; // 초급 기준 고정 크기
+        windowElement.style.width = windowWidth + 'px';
+        windowElement.style.height = windowHeight + 'px';
     } else {
         // For other windows, use their natural size from CSS or measure offsetWidth/Height
         windowWidth = windowElement.offsetWidth;
@@ -308,8 +314,8 @@ function resizeOnDrag(event) {
     let newWidth = initialWindowWidth + dx;
     let newHeight = initialWindowHeight + dy;
 
-    newWidth = Math.max(150, newWidth);
-    newHeight = Math.max(100, newHeight);
+    newWidth = Math.max(100, newWidth);
+    newHeight = Math.max(80, newHeight);
 
     resizingWindow.style.width = newWidth + 'px';
     resizingWindow.style.height = newHeight + 'px';
