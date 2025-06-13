@@ -594,11 +594,17 @@ const MinesweeperWindow: React.FC<MinesweeperWindowProps> = ({ onResize, onClose
 
 
 
+  // 컨텍스트 메뉴 방지
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
   return (
     <>
-      <div className="minesweeper-container">
+      <div className="minesweeper-container" onContextMenu={handleContextMenu}>
         {/* 메뉴바 - 원본과 동일 */}
-        <div className="menu-bar">
+        <div className="menu-bar" onContextMenu={handleContextMenu}>
           <div 
             className="menu-item"
             onClick={handleGameMenuClick}
@@ -641,7 +647,7 @@ const MinesweeperWindow: React.FC<MinesweeperWindowProps> = ({ onResize, onClose
         </div>
 
         {/* 게임 정보 */}
-        <div className="game-info">
+        <div className="game-info" onContextMenu={handleContextMenu}>
           <div className="timer">Time: {elapsedTime.toFixed(2)}</div>
           <button className="reset-btn" onClick={newGame}>
             {gameOver ? (isWin ? '😎' : '😵') : '🙂'}
@@ -657,6 +663,7 @@ const MinesweeperWindow: React.FC<MinesweeperWindowProps> = ({ onResize, onClose
             gridTemplateRows: `repeat(${settings.rows}, ${settings.cellSize}px)`,
             gap: '1px'
           }}
+          onContextMenu={handleContextMenu}
         >
           {board.map((row, r) =>
             row.map((cell, c) => (

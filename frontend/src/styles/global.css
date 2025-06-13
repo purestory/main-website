@@ -574,15 +574,50 @@
             border-top: 1px solid #ffffff;
             display: flex;
             align-items: center;
-            justify-content: space-between;
             padding: 0 5px;
             z-index: 1000;
         }
 
+        .taskbar-right {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            gap: 8px;
+        }
+
+        .volume-icon {
+            color: white;
+            font-size: 16px;
+            padding: 4px 6px;
+            cursor: pointer;
+            border: 1px inset #c0c0c0;
+            background-color: #c0c0c0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 24px;
+            height: 24px;
+        }
+
+        .volume-icon:hover {
+            background-color: #d0d0d0;
+        }
+
+        .volume-icon:active {
+            border: 1px inset #a0a0a0;
+            background-color: #b0b0b0;
+        }
+
         #taskbar-clock {
-            padding: 0 10px;
-            font-size: 0.9em;
-            color: #333;
+            padding: 4px 8px;
+            font-size: 11px;
+            color: black;
+            text-align: center;
+            border: none;
+            background-color: #c0c0c0;
+            min-width: 80px;
+            line-height: 1.1;
+            font-family: 'MS Sans Serif', sans-serif;
         }
 
         .start-button {
@@ -595,6 +630,44 @@
         }
         .start-button:active {
             border-style: inset;
+        }
+
+        /* 빠른 실행 영역 */
+        .quick-launch {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            margin-left: 0px;
+            padding-left: 6px;
+            border-left: 2px inset #c0c0c0;
+            height: 32px;
+        }
+
+        .quick-launch-btn {
+            width: 24px;
+            height: 24px;
+            background-color: #c0c0c0;
+            border: 1px outset #ffffff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            padding: 2px;
+        }
+
+        .quick-launch-btn:hover {
+            background-color: #d0d0d0;
+            border-color: #e0e0e0;
+        }
+
+        .quick-launch-btn:active {
+            border-style: inset;
+            background-color: #b0b0b0;
+        }
+
+        .quick-launch-btn img {
+            pointer-events: none;
         }
 
         /* Start Menu Styles */

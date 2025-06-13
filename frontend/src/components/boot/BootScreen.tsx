@@ -13,6 +13,11 @@ const BootScreen: React.FC<BootScreenProps> = ({
   updateBootState, 
   onBootComplete 
 }) => {
+  // 컨텍스트 메뉴 방지
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
   // 기존 boot.js의 메시지들 그대로 사용
   const postScreenMessages = [
     "AMIBIOS(C) 2023 American Megatrends Inc.",
@@ -156,7 +161,7 @@ const BootScreen: React.FC<BootScreenProps> = ({
 
   if (bootState.currentPhase === 'post') {
     return (
-      <div id="post-screen">
+      <div id="post-screen" onContextMenu={handleContextMenu}>
         <div id="postBiosLogo">
           <img src={americanMegatrendsLogo} alt="American Megatrends" />
         </div>
@@ -174,7 +179,7 @@ const BootScreen: React.FC<BootScreenProps> = ({
 
   if (bootState.currentPhase === 'boot') {
     return (
-      <div id="boot-screen">
+      <div id="boot-screen" onContextMenu={handleContextMenu}>
         <div className="boot-logo">
           <div className="logo-pane"></div>
           <div className="logo-pane"></div>

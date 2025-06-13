@@ -7,6 +7,12 @@ const PaintWindow = () => {
   const [brushColor, setBrushColor] = useState('#000000')
   const [lastPosition, setLastPosition] = useState({ x: 0, y: 0 })
 
+  // 컨텍스트 메뉴 방지
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -72,7 +78,7 @@ const PaintWindow = () => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }} onContextMenu={handleContextMenu}>
       <div style={{ 
         padding: '10px', 
         borderBottom: '1px solid #ccc',
@@ -118,6 +124,7 @@ const PaintWindow = () => {
           onMouseMove={draw}
           onMouseUp={stopDrawing}
           onMouseLeave={stopDrawing}
+          onContextMenu={handleContextMenu}
           style={{
             border: '1px solid #ccc',
             cursor: 'crosshair',

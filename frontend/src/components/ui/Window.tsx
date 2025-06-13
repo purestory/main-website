@@ -88,6 +88,12 @@ const Window: React.FC<WindowProps> = ({
     display: window.isMinimized ? 'none' : 'block'
   }
 
+  // 창 위에서 컨텍스트 메뉴 방지
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault() // 컨텍스트 메뉴 방지
+    e.stopPropagation() // 이벤트 버블링 방지 (부모인 Desktop으로 전파되지 않도록)
+  }
+
   console.log('Window 렌더링:', window.id, windowStyle)
 
   return (
@@ -95,8 +101,9 @@ const Window: React.FC<WindowProps> = ({
       className={`window ${isActive ? 'active' : ''} ${window.isMaximized ? 'maximized' : ''}`}
       style={windowStyle}
       onClick={onFocus}
+      onContextMenu={handleContextMenu}
     >
-      <div className="window-header" onMouseDown={handleMouseDown}>
+      <div className="window-header" onMouseDown={handleMouseDown} onContextMenu={handleContextMenu}>
         <span className="window-title">{window.title}</span>
         <div>
           <button 
@@ -125,10 +132,10 @@ const Window: React.FC<WindowProps> = ({
           />
         </div>
       </div>
-      <div className="window-body">
+      <div className="window-body" onContextMenu={handleContextMenu}>
         {children}
       </div>
-      <div className="resize-handle" />
+      <div className="resize-handle" onContextMenu={handleContextMenu} />
     </div>
   )
 }

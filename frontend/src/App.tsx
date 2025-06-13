@@ -32,7 +32,7 @@ function App() {
     )
   }
 
-  return <Desktop windows={windows} setWindows={setWindows} />
+  return <Desktop windows={windows} setWindows={setWindows} isBootComplete={isBootComplete} />
 }
 
 export default App

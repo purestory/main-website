@@ -13,9 +13,10 @@ import type { WindowState, DesktopIcon } from '../../types'
 interface DesktopProps {
   windows: WindowState[]
   setWindows: React.Dispatch<React.SetStateAction<WindowState[]>>
+  isBootComplete?: boolean
 }
 
-const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
+const Desktop: React.FC<DesktopProps> = ({ windows, setWindows, isBootComplete = true }) => {
   const [time, setTime] = useState(new Date())
   const [isStartMenuVisible, setIsStartMenuVisible] = useState(false)
   const [contextMenu, setContextMenu] = useState<{
@@ -207,6 +208,12 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault()
+    
+    // 부팅이 완료되지 않았으면 컨텍스트 메뉴를 표시하지 않음
+    if (!isBootComplete) {
+      return
+    }
+    
     setContextMenu({
       isVisible: true,
       position: { x: e.clientX, y: e.clientY }
@@ -221,7 +228,8 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
   const handleContextMenuItemClick = (itemId: string) => {
     switch (itemId) {
       case 'refresh':
-        window.location.reload()
+        // 새로고침 기능 비활성화
+        console.log('새로고침 비활성화됨')
         break
       case 'new-folder':
         // 새 폴더 생성 로직
@@ -238,6 +246,11 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
       default:
         break
     }
+  }
+
+  const handleMinimizeAll = () => {
+    console.log('🔽 모든 창 최소화')
+    setWindows(prev => prev.map(w => ({ ...w, isMinimized: true })))
   }
 
   const contextMenuItems = [
@@ -274,6 +287,8 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
           ))
         }}
         onStartClick={() => setIsStartMenuVisible(!isStartMenuVisible)}
+        onOpenWindow={openWindow}
+        onMinimizeAll={handleMinimizeAll}
       />
       
       {/* Desktop icons - DesktopIcons 컴포넌트 사용 */}

@@ -1,6 +1,8 @@
 import React from 'react'
 import Window from '../ui/Window'
 import MinesweeperWindow from '../windows/MinesweeperWindow'
+import CalculatorWindow from '../windows/CalculatorWindow'
+import PaintWindow from '../windows/PaintWindow'
 import type { WindowState } from '../../types'
 
 interface WindowManagerProps {
@@ -9,6 +11,12 @@ interface WindowManagerProps {
 }
 
 const WindowManager: React.FC<WindowManagerProps> = ({ windows, setWindows }) => {
+  // 컨텍스트 메뉴 방지
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
   const handleWindowClose = (windowId: string) => {
     setWindows(prev => prev.filter(w => w.id !== windowId))
   }
@@ -53,12 +61,14 @@ const WindowManager: React.FC<WindowManagerProps> = ({ windows, setWindows }) =>
           handleWindowResize(window.id, width, height)
         }} />
       case 'calculator-app-window':
-        return <div>계산기 앱 (준비 중)</div>
+        return <CalculatorWindow />
+      case 'paint-app-window':
+        return <PaintWindow />
       case 'projects-window':
-        return <div>프로젝트 목록 (준비 중)</div>
+        return <div onContextMenu={handleContextMenu}>프로젝트 목록 (준비 중)</div>
       case 'my-computer-window':
         return (
-          <div className="my-computer-body">
+          <div className="my-computer-body" onContextMenu={handleContextMenu}>
             <p><strong>시스템 정보 (가상)</strong></p>
             <ul>
               <li>운영체제: Web OS Simulation</li>
@@ -76,13 +86,13 @@ const WindowManager: React.FC<WindowManagerProps> = ({ windows, setWindows }) =>
           </div>
         )
       case 'explorer-app-window':
-        return <div>파일 탐색기 로딩 중...</div>
+        return <div onContextMenu={handleContextMenu}>파일 탐색기 로딩 중...</div>
       case 'chrome-app-window':
         return (
-          <div className="chrome-browser">
-            <div className="chrome-url-bar">
-              <input type="text" placeholder="https://oo.ai" defaultValue="https://oo.ai" />
-              <button>이동</button>
+          <div className="chrome-browser" onContextMenu={handleContextMenu}>
+            <div className="chrome-url-bar" onContextMenu={handleContextMenu}>
+              <input type="text" placeholder="https://oo.ai" defaultValue="https://oo.ai" onContextMenu={handleContextMenu} />
+              <button onContextMenu={handleContextMenu}>이동</button>
             </div>
             <iframe 
               src="https://oo.ai" 
@@ -93,7 +103,7 @@ const WindowManager: React.FC<WindowManagerProps> = ({ windows, setWindows }) =>
           </div>
         )
       default:
-        return <div>알 수 없는 윈도우</div>
+        return <div onContextMenu={handleContextMenu}>알 수 없는 윈도우</div>
     }
   }
 

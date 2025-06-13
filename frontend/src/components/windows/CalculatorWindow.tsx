@@ -7,6 +7,12 @@ const CalculatorWindow = () => {
   const [displayNeedsReset, setDisplayNeedsReset] = useState(false)
   const [display, setDisplay] = useState('0')
 
+  // 컨텍스트 메뉴 방지
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+  }
+
   // Initialize display
   useEffect(() => {
     setDisplay('0')
@@ -162,7 +168,7 @@ const CalculatorWindow = () => {
   }
 
   return (
-    <div className="calculator-body">
+    <div className="calculator-body" onContextMenu={handleContextMenu}>
       <input 
         type="text" 
         className="calculator-display" 
