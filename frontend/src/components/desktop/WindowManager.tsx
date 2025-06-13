@@ -84,7 +84,12 @@ const WindowManager: React.FC<WindowManagerProps> = ({ windows, setWindows }) =>
               <input type="text" placeholder="https://oo.ai" defaultValue="https://oo.ai" />
               <button>이동</button>
             </div>
-            <iframe src="https://oo.ai" style={{ width: '100%', height: 'calc(100% - 40px)', border: 'none' }} />
+            <iframe 
+              src="https://oo.ai" 
+              style={{ width: '100%', height: 'calc(100% - 40px)', border: 'none' }}
+              allow="microphone; camera; fullscreen; autoplay; encrypted-media"
+              sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation allow-downloads"
+            />
           </div>
         )
       default:

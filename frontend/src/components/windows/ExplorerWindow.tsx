@@ -15,6 +15,8 @@ const ExplorerWindow: React.FC = () => {
         title="파일 탐색기"
         loading="lazy"
         scrolling="no"
+        allow="microphone; camera; fullscreen; autoplay; encrypted-media"
+        sandbox="allow-same-origin allow-scripts allow-forms allow-popups allow-popups-to-escape-sandbox allow-presentation allow-downloads"
       />
     </div>
   )

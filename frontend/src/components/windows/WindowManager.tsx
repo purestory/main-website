@@ -6,6 +6,13 @@ import ProjectsWindow from './ProjectsWindow'
 import ChromeWindow from './ChromeWindow'
 import PaintWindow from './PaintWindow'
 import ExplorerWindow from './ExplorerWindow'
+import DocumentsWindow from './DocumentsWindow'
+import SettingsWindow from './SettingsWindow'
+import SearchWindow from './SearchWindow'
+import RunWindow from './RunWindow'
+import ShutdownWindow from './ShutdownWindow'
+import ProjectAppWindow from './ProjectAppWindow'
+import { projectsData } from '../../data/projectsData'
 import type { WindowState } from '../../types'
 
 interface WindowManagerProps {
@@ -13,9 +20,10 @@ interface WindowManagerProps {
   setWindows: React.Dispatch<React.SetStateAction<WindowState[]>>
   onWindowMove?: (windowId: string, newPosition: { x: number; y: number }) => void
   onWindowResize?: (windowId: string, newSize: { width: number; height: number }) => void
+  onOpenProject?: (projectName: string, windowId: string) => void
 }
 
-const WindowManager: React.FC<WindowManagerProps> = ({ windows, setWindows, onWindowMove, onWindowResize }) => {
+const WindowManager: React.FC<WindowManagerProps> = ({ windows, setWindows, onWindowMove, onWindowResize, onOpenProject }) => {
   // 무한 렌더링 방지를 위해 console.log 제거
   const handleWindowClose = (windowId: string) => {
     setWindows(prev => prev.filter(w => w.id !== windowId))
@@ -55,15 +63,15 @@ const WindowManager: React.FC<WindowManagerProps> = ({ windows, setWindows, onWi
       case 'calculator-app-window':
         return <CalculatorWindow />
       case 'projects-window':
-        return <ProjectsWindow />
+        return <ProjectsWindow onOpenProject={onOpenProject} />
       case 'my-computer-window':
         return (
           <div className="my-computer-body">
             <p><strong>시스템 정보</strong></p>
             <ul>
-              <li>운영체제: Ubuntu Server 22.04 LTS</li>
+              <li>운영체제: Windows Server 2012 R2</li>
               <li>CPU: Intel Core i9-13900HK @ 5.4GHz (14 Cores, 20 Threads)</li>
-              <li>메모리: 32768MB DDR4</li>
+              <li>메모리: 32,768MB DDR4</li>
               <li>GPU: NVIDIA GeForce RTX 3090 24GB</li>
             </ul>
             <hr />
@@ -85,6 +93,16 @@ const WindowManager: React.FC<WindowManagerProps> = ({ windows, setWindows, onWi
         return <ChromeWindow />
       case 'paint-app-window':
         return <PaintWindow />
+      case 'documents-window':
+        return <DocumentsWindow />
+      case 'settings-window':
+        return <SettingsWindow />
+      case 'search-window':
+        return <SearchWindow />
+      case 'run-window':
+        return <RunWindow />
+      case 'shutdown-window':
+        return <ShutdownWindow />
       case 'test-window':
         return (
           <div style={{ padding: '20px', textAlign: 'center' }}>
@@ -94,6 +112,11 @@ const WindowManager: React.FC<WindowManagerProps> = ({ windows, setWindows, onWi
           </div>
         )
       default:
+        // 프로젝트 윈도우들 처리
+        const project = projectsData.find(p => p.windowId === window.id)
+        if (project) {
+          return <ProjectAppWindow url={project.link} title={project.name} />
+        }
         return <div>알 수 없는 윈도우</div>
     }
   }

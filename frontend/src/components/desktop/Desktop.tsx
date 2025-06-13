@@ -3,6 +3,7 @@ import Taskbar from './Taskbar'
 import StartMenu from './StartMenu'
 import DesktopIcons from './DesktopIcons'
 import WindowManager from '../windows/WindowManager'
+import ContextMenu from './ContextMenu'
 import calculatorIcon from '../../assets/images/calculator-icon.png'
 import explorerIcon from '../../assets/images/explorer_ICO_MYCOMPUTER.ico'
 import chromeLogo from '../../assets/images/chrome-logo.svg'
@@ -17,6 +18,13 @@ interface DesktopProps {
 const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
   const [time, setTime] = useState(new Date())
   const [isStartMenuVisible, setIsStartMenuVisible] = useState(false)
+  const [contextMenu, setContextMenu] = useState<{
+    isVisible: boolean
+    position: { x: number; y: number }
+  }>({
+    isVisible: false,
+    position: { x: 0, y: 0 }
+  })
 
   // 데스크톱 아이콘 데이터 정의
   const desktopIcons: DesktopIcon[] = [
@@ -34,7 +42,7 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
     },
     {
       id: 'icon-minesweeper',
-      label: 'Minesweeper',
+      label: '지뢰찾기',
       image: '💣',
       windowId: 'minesweeper-app-window'
     },
@@ -46,7 +54,7 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
     },
     {
       id: 'icon-calculator',
-      label: 'Calculator',
+      label: '계산기',
       image: calculatorIcon,
       windowId: 'calculator-app-window'
     },
@@ -69,6 +77,10 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
       windowId: 'youtube-app-window'
     }
   ]
+
+  const handleOpenProject = (projectName: string, windowId: string) => {
+    openWindow(windowId, projectName)
+  }
 
   const openWindow = (windowId: string, title: string) => {
     console.log('Opening window:', windowId, title)
@@ -111,6 +123,19 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
       defaultSize = { width: 700, height: 550 }
     } else if (windowId === 'chrome-app-window') {
       defaultSize = { width: 1200, height: 800 }
+    } else if (windowId === 'documents-window') {
+      defaultSize = { width: 600, height: 500 }
+    } else if (windowId === 'settings-window') {
+      defaultSize = { width: 800, height: 600 }
+    } else if (windowId === 'search-window') {
+      defaultSize = { width: 700, height: 550 }
+    } else if (windowId === 'run-window') {
+      defaultSize = { width: 600, height: 500 }
+    } else if (windowId === 'shutdown-window') {
+      defaultSize = { width: 500, height: 600 }
+    } else if (windowId.includes('-window') && !['my-computer-window', 'projects-window', 'explorer-app-window', 'chrome-app-window', 'paint-app-window', 'calculator-app-window', 'minesweeper-app-window'].includes(windowId)) {
+      // 프로젝트 앱 윈도우들의 기본 크기
+      defaultSize = { width: 1000, height: 700 }
     }
 
     // 화면 크기 정보
@@ -180,6 +205,52 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
     )
   }
 
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault()
+    setContextMenu({
+      isVisible: true,
+      position: { x: e.clientX, y: e.clientY }
+    })
+    setIsStartMenuVisible(false)
+  }
+
+  const handleContextMenuClose = () => {
+    setContextMenu(prev => ({ ...prev, isVisible: false }))
+  }
+
+  const handleContextMenuItemClick = (itemId: string) => {
+    switch (itemId) {
+      case 'refresh':
+        window.location.reload()
+        break
+      case 'new-folder':
+        // 새 폴더 생성 로직
+        break
+      case 'paste':
+        // 붙여넣기 로직
+        break
+      case 'properties':
+        // 속성 창 열기
+        break
+      case 'personalize':
+        // 개인 설정 창 열기
+        break
+      default:
+        break
+    }
+  }
+
+  const contextMenuItems = [
+    { id: 'refresh', label: '새로 고침', icon: '🔄' },
+    { separator: true, id: 'sep1', label: '' },
+    { id: 'new-folder', label: '새로 만들기', icon: '📁' },
+    { separator: true, id: 'sep2', label: '' },
+    { id: 'paste', label: '붙여넣기', icon: '📋', disabled: true },
+    { separator: true, id: 'sep3', label: '' },
+    { id: 'personalize', label: '개인 설정', icon: '🎨' },
+    { id: 'properties', label: '속성', icon: '⚙️' }
+  ]
+
   useEffect(() => {
     console.log('🖥️ 데스크톱 로드됨')
     
@@ -191,7 +262,7 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
   }, [])
 
   return (
-    <div className="desktop visible">
+    <div className="desktop visible" onContextMenu={handleContextMenu}>
       <Taskbar 
         time={time} 
         windows={windows} 
@@ -211,17 +282,27 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
         onIconClick={openWindow}
       />
 
-      <StartMenu
-        isVisible={isStartMenuVisible}
-        onClose={() => setIsStartMenuVisible(false)}
-        onOpenWindow={openWindow}
-      />
+              <StartMenu 
+          isVisible={isStartMenuVisible} 
+          onClose={() => setIsStartMenuVisible(false)}
+          onOpenWindow={openWindow}
+          onOpenProject={handleOpenProject}
+        />
 
-      <WindowManager 
-        windows={windows} 
-        setWindows={setWindows}
-        onWindowMove={handleWindowMove}
-        onWindowResize={handleWindowResize}
+              <WindowManager 
+          windows={windows} 
+          setWindows={setWindows}
+          onWindowMove={handleWindowMove}
+          onWindowResize={handleWindowResize}
+          onOpenProject={handleOpenProject}
+        />
+
+      <ContextMenu
+        isVisible={contextMenu.isVisible}
+        position={contextMenu.position}
+        items={contextMenuItems}
+        onClose={handleContextMenuClose}
+        onItemClick={handleContextMenuItemClick}
       />
     </div>
   )

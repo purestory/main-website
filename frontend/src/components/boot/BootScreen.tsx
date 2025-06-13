@@ -41,13 +41,13 @@ const BootScreen: React.FC<BootScreenProps> = ({
   ]
 
   const bootMessages = [
-    "POST: System Check...",
-    "Memory Test: 32768MB OK",
-    "Initializing USB Controllers...",
-    "AHCI Driver Loaded.",
-    "Loading Kernel (core.sys)...",
-    "Starting Windows Services...",
-    "Welcome!"
+    { text: "POST: System Check...", duration: 300 },
+    { text: "Memory Test: 32768MB OK", duration: 350 },
+    { text: "Initializing USB Controllers...", duration: 400 },
+    { text: "AHCI Driver Loaded.", duration: 350 },
+    { text: "Loading Kernel (core.sys)...", duration: 500 },
+    { text: "Starting Windows Services...", duration: 450 },
+    { text: "Welcome!", duration: 150 }
   ]
 
   const [currentBootMessageIndex, setCurrentBootMessageIndex] = useState(0)
@@ -59,7 +59,6 @@ const BootScreen: React.FC<BootScreenProps> = ({
   // 기존 코드의 타이밍 그대로 사용
   const postMessageDelay = 100 // 0.1초
   const totalBootTime = 2500 // 2.5초
-  const messageInterval = (totalBootTime - 2000) / (bootMessages.length > 1 ? (bootMessages.length - 1) : 1)
 
   useEffect(() => {
     if (!isPostStarted) {
@@ -106,12 +105,13 @@ const BootScreen: React.FC<BootScreenProps> = ({
       
       const showNextBootMessage = (messageIndex: number) => {
         if (messageIndex < bootMessages.length) {
-          console.log(`💻 Boot 메시지 ${messageIndex + 1}/${bootMessages.length}: ${bootMessages[messageIndex]}`)
-          setCurrentBootMessage(bootMessages[messageIndex])
+          const currentMessage = bootMessages[messageIndex]
+          console.log(`💻 Boot 메시지 ${messageIndex + 1}/${bootMessages.length}: ${currentMessage.text}`)
+          setCurrentBootMessage(currentMessage.text)
           setCurrentBootMessageIndex(messageIndex + 1)
           
           if (messageIndex + 1 < bootMessages.length) {
-            setTimeout(() => showNextBootMessage(messageIndex + 1), messageInterval)
+            setTimeout(() => showNextBootMessage(messageIndex + 1), currentMessage.duration)
           }
         }
       }

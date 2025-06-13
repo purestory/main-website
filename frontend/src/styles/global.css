@@ -227,6 +227,10 @@
             color: white;
             cursor: pointer;
             vertical-align: top; /* Align icons from the top */
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
 
         .desktop-icon:hover .icon-image {
@@ -372,7 +376,7 @@
         .window-minimize-button::before {
             content: '';
             position: absolute;
-            bottom: 4px;
+            bottom: 6px;
             left: 50%;
             transform: translateX(-50%);
             width: 10px;
@@ -401,8 +405,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(45deg);
-            width: 10px;
-            height: 1.5px;
+            width: 12px;
+            height: 1px;
             background-color: #ffffff;
         }
         
@@ -412,8 +416,8 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-45deg);
-            width: 10px;
-            height: 1.5px;
+            width: 12px;
+            height: 1px;
             background-color: #ffffff;
         }
 
@@ -1847,6 +1851,73 @@
 
 .explorer-app-body iframe {
     overflow: hidden !important;
+}
+
+/* Context Menu Styles */
+.context-menu {
+    background-color: #f0f0f0;
+    border: 1px solid #999;
+    border-radius: 0;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    min-width: 180px;
+    padding: 2px 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 11px;
+}
+
+.context-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 4px 20px 4px 8px;
+    cursor: pointer;
+    position: relative;
+    white-space: nowrap;
+}
+
+.context-menu-item:hover:not(.disabled) {
+    background-color: #316ac5;
+    color: white;
+}
+
+.context-menu-item.disabled {
+    color: #999;
+    cursor: default;
+}
+
+.context-menu-icon {
+    width: 16px;
+    margin-right: 8px;
+    text-align: center;
+    font-size: 12px;
+}
+
+.context-menu-label {
+    flex: 1;
+}
+
+.context-menu-arrow {
+    margin-left: 8px;
+    font-size: 8px;
+}
+
+.context-menu-separator {
+    height: 1px;
+    background-color: #d4d0c8;
+    margin: 3px 0;
+    border-top: 1px solid #808080;
+}
+
+/* Project App Window Styles */
+.project-app-body {
+    padding: 0;
+    height: 100%;
+    overflow: hidden;
+}
+
+.project-app-body iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
 }
 
 

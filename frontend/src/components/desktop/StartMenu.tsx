@@ -12,9 +12,10 @@ interface StartMenuProps {
   isVisible: boolean
   onClose: () => void
   onOpenWindow: (windowId: string, title: string) => void
+  onOpenProject?: (projectName: string, windowId: string) => void
 }
 
-const StartMenu: React.FC<StartMenuProps> = ({ isVisible, onClose, onOpenWindow }) => {
+const StartMenu: React.FC<StartMenuProps> = ({ isVisible, onClose, onOpenWindow, onOpenProject }) => {
   const [showProgramsSubmenu, setShowProgramsSubmenu] = useState(false)
   const startMenuRef = useRef<HTMLDivElement>(null)
   const hideSubmenuTimer = useRef<NodeJS.Timeout | null>(null)
@@ -79,10 +80,13 @@ const StartMenu: React.FC<StartMenuProps> = ({ isVisible, onClose, onOpenWindow 
   }
 
   const handleProjectClick = (project: any) => {
-    if (project.name === 'YouTube') {
-      window.open('https://youtube.com', '_blank')
-    } else if (project.link && project.link !== '#' && !project.link.startsWith('javascript:')) {
-      window.open(project.link, '_blank')
+    if (project.windowId && onOpenProject) {
+      onOpenProject(project.name, project.windowId)
+    } else {
+      // 윈도우 ID가 없으면 기존 방식으로 새 탭에서 열기
+      if (project.link && project.link !== '#' && !project.link.startsWith('javascript:')) {
+        window.open(project.link, '_blank')
+      }
     }
     onClose()
     setShowProgramsSubmenu(false)
@@ -101,7 +105,7 @@ const StartMenu: React.FC<StartMenuProps> = ({ isVisible, onClose, onOpenWindow 
   const getIconElement = (program: any) => {
     if (program.isImage && program.imageSrc) {
       let src = program.imageSrc
-      if (program.name === 'Calculator') {
+      if (program.name === '계산기') {
         src = calculatorIcon
       } else if (program.name === '파일 탐색기') {
         src = explorerIcon
@@ -180,7 +184,7 @@ const StartMenu: React.FC<StartMenuProps> = ({ isVisible, onClose, onOpenWindow 
           onMouseEnter={handleProgramsHover}
           onMouseLeave={handleProgramsLeave}
         >
-          <span className="menu-text">프로그램</span>
+          <span className="menu-text">모든 프로그램</span>
           <span className="submenu-arrow">▶</span>
           <ul 
             className={`submenu ${showProgramsSubmenu ? 'visible' : ''}`} 
@@ -209,14 +213,21 @@ const StartMenu: React.FC<StartMenuProps> = ({ isVisible, onClose, onOpenWindow 
             ))}
           </ul>
         </li>
-        <li onClick={() => handleMenuItemClick('minesweeper-app-window', 'Minesweeper')}>
-          💣 Minesweeper
+        <li onClick={() => handleMenuItemClick('documents-window', '내 문서')}>
+          📄 문서(D)
         </li>
-        <li onClick={() => handleMenuItemClick('paint-app-window', 'Paint')}>
-          🎨 Paint
+        <li onClick={() => handleMenuItemClick('settings-window', '설정')}>
+          ⚙️ 설정(S)
         </li>
-        <li onClick={() => handleMenuItemClick('calculator-app-window', 'Calculator')}>
-          🧮 Calculator
+        <li onClick={() => handleMenuItemClick('search-window', '검색')}>
+          🔍 검색(E)
+        </li>
+        <li onClick={() => handleMenuItemClick('run-window', '실행')}>
+          ▶️ 실행(R)...
+        </li>
+        <hr style={{ margin: '5px 0', border: 'none', borderTop: '1px solid #999' }} />
+        <li onClick={() => handleMenuItemClick('shutdown-window', 'Windows 종료')}>
+          🔌 컴퓨터 끄기(U)...
         </li>
       </ul>
     </div>
