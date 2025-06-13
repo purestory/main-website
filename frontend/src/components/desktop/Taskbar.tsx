@@ -23,7 +23,7 @@ const Taskbar: React.FC<TaskbarProps> = ({
   return (
     <div className="taskbar">
       <button className="start-button" onClick={onStartClick}>
-        Start
+        시작
       </button>
       
       <div id="taskbar-clock">

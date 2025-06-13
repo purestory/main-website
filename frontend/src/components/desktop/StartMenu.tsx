@@ -5,6 +5,7 @@ import explorerIcon from '../../assets/images/explorer_ICO_MYCOMPUTER.ico'
 import chromeLogo from '../../assets/images/chrome-logo.svg'
 import amicaIcon from '../../assets/images/amica_ai_icon.png'
 import translationIcon from '../../assets/images/translation_service_icon.png'
+import openwebuiIcon from '../../assets/images/openwebui-icon.png'
 import youtubeLogo from '../../assets/images/youtube-logo.svg'
 
 interface StartMenuProps {
@@ -139,6 +140,8 @@ const StartMenu: React.FC<StartMenuProps> = ({ isVisible, onClose, onOpenWindow 
         src = amicaIcon
       } else if (project.name === 'Translation Service') {
         src = translationIcon
+      } else if (project.name === 'OpenWebUI') {
+        src = openwebuiIcon
       }
       
       return (

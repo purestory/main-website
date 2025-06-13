@@ -1,5 +1,6 @@
 import amicaIcon from '../../assets/images/amica_ai_icon.png'
 import translationIcon from '../../assets/images/translation_service_icon.png'
+import openwebuiIcon from '../../assets/images/openwebui-icon.png'
 
 interface Project {
   name: string
@@ -13,7 +14,7 @@ interface Project {
 const ProjectsWindow = () => {
   const projectsData: Project[] = [
     // AI/ML 서비스
-    { name: 'OpenWebUI', description: 'Ollama용 웹 인터페이스', link: 'http://itsmyzone.iptime.org:3000/', type: 'AI/ML Service', status: 'Docker' },
+    { name: 'OpenWebUI', description: 'Ollama용 웹 인터페이스', link: 'http://itsmyzone.iptime.org:3000/', type: 'AI/ML Service', status: 'Docker', iconUrl: openwebuiIcon },
     { name: 'Amica AI', description: '3D AI 가상 비서 (내부용)', link: '/amica/', type: 'AI/ML Service', status: 'Active', iconUrl: amicaIcon },
     { name: 'Translation Service', description: 'AI 기반 다중 엔진 번역', link: '/translation/', type: 'AI/ML Service', status: 'Active', iconUrl: translationIcon },
     { name: 'Whisper STT', description: '고속 음성-텍스트 변환 (100+ 언어)', link: '/whisper/', type: 'AI/ML Service', status: 'Active' },

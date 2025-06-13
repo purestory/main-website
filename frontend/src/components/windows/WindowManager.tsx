@@ -59,19 +59,23 @@ const WindowManager: React.FC<WindowManagerProps> = ({ windows, setWindows, onWi
       case 'my-computer-window':
         return (
           <div className="my-computer-body">
-            <p><strong>시스템 정보 (가상)</strong></p>
+            <p><strong>시스템 정보</strong></p>
             <ul>
-              <li>운영체제: Web OS Simulation</li>
-              <li>CPU: Simulated Web CPU</li>
-              <li>RAM: User's Browser Memory</li>
+              <li>운영체제: Ubuntu Server 22.04 LTS</li>
+              <li>CPU: Intel Core i9-13900HK @ 5.4GHz (14 Cores, 20 Threads)</li>
+              <li>메모리: 32768MB DDR4</li>
+              <li>GPU: NVIDIA GeForce RTX 3090 24GB</li>
             </ul>
             <hr />
-            <p><strong>드라이브 (가상)</strong></p>
+            <p><strong>저장 장치</strong></p>
             <div className="drive-item">
-              <span className="drive-icon">💾</span> C: (Web Drive)
+              <span className="drive-icon">💾</span> NVMe 0: Crucial CT2000P3PSSD8 (2TB)
             </div>
             <div className="drive-item">
-              <span className="drive-icon">💿</span> D: (CD-ROM - 가상)
+              <span className="drive-icon">💾</span> NVMe 1: WD Blue SN580 (1TB)
+            </div>
+            <div className="drive-item">
+              <span className="drive-icon">💿</span> DVD: ASUS DVD-RW Drive
             </div>
           </div>
         )

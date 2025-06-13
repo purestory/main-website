@@ -1,5 +1,129 @@
 ---
-description:
-globs:
+description: 
+globs: 
 alwaysApply: false
 ---
+# Development Workflow
+
+## Project Structure
+- **Frontend**: React TypeScript app in `/frontend` directory
+- **Backend**: FastAPI service running on port 8001 via systemd
+- **Deployment**: Nginx serves static files and proxies API calls
+
+## Development Process
+1. **Frontend Changes**: 
+   - Edit files in `frontend/src/`
+   - Build: `cd frontend && npm run build`
+   - No nginx reload needed for static files
+
+2. **Backend Changes**:
+   - Edit Python files in backend directory
+   - Restart service: `sudo systemctl restart main-website-backend`
+   - Check logs: `sudo journalctl -u main-website-backend -f`
+
+3. **Nginx Config Changes**:
+   - Edit in `/home/purestory/tmp/` first
+   - Test: `sudo nginx -t`
+   - Apply: `sudo systemctl reload nginx`
+
+## File Permissions
+- Always check permissions before editing: `ls -la [file]`
+- Fix ownership: `sudo chown purestory:purestory [file]`
+- Never edit root-owned files directly with edit tools
+
+## API Integration
+- Frontend calls: Use relative paths `/main-api/...`
+- Nginx proxies `/main-api/` to `http://localhost:8001`
+- Backend service managed by systemd
+
+## Tech Stack
+- **Frontend**: React + TypeScript + Vite
+- **Backend**: Node.js + Express + SQLite
+- **Server**: nginx reverse proxy + systemd services
+- **Build Tool**: Vite for frontend bundling
+
+## Development Rules
+
+### Code Analysis Approach
+- **Always verify before assuming**: Read actual code, check logs, analyze errors
+- **Step-by-step debugging**: Don't guess, investigate systematically
+- **End-to-end verification**: Check from frontend → nginx → backend → database
+
+### File Modification Protocol
+1. **Check file permissions first**: `ls -la [filepath]`
+2. **Handle root-owned files**: Use tmp directory for editing
+3. **Never edit system files directly**: Copy → edit → copy back
+4. **Always test changes**: `nginx -t` before applying nginx configs
+
+### Port Management
+- **Frontend Dev**: Port 8880 (Vite dev server)
+- **Backend API**: Port 8001 (systemd service)
+- **Nginx**: Port 80/443 (production)
+- **Never assume ports**: Always ask user for port specifications
+
+### Build & Deploy Process
+```bash
+# 1. Build frontend
+cd frontend && npm run build
+
+# 2. Test nginx config (if modified)
+sudo nginx -t
+
+# 3. Reload nginx
+sudo systemctl reload nginx
+
+# 4. Check backend service
+sudo systemctl status main-website-backend
+```
+
+## Debugging Guidelines
+
+### Console Logging Rules
+- **Development**: Use console.log in useEffect hooks only
+- **Production**: Remove or minimize console output
+- **Never in JSX**: Causes infinite render loops
+
+### Error Investigation
+1. **Browser Console**: Check for JavaScript errors
+2. **Network Tab**: Verify API calls and responses
+3. **Nginx Logs**: `/var/log/nginx/error.log`
+4. **Backend Logs**: `journalctl -u main-website-backend -f`
+
+### Common Issues
+- **ERR_CONNECTION_REFUSED**: Check nginx proxy configuration
+- **Infinite Renders**: Remove console.log from JSX
+- **Missing Icons**: Verify import paths from assets folder
+- **Dialog Not Showing**: Check Portal vs inline rendering
+
+## 🚀 **Main Website 배포 프로세스**
+
+### ✅ **올바른 배포 방법**
+```bash
+# 1. Frontend 디렉토리로 이동
+cd /home/purestory/main-website/frontend
+
+# 2. 빌드 실행 (이것만 하면 됨!)
+npm run build
+
+# 3. 끝! nginx가 자동으로 dist 폴더를 서빙함
+```
+
+### 📁 **프로젝트 구조**
+- **Frontend**: [frontend/](mdc:frontend) - React + TypeScript + Vite
+- **Backend**: [backend/](mdc:backend) - FastAPI (Port 8001)
+- **Build Output**: `frontend/dist/` - nginx가 직접 서빙
+
+### 🔧 **Nginx 설정**
+- **Root**: `frontend/dist` 폴더를 직접 서빙
+- **API Proxy**: `/main-api/` → `http://localhost:8001`
+- **빌드 후 자동 반영**: 별도 복사 작업 불필요
+
+### ❌ **하지 말 것**
+1. **dist 파일을 다른 곳으로 복사하지 마라**
+2. **nginx 설정을 함부로 건드리지 마라**
+3. **권한 문제 시 sudo chown으로 해결**
+
+### 🎯 **개발 시 주의사항**
+- CSS/JS 변경 → `npm run build` → 즉시 반영
+- 캐시 문제 시 브라우저 새로고침 (Ctrl+F5)
+- 에러 시 브라우저 개발자 도구 콘솔 확인

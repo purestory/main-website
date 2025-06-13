@@ -65,9 +65,14 @@
 
         #postBiosLogo {
             display: block;
-            max-width: 300px;
-            width: 50%;
+            max-width: 500px;
+            width: 70%;
             margin: 0 0 20px 0; /* Remove auto margin to left-align */
+        }
+
+        #postBiosLogo img {
+            max-width: 100%;
+            height: auto;
             filter: brightness(0.8) grayscale(0.2) contrast(1.2);
         }
 
@@ -1833,6 +1838,15 @@
 .window.resizing .resize-handle {
     opacity: 1 !important;
     background: transparent !important;
+}
+
+/* Explorer 창 스크롤바 제거 */
+.explorer-app-body {
+    overflow: hidden !important;
+}
+
+.explorer-app-body iframe {
+    overflow: hidden !important;
 }
 
 

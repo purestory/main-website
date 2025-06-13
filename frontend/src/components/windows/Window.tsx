@@ -1,4 +1,4 @@
-import React, { type ReactNode, useState, useRef } from 'react'
+import React, { type ReactNode, useState, useRef, useCallback } from 'react'
 import type { WindowState } from '../../types'
 
 interface WindowProps {
@@ -27,14 +27,41 @@ const Window: React.FC<WindowProps> = ({
   const [isDragging, setIsDragging] = useState(false)
   const [isResizing, setIsResizing] = useState(false)
   const dragRef = useRef<{ offsetX: number; offsetY: number }>({ offsetX: 0, offsetY: 0 })
+  const isDraggingRef = useRef(false) // 드래그 상태를 즉시 추적하기 위한 ref 추가
   const resizeRef = useRef<{ startX: number; startY: number; startWidth: number; startHeight: number }>({ 
     startX: 0, startY: 0, startWidth: 0, startHeight: 0 
   })
-  const isResizingRef = useRef(false) // 즉시 상태 추적용
+  const isResizingRef = useRef(false)
 
   const handleMouseDown = () => {
     onFocus()
   }
+
+  // useCallback을 사용해서 handleMouseMove와 handleMouseUp을 메모이제이션
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    if (!isDraggingRef.current || window.isMaximized) return
+
+    const newX = e.clientX - dragRef.current.offsetX
+    const newY = e.clientY - dragRef.current.offsetY
+
+    // 화면 경계 체크
+    const maxX = globalThis.innerWidth - window.size.width
+    const maxY = globalThis.innerHeight - window.size.height - 40 // 태스크바 고려
+
+    const clampedX = Math.max(0, Math.min(maxX, newX))
+    const clampedY = Math.max(0, Math.min(maxY, newY))
+
+    if (onMove) {
+      onMove(window.id, { x: clampedX, y: clampedY })
+    }
+  }, [window.id, window.size.width, window.size.height, window.isMaximized, onMove])
+
+  const handleMouseUp = useCallback(() => {
+    isDraggingRef.current = false
+    setIsDragging(false)
+    document.removeEventListener('mousemove', handleMouseMove)
+    document.removeEventListener('mouseup', handleMouseUp)
+  }, [handleMouseMove])
 
   const handleHeaderMouseDown = (e: React.MouseEvent) => {
     // 최대화된 상태에서는 드래그 안됨
@@ -44,6 +71,7 @@ const Window: React.FC<WindowProps> = ({
     if ((e.target as HTMLElement).closest('button')) return
 
     e.preventDefault()
+    isDraggingRef.current = true // ref로 즉시 상태 업데이트
     setIsDragging(true)
     onFocus()
 
@@ -59,49 +87,22 @@ const Window: React.FC<WindowProps> = ({
     document.addEventListener('mouseup', handleMouseUp)
   }
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!isDragging || window.isMaximized) return
-
-    const newX = e.clientX - dragRef.current.offsetX
-    const newY = e.clientY - dragRef.current.offsetY
-
-    // 화면 경계 체크
-    const maxX = globalThis.innerWidth - window.size.width
-    const maxY = globalThis.innerHeight - window.size.height - 40 // 태스크바 고려
-
-    const clampedX = Math.max(0, Math.min(maxX, newX))
-    const clampedY = Math.max(0, Math.min(maxY, newY))
-
-    if (onMove) {
-      onMove(window.id, { x: clampedX, y: clampedY })
-    }
-  }
-
-  const handleMouseUp = () => {
-    setIsDragging(false)
-    document.removeEventListener('mousemove', handleMouseMove)
-    document.removeEventListener('mouseup', handleMouseUp)
-  }
-
   const handleResizeMouseDown = (e: React.MouseEvent) => {
     if (!isResizable || window.isMaximized) {
       return
     }
     
-    // 이벤트 전파 완전 차단
     e.preventDefault()
     e.stopPropagation()
     
-    // 텍스트 선택 방지
     const bodyStyle = document.body.style as any
     bodyStyle.userSelect = 'none'
     bodyStyle.webkitUserSelect = 'none'
     bodyStyle.mozUserSelect = 'none'
     bodyStyle.msUserSelect = 'none'
     
-    // 상태 설정을 먼저 하고 확인
     setIsResizing(true)
-    isResizingRef.current = true // 즉시 상태 업데이트
+    isResizingRef.current = true
     onFocus()
 
     resizeRef.current = {
@@ -111,12 +112,10 @@ const Window: React.FC<WindowProps> = ({
       startHeight: window.size.height
     }
     
-    // 강제로 모든 이벤트 리스너 제거 후 새로 추가
     const cleanup = () => {
       isResizingRef.current = false
       setIsResizing(false)
       
-      // 텍스트 선택 복원
       bodyStyle.userSelect = ''
       bodyStyle.webkitUserSelect = ''
       bodyStyle.mozUserSelect = ''
@@ -149,11 +148,9 @@ const Window: React.FC<WindowProps> = ({
       cleanup()
     }
     
-    // 이벤트 리스너 추가
     document.addEventListener('mousemove', handleMove, { passive: false })
     document.addEventListener('mouseup', handleUp, { passive: false })
     
-    // 5초 후 강제 해제 (안전장치)
     setTimeout(() => {
       if (isResizingRef.current) {
         cleanup()

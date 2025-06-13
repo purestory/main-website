@@ -52,7 +52,7 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
     },
     {
       id: 'icon-explorer',
-      label: 'Explorer',
+      label: '파일 탐색기',
       image: explorerIcon,
       windowId: 'explorer-app-window'
     },
@@ -78,6 +78,8 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
       window.open('https://youtube.com', '_blank')
       return
     }
+    
+
     
     // 이미 열린 창이 있는지 확인
     const existingWindow = windows.find(w => w.id === windowId)
@@ -111,10 +113,24 @@ const Desktop: React.FC<DesktopProps> = ({ windows, setWindows }) => {
       defaultSize = { width: 1200, height: 800 }
     }
 
-    // 화면 가운데 위치 계산
+    // 화면 크기 정보
     const screenWidth = window.innerWidth
     const screenHeight = window.innerHeight
     const taskbarHeight = 40 // 태스크바 높이
+    const margin = 40 // 창 주변 여백
+
+    // 브라우저 창에 맞게 크기 조정 (지뢰찾기, 계산기 제외)
+    if (windowId !== 'minesweeper-app-window' && windowId !== 'calculator-app-window') {
+      const maxWidth = screenWidth - margin
+      const maxHeight = screenHeight - taskbarHeight - margin
+      
+      if (defaultSize.width > maxWidth) {
+        defaultSize.width = maxWidth
+      }
+      if (defaultSize.height > maxHeight) {
+        defaultSize.height = maxHeight
+      }
+    }
     
     const centerX = (screenWidth - defaultSize.width) / 2
     const centerY = (screenHeight - defaultSize.height - taskbarHeight) / 2

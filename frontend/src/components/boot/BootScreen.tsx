@@ -20,11 +20,22 @@ const BootScreen: React.FC<BootScreenProps> = ({
     "Memory Test: 32768M <span class='post-message-highlight-ok'>OK</span>",
     "GPU: NVIDIA GeForce RTX 3090 24GB",
     "Initializing USB Controllers .. <span class='post-message-highlight-ok'>Done</span>",
+    "Detecting NVMe Devices...",
+    "  NVMe Slot 0: Crucial CT2000P3PSSD8 2TB",
+    "  NVMe Slot 1: WD Blue SN580 1TB",
+    "Detecting SATA Devices...",
+    "  SATA Port 0: None",
+    "  SATA Port 1: None",
+    "  SATA Port 2: None",
+    "  SATA Port 3: None",
     "Detecting IDE Devices...",
-    "  Primary Master: VBOX HARDDISK ATA Device",
+    "  Primary Master: None",
     "  Primary Slave: None",
-    "  Secondary Master: VBOX CD-ROM ATA Device",
+    "  Secondary Master: ASUS DVD-RW Drive",
     "  Secondary Slave: None",
+    "Storage Summary:",
+    "  NVMe 0: 2048GB Crucial CT2000P3PSSD8 <span class='post-message-highlight-ok'>Ready</span>",
+    "  NVMe 1: 1024GB WD Blue SN580 <span class='post-message-highlight-ok'>Ready</span>",
     " ",
     "<span class='post-message-highlight-info'>Booting from Hard Disk...</span>",
   ]
@@ -176,8 +187,8 @@ const BootScreen: React.FC<BootScreenProps> = ({
             id="bootProgressBar"
             className="boot-progress-bar"
             style={{ 
-              width: bootStartTime ? '100%' : '0%',
-              transition: bootStartTime ? `width ${totalBootTime / 1000}s linear` : 'none'
+              width: `${bootProgressPercent}%`,
+              transition: 'width 0.1s ease-out'
             }}
           />
         </div>
