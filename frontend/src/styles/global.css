@@ -227,9 +227,7 @@
         .desktop-icon:hover .icon-image {
             background-color: rgba(255, 255, 255, 0.3); /* Highlight effect */
         }
-        .desktop-icon:hover .icon-label {
-            /* text-decoration: underline; */ /* Optional: highlight label on hover */
-        }
+
 
 
         .icon-image {
@@ -257,6 +255,8 @@
             transform: scale(1.1); /* Added scale effect */
         }
 
+
+
         .icon-label {
             font-size: 12px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.7); /* Readability */
@@ -270,22 +270,31 @@
         /* Window Styles */
         .window {
             position: absolute;
-            width: auto; /* 자동 크기로 변경 - JS에서 설정 */
-            height: auto; /* 자동 크기로 변경 - JS에서 설정 */
-            background-color: #f0f0f0; /* Light grey background */
-            border: 1px solid #888;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            display: none; /* Hidden by default */
-            z-index: 500;
-            border-radius: 5px;
-            overflow: hidden;
+            background-color: #f0f0f0;
+            border: 2px outset #c0c0c0;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+            min-width: 200px;
+            min-height: 100px;
+            display: none;
             opacity: 0;
-            transform: scale(0.95);
-            transition: opacity 0.2s ease-out, transform 0.2s ease-out;
+            transform: scale(0.9);
+            transition: opacity 0.2s ease, transform 0.2s ease;
+            user-select: none; /* 텍스트 선택 방지 */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
         }
         .window.active {
             opacity: 1;
             transform: scale(1);
+            display: block !important;
+        }
+
+        /* React Window Override - Force visibility */
+        .window[style*="display: block"] {
+            display: block !important;
+            opacity: 1 !important;
+            transform: scale(1) !important;
         }
 
         .window-header {
@@ -358,9 +367,9 @@
         .window-minimize-button::before {
             content: '';
             position: absolute;
-            top: 50%;
+            bottom: 4px;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
             width: 10px;
             height: 1.5px;
             background-color: #ffffff;
@@ -415,6 +424,15 @@
             color: #333;
             height: calc(100% - 35px);
             overflow-y: auto;
+        }
+
+        /* 지뢰찾기 윈도우는 padding 제거 */
+        .window .window-body {
+            padding: 0 !important;
+        }
+        
+        div.window-body {
+            padding: 0 !important;
         }
 
         /* Old Project List Styles within Window - Commented Out */
@@ -474,8 +492,8 @@
         .project-icons-container {
             display: flex;
             flex-wrap: wrap;
-            gap: 15px; /* Spacing between icons */
-            padding: 10px;
+            gap: 10px; /* Spacing between icons - 줄임 */
+            padding: 15px;
             justify-content: flex-start; /* Align icons to the start */
             align-items: flex-start;
             height: 100%; /* Ensure it takes up window body height */
@@ -486,8 +504,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            width: 80px; /* Width of the icon + label area */
-            padding: 8px;
+            width: 75px; /* Width of the icon + label area - 줄임 */
+            padding: 6px; /* 패딩 줄임 */
             border-radius: 4px;
             text-decoration: none;
             color: #333; /* Text color for labels */
@@ -499,11 +517,11 @@
         }
 
         .project-icon-image {
-            font-size: 2.5em; /* 이모지 기본 크기, 기존 3em에서 약간 줄여서 48px 컨테이너와 더 잘 맞도록 조정 */
+            font-size: 2.2em; /* 이모지 크기 줄임 */
             line-height: 1;
-            margin-bottom: 5px;
-            width: 48px; /* 아이콘 이미지 컨테이너 크기 고정 */
-            height: 48px; /* 아이콘 이미지 컨테이너 크기 고정 */
+            margin-bottom: 4px; /* 마진 줄임 */
+            width: 42px; /* 아이콘 이미지 컨테이너 크기 줄임 */
+            height: 42px; /* 아이콘 이미지 컨테이너 크기 줄임 */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -521,12 +539,12 @@
 
 
         .project-icon-label {
-            font-size: 0.85em; /* Slightly smaller than desktop icon labels */
+            font-size: 0.8em; /* 폰트 크기 줄임 */
             text-align: center;
             word-wrap: break-word;
-            max-height: 2.6em; /* Approx 2 lines */
+            max-height: 2.4em; /* 높이 줄임 */
             overflow: hidden;
-            line-height: 1.3em;
+            line-height: 1.2em; /* 라인 높이 줄임 */
         }
 
 
@@ -665,23 +683,26 @@
 
         /* Specific overrides for the All Programs submenu */
         #all-programs-submenu {
-            top: -300px !important; /* 서브메뉴를 "프로그램" 아이템보다 위로 */
-            min-width: 230px; /* Specific width for All Programs */
-            max-height: 500px; /* 높이를 더 높게 설정 (350px → 500px) */
+            top: -450px !important; /* 서브메뉴를 더 위로 올림 (-300px → -450px) */
+            min-width: 250px; /* 폭을 약간 더 넓게 */
+            height: auto !important; /* 자동 높이 */
+            max-height: none !important; /* 최대 높이 제한 제거 */
             background-color: #c0c0c0 !important; /* 강제로 배경색 설정 */
             border: 2px outset #ffffff !important; /* 강제로 테두리 설정 */
             z-index: 1300 !important; /* 더 높은 z-index */
             box-shadow: 3px 3px 8px rgba(0,0,0,0.5) !important; /* 더 진한 그림자 */
+            overflow-y: visible !important; /* 스크롤 제거 */
+            overflow-x: visible !important; /* 가로 스크롤도 제거 */
         }
 
         /* Styles for li items specifically within any submenu, including #all-programs-submenu */
         .has-submenu > .submenu li, /* Targeting direct child ul's li */
         #all-programs-submenu li { /* Also target li items in #all-programs-submenu directly */
-            padding: 5px 10px;
+            padding: 8px 12px;
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            font-size: 0.9em;
+            font-size: 14px !important;
             cursor: pointer;
             border: 1px solid transparent;
         }
@@ -694,6 +715,20 @@
             text-decoration: none;
             color: black;
             width: 100%;
+            font-size: 14px !important;
+        }
+        
+        /* 서브메뉴 텍스트 크기 메인 메뉴와 동일하게 */
+        #all-programs-submenu li .menu-text {
+            font-size: 14px !important;
+        }
+        
+        /* 더 구체적인 셀렉터로 강제 적용 */
+        #start-menu #all-programs-submenu li,
+        #start-menu #all-programs-submenu li a,
+        #start-menu #all-programs-submenu li .menu-text,
+        #start-menu #all-programs-submenu li span {
+            font-size: 14px !important;
         }
         /* Hover effect for submenu items is inherited from #start-menu li:hover */
         /* If specific hover is needed:
@@ -1020,11 +1055,30 @@
     position: absolute;
     bottom: 0;
     right: 0;
-    width: 12px;
-    height: 12px;
-    background-color: transparent; /* Can add a visual cue if desired */
+    width: 20px;
+    height: 20px;
+    background: transparent; /* 완전 투명 */
     cursor: se-resize;
-    z-index: 10; /* Ensure it's clickable over window-body content if body has own bg */
+    z-index: 9999; /* 매우 높은 z-index */
+    opacity: 1;
+    transition: opacity 0.2s ease, background 0.2s ease;
+    border-bottom-right-radius: 4px;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    /* 포인터 이벤트 강제 활성화 */
+    pointer-events: auto !important;
+}
+
+.resize-handle:hover {
+    opacity: 1;
+    background: transparent; /* 호버해도 투명 */
+}
+
+.resize-handle:active {
+    opacity: 1;
+    background: transparent; /* 액티브해도 투명 */
 }
 
 /* Minesweeper Styles */
@@ -1570,8 +1624,9 @@
 .scores-buttons {
     display: flex;
     gap: 10px;
-    justify-content: flex-end;
-    margin-top: 10px;
+    justify-content: center;
+    margin-top: 20px;
+    padding: 0 20px;
 }
 
 .btn {
@@ -1769,6 +1824,15 @@
 
 .btn-secondary:active {
     border: 1px inset #c0c0c0;
+}
+
+.window.resizing {
+    transition: none !important; /* 리사이즈 중에는 transition 비활성화 */
+}
+
+.window.resizing .resize-handle {
+    opacity: 1 !important;
+    background: transparent !important;
 }
 
 

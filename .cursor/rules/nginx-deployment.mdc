@@ -1,0 +1,41 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Nginx Deployment Rules
+
+## ❌ **절대 금지사항**
+1. **sites-enabled에 백업 파일 생성 금지** - nginx가 모든 파일을 설정으로 읽음
+2. **sites-enabled에 실제 파일 생성 금지** - 심볼릭 링크만 허용
+3. **권한 확인 없이 파일 수정 시도 금지**
+
+## 📋 **필수 프로세스**
+
+### Nginx 설정 수정
+```bash
+# 1. 권한 확인
+ls -la /etc/nginx/sites-available/purestory
+
+# 2. 백업 생성
+sudo cp /etc/nginx/sites-available/purestory /home/purestory/tmp/nginx_backup_$(date +%Y%m%d_%H%M%S).conf
+
+# 3. 편집용 파일 생성
+sudo cp /etc/nginx/sites-available/purestory /home/purestory/tmp/nginx_edit.conf
+sudo chown purestory:purestory /home/purestory/tmp/nginx_edit.conf
+
+# 4. 수정 후 적용
+sudo cp /home/purestory/tmp/nginx_edit.conf /etc/nginx/sites-available/purestory
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+### 배포 순서
+1. **Frontend**: `cd frontend && npm run build`
+2. **Test**: `sudo nginx -t`
+3. **Apply**: `sudo systemctl reload nginx`
+
+## API 라우팅
+- **Backend**: Port 8001 (systemd 관리)
+- **Proxy**: `/main-api/` → `http://localhost:8001`
+- **Frontend**: 상대경로 `/main-api/...` 사용

@@ -1,0 +1,29 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Window Resize System
+
+## Core Implementation
+- **Window Component**: [frontend/src/components/windows/Window.tsx](mdc:frontend/src/components/windows/Window.tsx) - Resize logic with useRef for immediate state tracking
+- **WindowManager**: [frontend/src/components/windows/WindowManager.tsx](mdc:frontend/src/components/windows/WindowManager.tsx) - Controls which windows are resizable
+- **Desktop**: [frontend/src/components/desktop/Desktop.tsx](mdc:frontend/src/components/desktop/Desktop.tsx) - Handles window state updates
+
+## Resize Rules
+- **Resizable**: Projects, My Computer, Explorer, Chrome, Paint windows
+- **Non-Resizable**: Minesweeper, Calculator (fixed size for game/tool functionality)
+- **Handle**: Invisible 20x20px area at bottom-right corner with `se-resize` cursor
+- **Constraints**: Min 200px width, 150px height
+
+## Event Flow
+1. **MouseDown**: `handleResizeMouseDown` sets `isResizingRef.current = true`
+2. **MouseMove**: Real-time resize with `onResize(windowId, {width, height})`
+3. **MouseUp**: Cleanup function removes event listeners and resets state
+4. **Safety**: 5-second timeout prevents stuck resize state
+
+## Critical Implementation Details
+- Use `useRef` for immediate state tracking (React useState is async)
+- Prevent text selection during resize with body style manipulation
+- Remove ALL event listeners in cleanup to prevent memory leaks
+- Handle positioned absolutely with high z-index but transparent background

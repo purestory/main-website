@@ -1,0 +1,317 @@
+/* 지뢰찾기 - 바닐라 버전과 완전 동일 */
+.minesweeper-container {
+  padding: 0;
+  background-color: #ffffff;
+  border: none;
+  font-family: 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  overflow: hidden;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+/* 메뉴바 - 모던 플랫 스타일 */
+.menu-bar {
+  width: 100%;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e0e0e0;
+  margin: 0;
+  padding: 0px 0px;
+  font-size: 11px;
+  user-select: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+}
+
+.menu-item {
+  position: relative;
+  display: inline-block;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 11px;
+  border: 1px solid transparent;
+  background-color: transparent;
+  border-radius: 0;
+  margin: 0 1px;
+  transition: none;
+  color: #000;
+}
+
+.menu-item:hover {
+  background-color: #0078d4;
+  border-color: #0078d4;
+  color: #ffffff;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #ffffff;
+  border: 2px outset #ffffff;
+  padding: 2px 0;
+  min-width: 120px;
+  z-index: 1000;
+  font-size: 11px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.dropdown-menu > div {
+  padding: 4px 20px 4px 8px;
+  cursor: pointer;
+  color: #000;
+  font-size: 11px;
+  position: relative;
+}
+
+.dropdown-menu > div:hover {
+  background-color: #0078d4;
+  color: #ffffff;
+}
+
+.submenu {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  background-color: #ffffff;
+  border: 2px outset #ffffff;
+  padding: 2px 0;
+  min-width: 80px;
+  z-index: 1001;
+  font-size: 11px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.submenu > div {
+  padding: 4px 8px;
+  cursor: pointer;
+  color: #000;
+  font-size: 11px;
+}
+
+.submenu > div:hover {
+  background-color: #0078d4;
+  color: #ffffff;
+}
+
+/* 게임 정보 - 모던 플랫 스타일 */
+.game-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 0;
+  font-size: 14px;
+  margin: 0;
+  height: 35px;
+  box-sizing: border-box;
+}
+
+.timer, .mine-count {
+  background-color: #000000;
+  color: #ff0000;
+  font-family: 'Courier New', monospace;
+  padding: 4px 8px;
+  font-size: 14px;
+  font-weight: bold;
+  border: 1px solid #333333;
+  border-radius: 2px;
+  min-width: 60px;
+  text-align: center;
+  line-height: 1;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reset-btn {
+  font-size: 20px;
+  padding: 2px 6px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #ffffff;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  transition: background-color 0.2s ease;
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+}
+
+.reset-btn:hover {
+  background-color: #f5f5f5;
+}
+
+.reset-btn:active {
+  background-color: #e0e0e0;
+}
+
+/* 게임 보드 - 모던 플랫 스타일 */
+.game-board {
+  display: inline-grid;
+  gap: 1px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  padding: 8px;
+  margin: 8px auto 0 auto;
+  justify-self: center;
+  box-shadow: none;
+  align-self: center;
+}
+
+/* 셀 스타일 - 모던 플랫 스타일 */
+.cell {
+  width: 25px;
+  height: 25px;
+  background-color: #ffffff;
+  border: 1px solid #d0d0d0;
+  border-radius: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.1s ease;
+  box-shadow: none;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.cell:hover:not(.revealed) {
+  background-color: #f0f0f0;
+  transform: none;
+  box-shadow: none;
+}
+
+.cell.hidden {
+  background-color: #ffffff;
+  border: 1px solid #d0d0d0;
+}
+
+.cell.revealed {
+  background-color: #f8f8f8;
+  border: 1px solid #e0e0e0;
+  box-shadow: none;
+}
+
+.cell.revealed:hover {
+  transform: none;
+  background-color: #f8f8f8;
+  box-shadow: none;
+}
+
+.cell.mine {
+  background-color: #ff4444 !important;
+  font-size: 14px;
+  color: #000000;
+  border: 1px solid #cc0000;
+}
+
+.cell.flagged {
+  font-size: 14px;
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+}
+
+.cell.number-1 { color: #1e90ff; font-weight: bold; } /* 밝은 파란색 */
+.cell.number-2 { color: #32cd32; font-weight: bold; } /* 라임 그린 */
+.cell.number-3 { color: #ff4500; font-weight: bold; } /* 주황빨강 */
+.cell.number-4 { color: #4169e1; font-weight: bold; } /* 로열 블루 */
+.cell.number-5 { color: #dc143c; font-weight: bold; } /* 크림슨 */
+.cell.number-6 { color: #20b2aa; font-weight: bold; } /* 라이트 시 그린 */
+.cell.number-7 { color: #000000; font-weight: bold; } /* 검은색 */
+.cell.number-8 { color: #696969; font-weight: bold; } /* 딤 그레이 */
+
+.game-result {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #ffffff;
+  border: 2px outset #ffffff;
+  padding: 20px;
+  z-index: 1000;
+  text-align: center;
+  font-size: 14px;
+  box-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+}
+
+.game-result div {
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.game-result button {
+  padding: 5px 15px;
+  font-size: 11px;
+  border: 2px outset #ffffff;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+
+.game-result button:hover {
+  background-color: #ffffff;
+}
+
+.game-result button:active {
+  border: 2px inset #ffffff;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .minesweeper-container {
+    padding: 0;
+    border-radius: 0;
+  }
+  
+  .game-info {
+    padding: 12px 16px;
+  }
+  
+  .timer, .mine-count {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
+  
+  .reset-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+  }
+  
+  .game-board {
+    padding: 8px;
+  }
+}
+
+/* 다크모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .minesweeper-container {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+  }
+  
+  .dropdown-menu, .submenu {
+    background: rgba(44, 62, 80, 0.95);
+  }
+  
+  .dropdown-menu > div, .submenu > div {
+    color: #ecf0f1;
+  }
+} 
