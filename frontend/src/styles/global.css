@@ -590,7 +590,7 @@
             font-size: 16px;
             padding: 4px 6px;
             cursor: pointer;
-            border: 1px inset #c0c0c0;
+            border: none;
             background-color: #c0c0c0;
             display: flex;
             align-items: center;
@@ -604,7 +604,6 @@
         }
 
         .volume-icon:active {
-            border: 1px inset #a0a0a0;
             background-color: #b0b0b0;
         }
 
@@ -647,7 +646,7 @@
             width: 24px;
             height: 24px;
             background-color: #c0c0c0;
-            border: 1px outset #ffffff;
+            border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -658,11 +657,9 @@
 
         .quick-launch-btn:hover {
             background-color: #d0d0d0;
-            border-color: #e0e0e0;
         }
 
         .quick-launch-btn:active {
-            border-style: inset;
             background-color: #b0b0b0;
         }
 
