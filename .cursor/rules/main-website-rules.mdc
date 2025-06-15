@@ -1,0 +1,77 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Main Website Development Rules
+
+## 대화의 처음시작시
+- **readme.md** 파일을 읽고 프로젝트를 파악하고 시작
+- 중요한 변경사항은 **readme.md** 수정
+
+## 프로젝트 구조
+- **Frontend**: [frontend/](mdc:frontend) - React + TypeScript + Vite  
+- **Backend**: [backend/](mdc:backend) - FastAPI (Port 8001)
+- **배포**: nginx가 `frontend/dist` 직접 서빙
+
+## 절대 금지사항
+
+### 1. nginx 관련
+- **sites-enabled에 백업파일 생성 금지** (nginx가 모든 파일을 설정으로 읽음)
+- **권한 확인 없이 파일 수정 금지**
+- **배포 경로 임의 지정 금지**
+
+### 2. 배포 관련  
+- **사용자 승인 없이 프로덕션 배포 금지**
+- **dist 파일을 다른 곳으로 복사 금지** (nginx가 직접 서빙)
+
+## 필수 준수사항
+
+### 파일 수정 프로세스
+```bash
+# 1. 권한 확인
+ls -la [파일경로]
+
+# 2. root 소유 파일일 경우
+sudo chown purestory:purestory [파일경로]
+
+# 3. nginx 설정 수정은 tmp에서
+sudo cp /etc/nginx/sites-available/purestory /home/purestory/tmp/nginx_edit.conf
+sudo chown purestory:purestory /home/purestory/tmp/nginx_edit.conf
+# 수정 후
+sudo cp /home/purestory/tmp/nginx_edit.conf /etc/nginx/sites-available/purestory
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+### 배포 프로세스
+```bash
+# 올바른 배포 (이것만 하면 됨)
+cd frontend
+npm run build
+
+# nginx가 자동으로 frontend/dist 서빙
+```
+
+## 개발 워크플로우
+
+### Frontend 변경
+1. `frontend/src/` 파일 수정
+2. `npm run build` 실행  
+3. 끝 (nginx 재시작 불필요)
+
+### Backend 변경
+1. backend 파일 수정
+2. `sudo systemctl restart main-website-backend`
+3. `sudo journalctl -u main-website-backend -f` (로그 확인)
+
+### 디버깅
+- **Browser Console**: JavaScript 에러 확인
+- **Network Tab**: API 호출 상태 확인  
+- **Backend Logs**: `journalctl -u main-website-backend -f`
+
+## 기술 스택
+- **Frontend**: React 18 + TypeScript + Vite
+- **Backend**: FastAPI + SQLite  
+- **Server**: nginx (Port 80) + systemd
+- **API**: `/main-api/` → `http://localhost:8001`

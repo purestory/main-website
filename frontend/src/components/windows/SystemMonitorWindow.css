@@ -1,0 +1,169 @@
+.system-monitor {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+  background: #c0c0c0;
+  color: #000;
+}
+
+.monitor-tabs {
+  display: flex;
+  border-bottom: 1px solid #808080;
+  background: #c0c0c0;
+}
+
+.tab-button {
+  padding: 6px 12px;
+  border: none;
+  background: #c0c0c0;
+  color: #000;
+  cursor: pointer;
+  border-right: 1px solid #808080;
+  font-family: 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+}
+
+.tab-button:hover {
+  background: #e0e0e0;
+}
+
+.tab-button.active {
+  background: #ffffff;
+  border-bottom: 1px solid #ffffff;
+}
+
+.monitor-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  background: #ffffff;
+}
+
+.monitor-content {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.system-overview,
+.resource-usage,
+.projects-status,
+.apps-status,
+.quick-actions,
+.app-summary {
+  border: 2px inset #c0c0c0;
+  padding: 8px;
+  background: #f0f0f0;
+}
+
+.system-overview h3,
+.resource-usage h3,
+.projects-status h3,
+.apps-status h3,
+.quick-actions h3,
+.app-summary h3 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.info-grid,
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 6px;
+}
+
+.info-item,
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 3px 6px;
+  border: 1px inset #c0c0c0;
+  background: #ffffff;
+}
+
+.info-item label,
+.summary-item label {
+  font-weight: bold;
+}
+
+.usage-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.usage-item label {
+  width: 100px;
+  font-weight: bold;
+}
+
+.usage-bar {
+  flex: 1;
+  height: 14px;
+  border: 1px inset #c0c0c0;
+  background: #ffffff;
+  position: relative;
+}
+
+.usage-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.usage-item span {
+  width: 45px;
+  text-align: right;
+  font-weight: bold;
+}
+
+.status-table {
+  border: 1px inset #c0c0c0;
+  background: #ffffff;
+}
+
+.status-header,
+.status-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 2fr;
+  padding: 3px 6px;
+  border-bottom: 1px solid #c0c0c0;
+}
+
+.status-header {
+  background: #c0c0c0;
+  font-weight: bold;
+}
+
+.status-row:hover {
+  background: #e0e0e0;
+}
+
+.action-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 6px;
+}
+
+.action-btn {
+  padding: 4px 8px;
+  border: 2px outset #c0c0c0;
+  background: #c0c0c0;
+  color: #000;
+  cursor: pointer;
+  font-family: 'MS Sans Serif', sans-serif;
+  font-size: 11px;
+}
+
+.action-btn:hover {
+  background: #e0e0e0;
+}
+
+.action-btn:active {
+  border: 2px inset #c0c0c0;
+} 
